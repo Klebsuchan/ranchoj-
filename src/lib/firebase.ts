@@ -1,0 +1,150 @@
+import { initializeApp } from 'firebase/app';
+import { 
+  getAuth, 
+  signInWithPopup, 
+  signOut as fbSignOut, 
+  GoogleAuthProvider, 
+  onAuthStateChanged,
+  User as FirebaseUser
+} from 'firebase/auth';
+import { 
+  getFirestore, 
+  doc, 
+  setDoc, 
+  getDoc, 
+  getDocFromServer,
+  collection, 
+  onSnapshot,
+  query
+} from 'firebase/firestore';
+import firebaseConfig from '../../firebase-applet-config.json';
+import { UserProfile } from '../types';
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// CRITICAL: Must pass firebaseConfig.firestoreDatabaseId
+export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
+
+export enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+export interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId?: string | null;
+    email?: string | null;
+    emailVerified?: boolean | null;
+  };
+}
+
+export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+    },
+    operationType,
+    path
+  };
+  console.error('Firestore Error: ', JSON.stringify(errInfo));
+  return errInfo;
+}
+
+/**
+ * Validate connection to Firestore on boot
+ */
+export async function testConnection() {
+  try {
+    await getDocFromServer(doc(db, 'test', 'connection'));
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('the client is offline')) {
+      console.warn("Verifique a conexão do Firebase.");
+    }
+  }
+}
+
+// Test connection on module load
+testConnection();
+
+/**
+ * Sign in with Google using Firebase Authentication popup
+ */
+export async function signInWithGoogleFirebase(): Promise<FirebaseUser> {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    return result.user;
+  } catch (error: any) {
+    console.warn('Firebase Google Auth popup error:', error?.code, error?.message);
+    throw error;
+  }
+}
+
+/**
+ * Sign out from Firebase Authentication
+ */
+export async function signOutFirebase(): Promise<void> {
+  await fbSignOut(auth);
+}
+
+/**
+ * Save user profile to Firestore
+ */
+export async function saveUserProfileToFirestore(userProfile: Partial<UserProfile>): Promise<void> {
+  const currentUser = auth.currentUser;
+  if (!currentUser) return;
+
+  const userDocRef = doc(db, 'users', currentUser.uid);
+  try {
+    await setDoc(userDocRef, {
+      uid: currentUser.uid,
+      name: userProfile.name || currentUser.displayName || 'Usuário RanchoJá',
+      email: userProfile.email || currentUser.email || '',
+      avatarUrl: userProfile.avatarUrl || currentUser.photoURL || '',
+      neighborhood: userProfile.neighborhood || 'Centro',
+      city: userProfile.city || 'Passo Fundo',
+      state: userProfile.state || 'RS',
+      radiusKm: userProfile.radiusKm || 10,
+      monthlyBudget: userProfile.monthlyBudget || 1500,
+      familyMembers: userProfile.familyMembers || 3,
+      updatedAt: new Date().toISOString()
+    }, { merge: true });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, `users/${currentUser.uid}`);
+  }
+}
+
+/**
+ * Load user profile from Firestore
+ */
+export async function loadUserProfileFromFirestore(): Promise<Partial<UserProfile> | null> {
+  const currentUser = auth.currentUser;
+  if (!currentUser) return null;
+
+  const userDocRef = doc(db, 'users', currentUser.uid);
+  try {
+    const snap = await getDoc(userDocRef);
+    if (snap.exists()) {
+      return snap.data() as Partial<UserProfile>;
+    }
+    return null;
+  } catch (error) {
+    handleFirestoreError(error, OperationType.GET, `users/${currentUser.uid}`);
+    return null;
+  }
+}

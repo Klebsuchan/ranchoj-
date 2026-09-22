@@ -1,0 +1,6 @@
+{
+  "name": "RanchoJá",
+  "description": "Comparador de preços de supermercados, encartes em tempo real e gestor de compras do mês com alertas de economia.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

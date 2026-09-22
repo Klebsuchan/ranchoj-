@@ -1,0 +1,71 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with personal preferences and location settings",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "format": "email", "maxLength": 150 },
+        "avatarUrl": { "type": "string", "maxLength": 500 },
+        "neighborhood": { "type": "string", "maxLength": 100 },
+        "city": { "type": "string", "maxLength": 100 },
+        "state": { "type": "string", "maxLength": 10 },
+        "radiusKm": { "type": "number" },
+        "monthlyBudget": { "type": "number" },
+        "familyMembers": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    },
+    "RanchoItem": {
+      "title": "RanchoItem",
+      "description": "Grocery shopping list item for the user's rancho",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string", "maxLength": 120 },
+        "category": { "type": "string", "maxLength": 50 },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string", "maxLength": 20 },
+        "completed": { "type": "boolean" },
+        "estimatedPrice": { "type": "number" },
+        "bestMarket": { "type": "string", "maxLength": 80 },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "name"]
+    },
+    "PurchaseRecord": {
+      "title": "PurchaseRecord",
+      "description": "Monthly grocery purchase history and economized totals",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "date": { "type": "string", "maxLength": 30 },
+        "marketName": { "type": "string", "maxLength": 100 },
+        "totalSpent": { "type": "number" },
+        "totalEconomized": { "type": "number" },
+        "itemsCount": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "totalSpent"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profile and account settings"
+    },
+    "/users/{userId}/ranchoItems/{itemId}": {
+      "schema": { "$ref": "#/entities/RanchoItem" },
+      "description": "Items in the user's active grocery shopping list"
+    },
+    "/users/{userId}/purchases/{purchaseId}": {
+      "schema": { "$ref": "#/entities/PurchaseRecord" },
+      "description": "Historical shopping trips and savings logged by the user"
+    }
+  }
+}
