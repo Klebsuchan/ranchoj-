@@ -2,6 +2,8 @@ import { initializeApp } from 'firebase/app';
 import { 
   getAuth, 
   signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
   signOut as fbSignOut, 
   GoogleAuthProvider, 
   onAuthStateChanged,
@@ -83,7 +85,7 @@ export async function testConnection() {
 testConnection();
 
 /**
- * Sign in with Google using Firebase Authentication popup
+ * Sign in with Google using Firebase Authentication popup, with mobile redirect fallback
  */
 export async function signInWithGoogleFirebase(): Promise<FirebaseUser> {
   try {
@@ -91,8 +93,31 @@ export async function signInWithGoogleFirebase(): Promise<FirebaseUser> {
     return result.user;
   } catch (error: any) {
     console.warn('Firebase Google Auth popup error:', error?.code, error?.message);
+    // If popup was blocked by mobile browser, fallback to redirect flow
+    if (error?.code === 'auth/popup-blocked' || error?.code === 'auth/popup-closed-by-user' || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+      try {
+        await signInWithRedirect(auth, googleProvider);
+      } catch (redirectErr) {
+        console.warn('Firebase Google Auth redirect error:', redirectErr);
+      }
+    }
     throw error;
   }
+}
+
+/**
+ * Check if the user returned from a mobile redirect login
+ */
+export async function checkFirebaseRedirectResult(): Promise<FirebaseUser | null> {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result && result.user) {
+      return result.user;
+    }
+  } catch (err) {
+    console.warn('Erro ao verificar redirect do Google Firebase:', err);
+  }
+  return null;
 }
 
 /**
@@ -100,6 +125,17 @@ export async function signInWithGoogleFirebase(): Promise<FirebaseUser> {
  */
 export async function signOutFirebase(): Promise<void> {
   await fbSignOut(auth);
+}
+
+/**
+ * Clean any mocked unsplash URLs
+ */
+function sanitizeAvatarUrl(url?: string | null): string | undefined {
+  if (!url) return undefined;
+  if (url.includes('images.unsplash.com') || url.includes('unsplash')) {
+    return undefined;
+  }
+  return url;
 }
 
 /**
@@ -111,11 +147,12 @@ export async function saveUserProfileToFirestore(userProfile: Partial<UserProfil
 
   const userDocRef = doc(db, 'users', currentUser.uid);
   try {
+    const cleanAvatar = sanitizeAvatarUrl(userProfile.avatarUrl) || sanitizeAvatarUrl(currentUser.photoURL) || '';
     await setDoc(userDocRef, {
       uid: currentUser.uid,
       name: userProfile.name || currentUser.displayName || 'Usuário RanchoJá',
       email: userProfile.email || currentUser.email || '',
-      avatarUrl: userProfile.avatarUrl || currentUser.photoURL || '',
+      avatarUrl: cleanAvatar,
       neighborhood: userProfile.neighborhood || 'Centro',
       city: userProfile.city || 'Passo Fundo',
       state: userProfile.state || 'RS',
@@ -140,7 +177,11 @@ export async function loadUserProfileFromFirestore(): Promise<Partial<UserProfil
   try {
     const snap = await getDoc(userDocRef);
     if (snap.exists()) {
-      return snap.data() as Partial<UserProfile>;
+      const data = snap.data() as Partial<UserProfile>;
+      if (data.avatarUrl) {
+        data.avatarUrl = sanitizeAvatarUrl(data.avatarUrl);
+      }
+      return data;
     }
     return null;
   } catch (error) {
@@ -148,3 +189,4 @@ export async function loadUserProfileFromFirestore(): Promise<Partial<UserProfil
     return null;
   }
 }
+

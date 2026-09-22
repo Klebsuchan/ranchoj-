@@ -21,12 +21,21 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
 }) => {
   const [currentUser, setCurrentUser] = useState<GoogleAuthUser | null>(getStoredGoogleUser());
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [headerAvatarError, setHeaderAvatarError] = useState(false);
+  const [bannerAvatarError, setBannerAvatarError] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setHeaderAvatarError(false);
+    setBannerAvatarError(false);
+  }, [currentUser?.photoUrl]);
 
   useEffect(() => {
     const handleAuthChange = (e: any) => {
       const user = e.detail as GoogleAuthUser | null;
       setCurrentUser(user);
+      setHeaderAvatarError(false);
+      setBannerAvatarError(false);
       if (onUserChange) onUserChange(user);
     };
 
@@ -62,15 +71,18 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
             className="flex items-center gap-1.5 py-1 px-2 rounded-full border border-emerald-300 bg-emerald-50/80 hover:bg-emerald-100 text-slate-800 text-[11px] font-bold transition shadow-2xs active:scale-95"
             title={`Logado como ${currentUser.name} (${currentUser.email})`}
           >
-            {currentUser.photoUrl ? (
+            {currentUser.photoUrl && !headerAvatarError ? (
               <img
                 src={currentUser.photoUrl}
                 alt={currentUser.name}
+                referrerPolicy="no-referrer"
+                crossOrigin="anonymous"
+                onError={() => setHeaderAvatarError(true)}
                 className="w-5 h-5 rounded-full object-cover border border-emerald-500 shrink-0"
               />
             ) : (
               <div className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[9px] font-black flex items-center justify-center shrink-0">
-                {currentUser.name.slice(0, 1).toUpperCase()}
+                {currentUser.name ? currentUser.name.slice(0, 1).toUpperCase() : 'G'}
               </div>
             )}
             <span className="truncate max-w-[80px] text-[11px] font-extrabold text-slate-800">
@@ -157,15 +169,18 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       {currentUser ? (
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            {currentUser.photoUrl ? (
+            {currentUser.photoUrl && !bannerAvatarError ? (
               <img
                 src={currentUser.photoUrl}
                 alt={currentUser.name}
+                referrerPolicy="no-referrer"
+                crossOrigin="anonymous"
+                onError={() => setBannerAvatarError(true)}
                 className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500 shadow-2xs shrink-0"
               />
             ) : (
               <div className="w-10 h-10 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-sm shadow-xs shrink-0">
-                {currentUser.name.slice(0, 1).toUpperCase()}
+                {currentUser.name ? currentUser.name.slice(0, 1).toUpperCase() : 'G'}
               </div>
             )}
             <div className="min-w-0">

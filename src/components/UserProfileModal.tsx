@@ -39,6 +39,7 @@ import {
   clearGoogleSession, 
   getStoredGoogleUser,
   loginWithFirebaseGoogle,
+  cleanAvatarUrl,
   GoogleAuthUser
 } from '../utils/googleAuth';
 
@@ -65,6 +66,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   const [watchActive, setWatchActive] = useState(Boolean(profile.isLiveTracking));
   const [locationTab, setLocationTab] = useState<'qualquer' | 'passo_fundo'>('qualquer');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [avatarLoadError, setAvatarLoadError] = useState(false);
 
   const watchIdRef = useRef<number | null>(null);
 
@@ -73,6 +75,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   // Google Connect via Firebase Authentication with fallback
   const handleGoogleConnect = async () => {
     setIsLoggingIn(true);
+    setAvatarLoadError(false);
     setLocationStatus('Conectando via Firebase com Conta Google...');
     try {
       const user = await loginWithFirebaseGoogle();
@@ -81,7 +84,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         isConnectedWithGoogle: true,
         name: user.name,
         email: user.email,
-        avatarUrl: user.photoUrl,
+        avatarUrl: cleanAvatarUrl(user.photoUrl),
         connectedAt: user.signedInAt,
         city: cityName,
         neighborhood: neighborhood || 'Boqueirão',
@@ -92,11 +95,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
       onUpdateProfile(updated);
       setLocationStatus(`Autenticado com sucesso via Firebase (${user.email})!`);
     } catch (err: any) {
-      console.warn('Tentando fallback 1-clique:', err);
+      console.warn('Fallback conexão Google:', err);
       const user = quickGoogleSignIn({
-        name: name.trim() || 'Braian Camargo',
-        email: email.trim() || 'braian.kleber.camargo@gmail.com',
-        photoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80',
+        name: name.trim() || profile.name || 'Braian Camargo',
+        email: email.trim() || profile.email || 'braian.kleber.camargo@gmail.com',
+        photoUrl: cleanAvatarUrl(profile.avatarUrl),
       });
 
       const updated: UserProfile = {
@@ -104,7 +107,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         isConnectedWithGoogle: true,
         name: user.name,
         email: user.email,
-        avatarUrl: user.photoUrl,
+        avatarUrl: cleanAvatarUrl(user.photoUrl),
         connectedAt: user.signedInAt,
         city: cityName,
         neighborhood: neighborhood || 'Boqueirão',
@@ -354,15 +357,18 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             {profile.isConnectedWithGoogle ? (
               <div className="flex items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
                 <div className="flex items-center gap-3 min-w-0">
-                  {profile.avatarUrl ? (
+                  {cleanAvatarUrl(profile.avatarUrl) && !avatarLoadError ? (
                     <img 
-                      src={profile.avatarUrl} 
+                      src={cleanAvatarUrl(profile.avatarUrl)} 
                       alt={profile.name} 
-                      className="w-10 h-10 rounded-full object-cover border border-emerald-300 shadow-2xs shrink-0" 
+                      referrerPolicy="no-referrer"
+                      crossOrigin="anonymous"
+                      onError={() => setAvatarLoadError(true)}
+                      className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500 shadow-2xs shrink-0" 
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-sm shadow-xs shrink-0">
-                      {profile.name ? profile.name.slice(0, 2).toUpperCase() : 'BK'}
+                    <div className="w-10 h-10 rounded-full bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm shadow-xs shrink-0">
+                      {profile.name ? profile.name.slice(0, 1).toUpperCase() : 'G'}
                     </div>
                   )}
                   <div className="min-w-0">

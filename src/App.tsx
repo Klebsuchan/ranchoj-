@@ -22,9 +22,10 @@ import { PassoFundoMap } from './components/PassoFundoMap';
 import { UserProfileModal } from './components/UserProfileModal';
 import { RanchoJaLogo } from './components/RanchoJaLogo';
 import { GoogleAuthButton } from './components/GoogleAuthButton';
-import { initFirebaseAuthListener } from './utils/googleAuth';
+import { initFirebaseAuthListener, cleanAvatarUrl } from './utils/googleAuth';
 import { PASSO_FUNDO_NEIGHBORHOODS } from './utils/passoFundoLocations';
 import { ProductSubstitute } from './utils/productSubstitutes';
+import { getDefaultPromotionsCatalogue } from './utils/catalogueData';
 import { decodeRanchoFromUrl, fetchShortRancho } from './utils/shareRancho';
 import { StepProgressBar, ShoppingStep } from './components/StepProgressBar';
 import { BudgetStepView } from './components/BudgetStepView';
@@ -173,7 +174,7 @@ export default function App() {
           id: gu.id,
           name: gu.name,
           email: gu.email,
-          avatarUrl: gu.photoUrl,
+          avatarUrl: cleanAvatarUrl(gu.photoUrl),
           isConnectedWithGoogle: true,
           connectedAt: gu.signedInAt,
           neighborhood: 'Boqueirão',
@@ -184,7 +185,11 @@ export default function App() {
         };
       }
       const saved = localStorage.getItem('pf_rancho_user_profile');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        parsed.avatarUrl = cleanAvatarUrl(parsed.avatarUrl);
+        return parsed;
+      }
     } catch {}
     return {
       id: 'user-default',
@@ -211,7 +216,7 @@ export default function App() {
           isConnectedWithGoogle: true,
           name: user.name,
           email: user.email,
-          avatarUrl: user.photoUrl,
+          avatarUrl: cleanAvatarUrl(user.photoUrl),
           connectedAt: user.signedInAt,
         }));
       } else {
@@ -232,7 +237,7 @@ export default function App() {
           isConnectedWithGoogle: true,
           name: user.name,
           email: user.email,
-          avatarUrl: user.photoUrl,
+          avatarUrl: cleanAvatarUrl(user.photoUrl),
           connectedAt: user.signedInAt,
         }));
       } else {
@@ -251,11 +256,16 @@ export default function App() {
     };
   }, []);
 
-  // 5. Promotions Data State
-  const [promotions, setPromotions] = useState<PromotionItem[]>([]);
-  const [sources, setSources] = useState<{ title: string; uri: string }[]>([]);
-  const [isLoadingPromotions, setIsLoadingPromotions] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState<string>('Carregando...');
+  // 5. Promotions Data State (Initialized with verified Passo Fundo catalogue for offline/Vercel)
+  const [promotions, setPromotions] = useState<PromotionItem[]>(() => getDefaultPromotionsCatalogue());
+  const [sources, setSources] = useState<{ title: string; uri: string }[]>([
+    { title: 'Stok Center Passo Fundo (Boqueirão/Petrópolis)', uri: 'https://stokcenter.com.br' },
+    { title: 'Supermercado Boqueirão (Passo Fundo)', uri: 'https://supermercadoboqueirao.com.br' },
+    { title: 'Atacadão Passo Fundo (BR-285)', uri: 'https://atacadao.com.br' },
+    { title: 'Bourbon & Zaffari Passo Fundo', uri: 'https://zaffari.com.br' },
+  ]);
+  const [isLoadingPromotions, setIsLoadingPromotions] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<string>('Preços atualizados');
   const [activeTab, setActiveTab] = useState<'orcamento' | 'promocoes' | 'comparador' | 'carrinho' | 'rancho' | 'mapa' | 'historico'>('orcamento');
   const [ranchoViewMode, setRanchoViewMode] = useState<'single_market' | 'comparator'>('single_market');
 
@@ -397,13 +407,18 @@ export default function App() {
       const res = await fetch(url);
       if (!res.ok) throw new Error('Erro ao carregar dados de promoções.');
       const data = await res.json();
-      if (data.items) {
+      if (data.items && Array.isArray(data.items) && data.items.length > 0) {
         setPromotions(data.items);
         setLastUpdated(data.updatedAt || new Date().toLocaleTimeString('pt-BR'));
         setSources(data.sources || []);
+        return;
       }
+      throw new Error('Nenhum dado retornado da API');
     } catch (err) {
-      console.error('Failed to load promotions:', err);
+      console.warn('API de promoções em fallback local para Passo Fundo:', err);
+      const fallbackList = getDefaultPromotionsCatalogue(userProfile.city);
+      setPromotions((prev) => (prev && prev.length > 0 ? prev : fallbackList));
+      setLastUpdated('Catálogo Passo Fundo ativo');
     } finally {
       setIsLoadingPromotions(false);
     }
@@ -466,6 +481,16 @@ export default function App() {
 
       return [newItem, ...prev];
     });
+  };
+
+  // Add custom searched product to both promotions table and shopping list
+  const handleCustomProductAdd = (promoItem: PromotionItem, supermarket?: SupermarketName) => {
+    setPromotions((prev) => {
+      const exists = prev.some((p) => p.name.toLowerCase() === promoItem.name.toLowerCase());
+      if (exists) return prev;
+      return [promoItem, ...prev];
+    });
+    handleAddToRancho(promoItem, supermarket);
   };
 
   // Add custom item created directly in shopping mode
@@ -719,7 +744,7 @@ export default function App() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto min-h-screen bg-slate-50 text-slate-800 relative flex flex-col shadow-2xl sm:border-x sm:border-slate-200 pb-28">
+    <div className="w-full max-w-md mx-auto min-h-full min-h-[100dvh] bg-slate-50 text-slate-800 relative flex flex-col shadow-2xl sm:border-x sm:border-slate-200 pb-24 overflow-x-hidden">
       {/* Top Application Header - Mobile Native Style */}
       <header className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 shadow-2xs">
         <div className="px-3.5 py-2.5 flex items-center justify-between">

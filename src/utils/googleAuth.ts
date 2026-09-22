@@ -4,7 +4,8 @@ import {
   signInWithGoogleFirebase, 
   signOutFirebase, 
   saveUserProfileToFirestore,
-  loadUserProfileFromFirestore 
+  loadUserProfileFromFirestore,
+  checkFirebaseRedirectResult
 } from '../lib/firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
@@ -22,14 +23,37 @@ export interface GoogleAuthUser {
 const STORAGE_KEY = 'ranchoja_google_user';
 
 /**
- * Retrieve current signed-in Google user from storage
+ * Filter out any mock/placeholder Unsplash URLs
+ */
+export function cleanAvatarUrl(url?: string | null): string | undefined {
+  if (!url) return undefined;
+  const trimmed = url.trim();
+  if (
+    trimmed === '' ||
+    trimmed.includes('images.unsplash.com') ||
+    trimmed.includes('unsplash.com') ||
+    trimmed.includes('placeholder')
+  ) {
+    return undefined;
+  }
+  return trimmed;
+}
+
+/**
+ * Retrieve current signed-in Google user from storage, sanitizing legacy mock images
  */
 export function getStoredGoogleUser(): GoogleAuthUser | null {
   if (typeof window === 'undefined') return null;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw);
+    const user: GoogleAuthUser = JSON.parse(raw);
+    const cleaned = cleanAvatarUrl(user.photoUrl);
+    if (cleaned !== user.photoUrl) {
+      user.photoUrl = cleaned;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    }
+    return user;
   } catch {
     return null;
   }
@@ -41,6 +65,7 @@ export function getStoredGoogleUser(): GoogleAuthUser | null {
 export function saveGoogleUser(user: GoogleAuthUser): void {
   if (typeof window === 'undefined') return;
   try {
+    user.photoUrl = cleanAvatarUrl(user.photoUrl);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     window.dispatchEvent(new CustomEvent('ranchoja_auth_change', { detail: user }));
   } catch (e) {
@@ -69,11 +94,12 @@ export async function clearGoogleSession(): Promise<void> {
 export async function loginWithFirebaseGoogle(): Promise<GoogleAuthUser> {
   try {
     const fbUser: FirebaseUser = await signInWithGoogleFirebase();
+    const realPhoto = cleanAvatarUrl(fbUser.photoURL);
     const user: GoogleAuthUser = {
       id: fbUser.uid,
       name: fbUser.displayName || 'Usuário Google',
       email: fbUser.email || 'usuario@gmail.com',
-      photoUrl: fbUser.photoURL || undefined,
+      photoUrl: realPhoto,
       authMethod: 'firebase_google',
       signedInAt: new Date().toLocaleDateString('pt-BR'),
     };
@@ -101,14 +127,32 @@ export async function loginWithFirebaseGoogle(): Promise<GoogleAuthUser> {
  * Setup Firebase Auth listener to automatically restore and synchronize user session
  */
 export function initFirebaseAuthListener(onUserChange: (user: GoogleAuthUser | null) => void) {
+  // Check redirect result on mobile app boot
+  checkFirebaseRedirectResult().then((redirectUser) => {
+    if (redirectUser) {
+      const realPhoto = cleanAvatarUrl(redirectUser.photoURL);
+      const user: GoogleAuthUser = {
+        id: redirectUser.uid,
+        name: redirectUser.displayName || 'Usuário Google',
+        email: redirectUser.email || 'usuario@gmail.com',
+        photoUrl: realPhoto,
+        authMethod: 'firebase_google',
+        signedInAt: new Date().toLocaleDateString('pt-BR'),
+      };
+      saveGoogleUser(user);
+      onUserChange(user);
+    }
+  });
+
   return onAuthStateChanged(auth, async (fbUser) => {
     if (fbUser) {
       const stored = getStoredGoogleUser();
+      const realPhoto = cleanAvatarUrl(fbUser.photoURL) || cleanAvatarUrl(stored?.photoUrl);
       const user: GoogleAuthUser = {
         id: fbUser.uid,
         name: fbUser.displayName || stored?.name || 'Usuário Google',
         email: fbUser.email || stored?.email || 'usuario@gmail.com',
-        photoUrl: fbUser.photoURL || stored?.photoUrl || undefined,
+        photoUrl: realPhoto,
         authMethod: 'firebase_google',
         signedInAt: stored?.signedInAt || new Date().toLocaleDateString('pt-BR'),
       };
@@ -132,7 +176,7 @@ export function initFirebaseAuthListener(onUserChange: (user: GoogleAuthUser | n
 export function quickGoogleSignIn({
   name = 'Braian Camargo',
   email = 'braian.kleber.camargo@gmail.com',
-  photoUrl = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+  photoUrl,
 }: {
   name?: string;
   email?: string;
@@ -142,10 +186,11 @@ export function quickGoogleSignIn({
     id: `google-user-${Date.now()}`,
     name,
     email,
-    photoUrl,
+    photoUrl: cleanAvatarUrl(photoUrl),
     authMethod: 'google_1click',
     signedInAt: new Date().toLocaleDateString('pt-BR'),
   };
   saveGoogleUser(user);
   return user;
 }
+

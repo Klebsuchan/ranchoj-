@@ -48,6 +48,7 @@ import {
   removePriceAlert, 
   evaluatePriceAlerts 
 } from '../utils/priceAlerts';
+import { normalizeSearchText, generateOrEstimateProduct } from '../utils/catalogueData';
 
 interface PromotionsTableProps {
   items: PromotionItem[];
@@ -57,6 +58,7 @@ interface PromotionsTableProps {
   shoppingList: ShoppingListItem[];
   onAddToRancho: (item: PromotionItem) => void;
   onAddSubstituteToRancho?: (sub: ProductSubstitute, replaceOriginalName?: string) => void;
+  onAddCustomProduct?: (item: PromotionItem) => void;
   sources: { title: string; uri: string }[];
   userProfile?: UserProfile;
   initialOnlyNearby?: boolean;
@@ -79,6 +81,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
   shoppingList,
   onAddToRancho,
   onAddSubstituteToRancho,
+  onAddCustomProduct,
   sources,
   userProfile,
   initialOnlyNearby = false,
@@ -240,11 +243,33 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
     }
   };
 
+  const handleAddSearchedItemDirectly = (term: string) => {
+    const estimated = generateOrEstimateProduct(term, userProfile?.city || 'Passo Fundo');
+    if (onAddCustomProduct) {
+      onAddCustomProduct(estimated);
+    } else {
+      onAddToRancho(estimated);
+    }
+  };
+
   // Filtered items
   const filteredItems = items.filter((item) => {
-    if (selectedCategory !== 'all' && item.category !== selectedCategory) {
-      return false;
+    // If user typed a search query, prioritize finding the searched query across all products
+    if (searchQuery.trim()) {
+      const q = normalizeSearchText(searchQuery);
+      const matchName = normalizeSearchText(item.name).includes(q);
+      const matchBrand = normalizeSearchText(item.brand || '').includes(q);
+      const matchCategory = normalizeSearchText(categoryLabels[item.category] || '').includes(q);
+      if (!matchName && !matchBrand && !matchCategory) {
+        return false;
+      }
+    } else {
+      // Only apply category filter when not explicitly searching
+      if (selectedCategory !== 'all' && item.category !== selectedCategory) {
+        return false;
+      }
     }
+
     if (onlyEssentials && !item.isEssential) {
       return false;
     }
@@ -259,13 +284,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
     if (onlyFavorites) {
       if (!priceAlerts[item.id]) return false;
     }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const matchName = item.name.toLowerCase().includes(q);
-      const matchBrand = item.brand?.toLowerCase().includes(q);
-      const matchCategory = categoryLabels[item.category]?.toLowerCase().includes(q);
-      return matchName || matchBrand || matchCategory;
-    }
+
     return true;
   });
 
@@ -554,9 +573,28 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
       {viewMode === 'cards' && (
         <div className="p-3 sm:p-5">
           {filteredItems.length === 0 ? (
-            <div className="py-12 text-center text-slate-500">
-              <p className="font-medium text-slate-700">Nenhum produto encontrado com os filtros atuais.</p>
-              <p className="text-xs mt-1">Limpe a busca ou ative todas as categorias.</p>
+            <div className="py-8 px-4 text-center bg-slate-50 border border-dashed border-slate-300 rounded-2xl my-2">
+              <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto mb-2.5">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <p className="font-bold text-slate-800 text-sm">
+                {searchQuery.trim() ? `Comparar preços de "${searchQuery}"?` : 'Nenhum produto encontrado com os filtros atuais.'}
+              </p>
+              <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
+                {searchQuery.trim()
+                  ? 'Clique abaixo para comparar preços no Stok Center, Boqueirão, Atacadão, Bourbon e Zaffari e adicionar ao rancho!'
+                  : 'Limpe a busca ou ative todas as categorias para visualizar ofertas.'}
+              </p>
+              {searchQuery.trim() && (
+                <button
+                  type="button"
+                  onClick={() => handleAddSearchedItemDirectly(searchQuery)}
+                  className="mt-3.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition inline-flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Adicionar "{searchQuery}" com Preços Comparados</span>
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
@@ -825,10 +863,28 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
             <tbody className="divide-y divide-slate-200/70">
               {filteredItems.length === 0 ? (
                 <tr>
-                  <td colSpan={activeMarkets.length + 4} className="py-12 text-center text-slate-500">
+                  <td colSpan={activeMarkets.length + 4} className="py-10 text-center text-slate-500">
                     <div className="max-w-md mx-auto space-y-2">
-                      <p className="font-medium text-slate-700">Nenhum produto encontrado com os filtros atuais.</p>
-                      <p className="text-xs">Tente limpar os termos de busca ou selecionar outra categoria.</p>
+                      <p className="font-medium text-slate-700">
+                        {searchQuery.trim() ? `Comparar preços de "${searchQuery}"?` : 'Nenhum produto encontrado com os filtros atuais.'}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {searchQuery.trim()
+                          ? 'Clique abaixo para comparar preços e adicionar à sua lista de compras imediatamente!'
+                          : 'Tente limpar os termos de busca ou selecionar outra categoria.'}
+                      </p>
+                      {searchQuery.trim() && (
+                        <div className="pt-2">
+                          <button
+                            type="button"
+                            onClick={() => handleAddSearchedItemDirectly(searchQuery)}
+                            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition inline-flex items-center gap-1.5"
+                          >
+                            <Plus className="w-4 h-4" />
+                            <span>Adicionar "{searchQuery}" com Preços Comparados</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </td>
                 </tr>
