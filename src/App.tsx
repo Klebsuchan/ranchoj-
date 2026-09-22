@@ -872,7 +872,7 @@ export default function App() {
             />
 
             <ProductSearchAdd 
-              onAddCustomProduct={handleAddToRancho} 
+              onAddCustomProduct={handleCustomProductAdd} 
               cityName={userProfile.city || 'Passo Fundo'}
             />
 
@@ -900,6 +900,7 @@ export default function App() {
               shoppingList={shoppingList}
               onAddToRancho={handleAddToRancho}
               onAddSubstituteToRancho={handleAddSubstituteToRancho}
+              onAddCustomProduct={handleCustomProductAdd}
               sources={sources}
               userProfile={userProfile}
             />
