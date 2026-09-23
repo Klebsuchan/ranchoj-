@@ -40,7 +40,8 @@ import {
 } from '../types';
 import { 
   generateRanchoProntoOptions, 
-  RanchoProntoOption 
+  RanchoProntoOption,
+  ESSENTIAL_STAPLES
 } from '../utils/ranchoProntoGenerator';
 import { generateRanchoPdf } from '../utils/generateRanchoPdf';
 import { copyTextToClipboard } from '../utils/shareRancho';
@@ -55,7 +56,11 @@ interface RanchoProntoSelectorProps {
   className?: string;
 }
 
-const BUDGET_PRESETS = [250, 400, 600, 850, 1200];
+const BUDGET_PRESETS_BY_HOUSEHOLD: Record<'solo' | 'casal' | 'familia', number[]> = {
+  solo: [350, 480, 600, 750],
+  casal: [650, 850, 1050, 1350],
+  familia: [980, 1350, 1750, 2200],
+};
 
 type CategoryFilter = 'todas' | 'cesta_basica' | 'carnes_proteinas' | 'hortifruti' | 'limpeza_higiene';
 
@@ -65,12 +70,12 @@ export const RanchoProntoSelector: React.FC<RanchoProntoSelectorProps> = ({
   onApplyRancho,
   onOpenMap,
   onNavigateToCart,
-  initialBudget = 400,
+  initialBudget = 480,
   className = '',
 }) => {
+  const [household, setHousehold] = useState<'solo' | 'casal' | 'familia'>('solo');
   const [selectedBudget, setSelectedBudget] = useState<number>(initialBudget);
   const [customInputValue, setCustomInputValue] = useState<string>(String(initialBudget));
-  const [household, setHousehold] = useState<'solo' | 'casal' | 'familia'>('solo');
   const [selectedOptionId, setSelectedOptionId] = useState<'maxima-economia' | 'mais-proximo' | 'combo-inteligente'>('maxima-economia');
   const [appliedOptionId, setAppliedOptionId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -107,6 +112,20 @@ export const RanchoProntoSelector: React.FC<RanchoProntoSelectorProps> = ({
   const handlePresetClick = (amount: number) => {
     setSelectedBudget(amount);
     setCustomInputValue(String(amount));
+  };
+
+  const handleHouseholdSelect = (type: 'solo' | 'casal' | 'familia') => {
+    setHousehold(type);
+    const defaultBudget = type === 'solo' ? 480 : type === 'casal' ? 850 : 1350;
+    // Auto-adjust budget if current value is far out of realistic range for the selected profile
+    if (
+      (type === 'casal' && selectedBudget < 550) ||
+      (type === 'familia' && selectedBudget < 900) ||
+      (type === 'solo' && selectedBudget > 850)
+    ) {
+      setSelectedBudget(defaultBudget);
+      setCustomInputValue(String(defaultBudget));
+    }
   };
 
   const handleCustomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -281,7 +300,7 @@ export const RanchoProntoSelector: React.FC<RanchoProntoSelectorProps> = ({
           {/* Quick preset chips */}
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-[11px] text-slate-400 font-semibold mr-1">Teto:</span>
-            {BUDGET_PRESETS.map((amount) => {
+            {BUDGET_PRESETS_BY_HOUSEHOLD[household].map((amount) => {
               const isSelected = selectedBudget === amount;
               return (
                 <button
@@ -320,7 +339,7 @@ export const RanchoProntoSelector: React.FC<RanchoProntoSelectorProps> = ({
           <div className="flex items-center gap-1 bg-slate-900 rounded-xl p-1 border border-slate-700/80">
             <button
               type="button"
-              onClick={() => setHousehold('solo')}
+              onClick={() => handleHouseholdSelect('solo')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 ${
                 household === 'solo'
                   ? 'bg-red-600 text-white shadow-xs'
@@ -331,7 +350,7 @@ export const RanchoProntoSelector: React.FC<RanchoProntoSelectorProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => setHousehold('casal')}
+              onClick={() => handleHouseholdSelect('casal')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 ${
                 household === 'casal'
                   ? 'bg-red-600 text-white shadow-xs'
@@ -342,7 +361,7 @@ export const RanchoProntoSelector: React.FC<RanchoProntoSelectorProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => setHousehold('familia')}
+              onClick={() => handleHouseholdSelect('familia')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 ${
                 household === 'familia'
                   ? 'bg-red-600 text-white shadow-xs'
@@ -587,9 +606,10 @@ export const RanchoProntoSelector: React.FC<RanchoProntoSelectorProps> = ({
         </div>
 
         {/* Item Rows List */}
-        <div className="mt-3 space-y-2 max-h-[380px] overflow-y-auto pr-1">
+        <div className="mt-3 space-y-2 max-h-[480px] sm:max-h-[580px] overflow-y-auto pr-1">
           {displayedItems.map((item) => {
             const isExcluded = excludedIds.has(item.id);
+            const stapleConfig = ESSENTIAL_STAPLES.find((s) => item.id.includes(s.id));
 
             return (
               <div
@@ -638,10 +658,17 @@ export const RanchoProntoSelector: React.FC<RanchoProntoSelectorProps> = ({
                       {item.unit && (
                         <>
                           <span>•</span>
-                          <span className="text-slate-300 font-medium">Porção: {item.quantity} {item.unit}</span>
+                          <span className="text-slate-300 font-medium">Qtd: {item.quantity} {item.unit}</span>
                         </>
                       )}
                     </div>
+
+                    {stapleConfig?.portionDesc && (
+                      <div className="text-[10px] sm:text-[11px] text-amber-300/90 font-medium mt-1 flex items-center gap-1">
+                        <span>📅</span>
+                        <span>{stapleConfig.portionDesc}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
