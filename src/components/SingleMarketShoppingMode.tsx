@@ -19,8 +19,11 @@ import {
   TrendingDown,
   ArrowRight,
   Filter,
-  CheckCircle2
+  CheckCircle2,
+  FileDown,
+  Printer
 } from 'lucide-react';
+import { generateRanchoPdf } from '../utils/generateRanchoPdf';
 
 interface SingleMarketShoppingModeProps {
   promotions: PromotionItem[];
@@ -41,6 +44,7 @@ interface SingleMarketShoppingModeProps {
   onSaveToHistory?: () => void;
   onSwitchToComparator?: () => void;
   onOpenShareModal?: () => void;
+  onExportPdf?: () => void;
 }
 
 export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> = ({
@@ -61,7 +65,8 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
   availableMarkets = ["Stock Center", "Atacadão", "Supermercado Boqueirão", "Zaffari", "Bourbon", "Coqueiros"],
   onSaveToHistory,
   onSwitchToComparator,
-  onOpenShareModal
+  onOpenShareModal,
+  onExportPdf
 }) => {
   // Current chosen supermarket - default to Stock Center as highlighted by the user!
   const [selectedMarket, setSelectedMarket] = useState<string>("Stock Center");
@@ -73,6 +78,25 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
   const [customName, setCustomName] = useState("");
   const [customPrice, setCustomPrice] = useState("");
   const [customQty, setCustomQty] = useState(1);
+
+  // Export physical PDF list ready for printing
+  const handleExportPdf = () => {
+    if (onExportPdf) {
+      onExportPdf();
+      return;
+    }
+    generateRanchoPdf({
+      items: marketListItems.map((item) => ({
+        ...item,
+        selectedMarket: selectedMarket as SupermarketName,
+      })),
+      budgetLimit,
+      householdType: familyMembers > 1 ? 'casal' : 'solo',
+      neighborhood: cityName,
+      cityName,
+      selectedMarket,
+    });
+  };
 
   // Helper to extract the price for this specific market from an item
   const getItemPriceInSelectedMarket = (item: ShoppingListItem): number => {
@@ -530,25 +554,46 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
           </div>
 
           {marketListItems.length > 0 && (
-            <button
-              type="button"
-              onClick={onClearList}
-              className="text-[11px] text-rose-600 hover:text-rose-700 font-semibold"
-            >
-              Limpar Lista
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleExportPdf}
+                className="py-1 px-2.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 text-[11px] font-bold flex items-center gap-1 transition shadow-2xs active:scale-95"
+                title="Exportar arquivo PDF para imprimir e levar às compras offline"
+              >
+                <FileDown className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Exportar PDF</span>
+              </button>
+              <button
+                type="button"
+                onClick={onClearList}
+                className="text-[11px] text-rose-600 hover:text-rose-700 font-semibold"
+              >
+                Limpar Lista
+              </button>
+            </div>
           )}
         </div>
 
         {marketListItems.length === 0 ? (
-          <div className="py-10 text-center text-slate-400 space-y-2">
+          <div className="py-8 text-center text-slate-400 space-y-3">
             <PiggyBank className="w-10 h-10 mx-auto text-slate-300" />
-            <p className="text-xs font-medium text-slate-600">
+            <p className="text-xs font-bold text-slate-700">
               Sua lista de compras no {selectedMarket} está vazia.
             </p>
             <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
-              Pesquise produtos acima ou navegue pelas promoções para montar o seu rancho econômico.
+              Sem tempo de escolher item por item? Você pode gerar uma lista pronta balanceada com 1 toque!
             </p>
+            {onSwitchToComparator && (
+              <button
+                type="button"
+                onClick={onSwitchToComparator}
+                className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-sm transition active:scale-95"
+              >
+                <Sparkles className="w-4 h-4 text-amber-300" />
+                <span>⚡ Montar Rancho Pronto em 1 Toque</span>
+              </button>
+            )}
           </div>
         ) : (
           <div className="space-y-2">
@@ -624,8 +669,18 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
               </div>
             ))}
 
-            {/* Actions: WhatsApp & Save to History */}
-            <div className="pt-2 grid grid-cols-2 gap-2">
+            {/* Actions: Exportar PDF, Compartilhar Lista & Salvar no Histórico */}
+            <div className="pt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={handleExportPdf}
+                className="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-xs active:scale-98"
+                title="Gerar arquivo PDF formatado pronto para imprimir e levar ao supermercado sem internet"
+              >
+                <FileDown className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Exportar PDF</span>
+              </button>
+
               <button
                 type="button"
                 onClick={onOpenShareModal || handleShareWhatsApp}
@@ -633,16 +688,16 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
                 title="Compartilhar lista por link encurtado ou WhatsApp"
               >
                 <Share2 className="w-3.5 h-3.5" />
-                <span>Compartilhar Lista</span>
+                <span>Compartilhar</span>
               </button>
 
               {onSaveToHistory && (
                 <button
                   type="button"
                   onClick={onSaveToHistory}
-                  className="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-xs active:scale-98"
+                  className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-2xs active:scale-98 border border-slate-200"
                 >
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Salvar no Histórico</span>
                 </button>
               )}

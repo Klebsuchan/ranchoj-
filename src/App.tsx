@@ -31,6 +31,8 @@ import { StepProgressBar, ShoppingStep } from './components/StepProgressBar';
 import { BudgetStepView } from './components/BudgetStepView';
 import { CompactBudgetHeader } from './components/CompactBudgetHeader';
 import { DailySuggestionCard } from './components/DailySuggestionCard';
+import { QuickExpressRanchoBar } from './components/QuickExpressRanchoBar';
+import { FloatingQuickCartBar } from './components/FloatingQuickCartBar';
 import { 
   ShoppingCart, 
   Sparkles, 
@@ -48,8 +50,12 @@ import {
   Share2,
   ArrowRight,
   Banknote,
-  ChevronLeft
+  ChevronLeft,
+  Zap,
+  MessageCircle,
+  FileDown
 } from 'lucide-react';
+import { generateRanchoPdf } from './utils/generateRanchoPdf';
 
 const DEFAULT_PROFILE: BudgetProfile = {
   householdType: 'solo',
@@ -281,6 +287,78 @@ export default function App() {
     total: number;
   } | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [ranchoProntoSuccessBanner, setRanchoProntoSuccessBanner] = useState<{
+    title: string;
+    itemCount: number;
+    total: number;
+    budget: number;
+  } | null>(null);
+
+  // Dynamic Best Supermarket calculation for quick orientation
+  const bestMarketName = useMemo(() => {
+    if (shoppingList.length === 0) return 'Stock Center';
+    const totals: Record<string, number> = {};
+    shoppingList.forEach((item) => {
+      Object.entries(item.prices || {}).forEach(([m, p]) => {
+        if (typeof p === 'number' && p > 0) {
+          totals[m] = (totals[m] || 0) + p * item.quantity;
+        }
+      });
+    });
+    const sorted = Object.entries(totals).sort((a, b) => a[1] - b[1]);
+    return sorted[0]?.[0] || 'Stock Center';
+  }, [shoppingList]);
+
+  // Quick 1-tap add for busy users
+  const handleQuickAddStapleItem = (item: ShoppingListItem) => {
+    setShoppingList((prev) => {
+      const existing = prev.find((i) => i.name.toLowerCase() === item.name.toLowerCase());
+      if (existing) {
+        return prev.map((i) =>
+          i.id === existing.id
+            ? { ...i, quantity: i.quantity + 1, totalPrice: Number((i.unitPrice * (i.quantity + 1)).toFixed(2)) }
+            : i
+        );
+      }
+      return [item, ...prev];
+    });
+  };
+
+  // 1-tap WhatsApp list export for sharing with family
+  const handleShareListToWhatsApp = () => {
+    if (shoppingList.length === 0) {
+      alert('Sua lista está vazia! Adicione itens ou clique no Rancho Pronto.');
+      return;
+    }
+    const cheapestMarket = bestMarketName;
+    const text = `🛒 *MINHA LISTA DE RANCHO - PASSO FUNDO*\n` +
+      `🏪 Comprar mais barato no: *${cheapestMarket}*\n` +
+      `💰 Total estimado: *R$ ${totalRancho.toFixed(2)}*\n` +
+      (profile.ranchoBudget > 0 ? `🎯 Meta/Teto: R$ ${profile.ranchoBudget.toFixed(2)}\n\n` : '\n') +
+      `📋 *Itens para pegar no mercado (${shoppingList.length}):*\n` +
+      shoppingList.map((item, idx) => `${idx + 1}. [ ] ${item.quantity}x ${item.name} (${item.unit}) - R$ ${item.totalPrice.toFixed(2)}`).join('\n') +
+      `\n\n✅ Gerado no RanchoJá: https://ranchoja.app/`;
+
+    const encoded = encodeURIComponent(text);
+    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+  };
+
+  // Apply pre-built basic rancho based on user chosen budget
+  const handleApplyRanchoPronto = (items: ShoppingListItem[], budget: number, optionTitle: string) => {
+    setProfile((prev) => ({ ...prev, ranchoBudget: budget }));
+    setShoppingList(items);
+    const total = items.reduce((acc, it) => acc + (it.totalPrice || it.unitPrice * it.quantity), 0);
+    setRanchoProntoSuccessBanner({
+      title: optionTitle,
+      itemCount: items.length,
+      total,
+      budget,
+    });
+    setTimeout(() => {
+      setActiveTab('comparador');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 450);
+  };
 
   // Read short code (?r=...) or full base64 (?share_rancho=...) from URL query parameters on mount
   useEffect(() => {
@@ -743,6 +821,21 @@ export default function App() {
     setHistory((prev) => prev.filter((h) => h.id !== id));
   };
 
+  // Export physical PDF list ready for printing or offline use
+  const handleExportPdf = () => {
+    if (shoppingList.length === 0) {
+      alert('Sua lista está vazia! Adicione itens antes de exportar o PDF.');
+      return;
+    }
+    generateRanchoPdf({
+      items: shoppingList,
+      budgetLimit: profile.ranchoBudget,
+      householdType: profile.householdType,
+      neighborhood: userProfile.neighborhood,
+      cityName: userProfile.city || 'Passo Fundo',
+    });
+  };
+
   return (
     <div className="w-full max-w-md mx-auto min-h-full min-h-[100dvh] bg-slate-50 text-slate-800 relative flex flex-col shadow-2xl sm:border-x sm:border-slate-200 pb-24 overflow-x-hidden">
       {/* Top Application Header - Mobile Native Style */}
@@ -757,8 +850,22 @@ export default function App() {
             </div>
           </div>
 
-          {/* Quick Header actions: Google Login & Location */}
+          {/* Quick Header actions: 1-Clique Express, Location & Login */}
           <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              id="btn-modo-expresso-topo"
+              type="button"
+              onClick={() => {
+                setActiveTab('promocoes');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="flex items-center gap-1 py-1 px-2.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 font-black text-[11px] shadow-xs active:scale-95 transition"
+              title="Modo Expresso em 1 Toque para quem não quer perder tempo"
+            >
+              <Zap className="w-3.5 h-3.5 fill-slate-950 text-slate-950" />
+              <span>1-Clique</span>
+            </button>
+
             <button
               id="btn-abrir-perfil-usuario"
               type="button"
@@ -835,6 +942,47 @@ export default function App() {
           </div>
         )}
 
+        {/* Banner when Rancho Pronto is applied */}
+        {ranchoProntoSuccessBanner && (
+          <div className="mb-4 p-3.5 rounded-2xl bg-emerald-900 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md border border-emerald-500/30 animate-in fade-in slide-in-from-top-2">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="font-bold text-xs text-white flex items-center gap-1.5">
+                  <span>{ranchoProntoSuccessBanner.title} Montado!</span>
+                  <span className="text-[10px] bg-emerald-700 px-2 py-0.5 rounded-full text-emerald-200">
+                    {ranchoProntoSuccessBanner.itemCount} itens
+                  </span>
+                </h4>
+                <p className="text-[11px] text-emerald-200 mt-0.5">
+                  Total de R$ {ranchoProntoSuccessBanner.total.toFixed(2)} (dentro do teto de R$ {ranchoProntoSuccessBanner.budget.toFixed(2)}). Itens prontos para você comparar ou ir ao mercado!
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('carrinho');
+                  setRanchoProntoSuccessBanner(null);
+                }}
+                className="px-3 py-1 rounded-xl bg-white hover:bg-emerald-50 text-emerald-950 font-bold text-[11px] shadow-xs transition"
+              >
+                Ir para as Compras →
+              </button>
+              <button
+                type="button"
+                onClick={() => setRanchoProntoSuccessBanner(null)}
+                className="text-emerald-300 hover:text-white p-1 text-xs"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ETAPA 1: Planejamento Orçamentário */}
         {activeTab === 'orcamento' && (
           <BudgetStepView
@@ -847,6 +995,13 @@ export default function App() {
             }}
             onOpenAdvisor={runBudgetAdvisor}
             isAnalyzingAdvisor={isAnalyzingBudget}
+            userProfile={userProfile}
+            promotions={promotions}
+            onApplyRanchoPronto={handleApplyRanchoPronto}
+            onOpenMap={() => {
+              setActiveTab('mapa');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         )}
 
@@ -858,6 +1013,25 @@ export default function App() {
               budgetLimit={profile.ranchoBudget}
               onAdjustBudget={() => {
                 setActiveTab('orcamento');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+
+            {/* Modo Expresso: 1-Clique Rancho por Valor & Adição Rápida de Essenciais */}
+            <QuickExpressRanchoBar
+              userProfile={userProfile}
+              promotions={promotions}
+              currentItemsCount={shoppingList.length}
+              currentTotal={totalRancho}
+              budgetLimit={profile.ranchoBudget}
+              onApplyRancho={handleApplyRanchoPronto}
+              onQuickAddItem={handleQuickAddStapleItem}
+              onGoToShoppingMode={() => {
+                setActiveTab('carrinho');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onOpenMap={() => {
+                setActiveTab('mapa');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             />
@@ -958,24 +1132,41 @@ export default function App() {
             </div>
 
             {shoppingList.length === 0 ? (
-              <div className="p-8 text-center bg-white border border-dashed border-slate-200 rounded-3xl space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
-                  <ShoppingCart className="w-6 h-6" />
+              <div className="p-8 text-center bg-white border border-dashed border-slate-200 rounded-3xl space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
+                  <Sparkles className="w-6 h-6" />
                 </div>
-                <h4 className="text-sm font-bold text-slate-800">Sua lista está vazia</h4>
-                <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                  Adicione produtos na Etapa 2 para ver a comparação de preços entre Stock Center, Atacadão, Boqueirão e outros.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveTab('promocoes');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition"
-                >
-                  ← Ir para as Ofertas (Etapa 2)
-                </button>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900">Sua lista de rancho está vazia</h4>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+                    Você pode adicionar produtos um a um nas ofertas, ou montar um <strong>Rancho Pronto Básico</strong> em 1 clique com base no seu orçamento.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 max-w-sm mx-auto pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab('orcamento');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs transition shadow-sm flex items-center justify-center gap-1.5"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>Ver 3 Opções de Rancho Pronto</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab('promocoes');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="w-full sm:w-auto py-2.5 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition"
+                  >
+                    Ir para as Ofertas
+                  </button>
+                </div>
               </div>
             ) : (
               <>
@@ -1053,29 +1244,50 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Botão de Compartilhar Lista */}
-              <button
-                id="btn-compartilhar-lista-topo"
-                type="button"
-                onClick={() => setIsShareModalOpen(true)}
-                disabled={shoppingList.length === 0}
-                className={`min-h-[40px] px-4 py-2 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 transition shadow-xs active:scale-95 shrink-0 ${
-                  shoppingList.length === 0
-                    ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60'
-                    : 'bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-500/30'
-                }`}
-                title={
-                  shoppingList.length === 0
-                    ? 'Adicione itens à lista para compartilhar'
-                    : 'Gerar link encurtado para importar em outro navegador'
-                }
-              >
-                <Share2 className="w-4 h-4 text-emerald-100" />
-                <span>Compartilhar Lista</span>
-                <span className="text-[10px] font-bold bg-white/20 px-1.5 py-0.5 rounded text-white">
-                  Link
-                </span>
-              </button>
+              <div className="flex items-center gap-1.5 shrink-0">
+                {/* Botão Exportar PDF */}
+                <button
+                  id="btn-exportar-pdf-topo"
+                  type="button"
+                  onClick={handleExportPdf}
+                  disabled={shoppingList.length === 0}
+                  className={`min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition shadow-xs active:scale-95 ${
+                    shoppingList.length === 0
+                      ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60'
+                      : 'bg-white hover:bg-slate-50 text-slate-900 border-2 border-slate-300 hover:border-emerald-600'
+                  }`}
+                  title={
+                    shoppingList.length === 0
+                      ? 'Adicione itens à lista para exportar em PDF'
+                      : 'Exportar arquivo PDF pronto para impressão ou leitura offline no supermercado'
+                  }
+                >
+                  <FileDown className="w-4 h-4 text-emerald-600" />
+                  <span>Exportar PDF</span>
+                </button>
+
+                {/* Botão de Compartilhar Lista */}
+                <button
+                  id="btn-compartilhar-lista-topo"
+                  type="button"
+                  onClick={() => setIsShareModalOpen(true)}
+                  disabled={shoppingList.length === 0}
+                  className={`min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition shadow-xs active:scale-95 ${
+                    shoppingList.length === 0
+                      ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60'
+                      : 'bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-500/30'
+                  }`}
+                  title={
+                    shoppingList.length === 0
+                      ? 'Adicione itens à lista para compartilhar'
+                      : 'Gerar link encurtado para importar em outro navegador'
+                  }
+                >
+                  <Share2 className="w-4 h-4 text-emerald-100" />
+                  <span className="hidden sm:inline">Compartilhar</span>
+                  <span className="sm:hidden">Enviar</span>
+                </button>
+              </div>
             </div>
 
             <SingleMarketShoppingMode
@@ -1111,6 +1323,7 @@ export default function App() {
               }}
               onSwitchToComparator={() => setActiveTab('comparador')}
               onOpenShareModal={() => setIsShareModalOpen(true)}
+              onExportPdf={handleExportPdf}
             />
 
             <div className="pt-2 pb-6 flex items-center justify-between gap-2">
@@ -1197,37 +1410,19 @@ export default function App() {
         )}
       </main>
 
-      {/* Floating Indicator when on 'promocoes' with items */}
-      {activeTab === 'promocoes' && shoppingList.length > 0 && (
-        <div className="fixed bottom-[64px] left-0 right-0 z-30 px-3 pointer-events-none">
-          <div className="max-w-md mx-auto pointer-events-auto">
-            <button
-              id="btn-floating-ver-rancho"
-              type="button"
-              onClick={() => { setActiveTab('comparador'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              className="w-full py-2.5 px-3.5 rounded-2xl bg-slate-900/95 backdrop-blur-md text-white flex items-center justify-between shadow-xl border border-slate-700/60 active:scale-98 transition"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-black text-xs shrink-0">
-                  {shoppingList.length}
-                </div>
-                <div className="text-left leading-tight">
-                  <div className="text-xs font-bold text-white">
-                    Rancho: R$ {totalRancho.toFixed(2)}
-                  </div>
-                  <div className="text-[10px] text-emerald-400">
-                    {profile.ranchoBudget > 0 ? `${Math.round((totalRancho / profile.ranchoBudget) * 100)}% do teto mensal` : 'Toque para comparar mercados'}
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-300 bg-white/10 px-2 py-1 rounded-xl">
-                <span>Comparar (Etapa 3)</span>
-                <ArrowRight className="w-3 h-3" />
-              </div>
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Dynamic Floating Quick Cart Bar with WhatsApp & Best Store */}
+      <FloatingQuickCartBar
+        itemCount={shoppingList.length}
+        totalPrice={totalRancho}
+        budgetLimit={profile.ranchoBudget}
+        bestMarket={bestMarketName}
+        activeTab={activeTab}
+        onOpenShoppingMode={() => {
+          setActiveTab('carrinho');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onShareWhatsApp={handleShareListToWhatsApp}
+      />
 
       {/* Fixed Mobile Bottom Navigation Bar (4 Etapas + Histórico) */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-lg pb-[calc(env(safe-area-inset-bottom,0px)+4px)] pt-1 px-1">

@@ -60,6 +60,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   const [email, setEmail] = useState(profile.email || 'braian.kleber.camargo@gmail.com');
   const [neighborhood, setNeighborhood] = useState<string>(profile.neighborhood || 'Boqueirão');
   const [cityName, setCityName] = useState<string>(profile.city || 'Passo Fundo');
+  const [customCityInput, setCustomCityInput] = useState<string>('');
   const [radiusKm, setRadiusKm] = useState(profile.radiusKm || 5);
   const [isLocating, setIsLocating] = useState(false);
   const [locationStatus, setLocationStatus] = useState<string | null>(null);
@@ -276,6 +277,28 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
     };
     onUpdateProfile(updated);
     setLocationStatus(`Localização alterada para ${city.name} - ${city.state}. Preços e rotas sincronizados.`);
+  };
+
+  // Set any custom Brazilian city
+  const handleCustomCitySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customCityInput.trim()) return;
+    const typedCity = customCityInput.trim();
+    setCityName(typedCity);
+    const locName = `${typedCity}`;
+    setNeighborhood(locName);
+
+    const updated: UserProfile = {
+      ...profile,
+      city: typedCity,
+      neighborhood: locName,
+      locationMode: 'manual',
+      locationUpdatedAt: new Date().toLocaleTimeString('pt-BR'),
+      radiusKm,
+    };
+    onUpdateProfile(updated);
+    setLocationStatus(`Localização definida para "${typedCity}". Buscando ofertas e mercados na internet...`);
+    setCustomCityInput('');
   };
 
   // Quick select Passo Fundo neighborhood
@@ -560,9 +583,32 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             </div>
 
             {locationTab === 'qualquer' ? (
-              <div className="space-y-2">
-                <p className="text-[11px] text-slate-500">
-                  Selecione uma cidade de referência ou use o GPS acima para posicionamento exato:
+              <div className="space-y-3">
+                {/* Form to type ANY Brazilian city */}
+                <form onSubmit={handleCustomCitySubmit} className="space-y-1.5">
+                  <label className="block text-[11px] font-bold text-slate-700">
+                    Digite qualquer cidade do Brasil:
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={customCityInput}
+                      onChange={(e) => setCustomCityInput(e.target.value)}
+                      placeholder="Ex: Caxias do Sul, Chapecó, Pelotas, Curitiba, São Paulo..."
+                      className="flex-1 px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!customCityInput.trim()}
+                      className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition shadow-xs shrink-0"
+                    >
+                      Buscar
+                    </button>
+                  </div>
+                </form>
+
+                <p className="text-[11px] text-slate-500 pt-1">
+                  Ou selecione uma das cidades frequentes:
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {KNOWN_BRAZILIAN_CITIES.map((c) => {

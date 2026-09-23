@@ -2,11 +2,12 @@
 
 @layer base {
   html {
-    background-color: #f8fafc;
+    background-color: #0f172a; /* Sleek dark frame on desktop preview, native canvas */
     color: #1e293b;
     height: 100%;
     overscroll-behavior-y: none;
     -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
@@ -21,12 +22,13 @@
     overscroll-behavior-y: none;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
+    -webkit-font-smoothing: antialiased;
   }
 
   #root {
     min-height: 100%;
     min-height: 100dvh;
-    background-color: #f8fafc;
+    background-color: #0f172a;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
@@ -35,6 +37,26 @@
 
   h1, h2, h3, .font-display {
     font-family: 'Cabinet Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  /* Mobile-first touch optimizations: remove 300ms delay and avoid iOS input auto-zoom */
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
+  @media (max-width: 768px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+  }
+
+  /* Hide scrollbars for clean native mobile feeling */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
 

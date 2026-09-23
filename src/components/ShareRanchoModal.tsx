@@ -12,7 +12,8 @@ import {
   Settings2, 
   ExternalLink,
   Smartphone,
-  Send
+  Send,
+  FileDown
 } from 'lucide-react';
 import { 
   formatRanchoForSharing, 
@@ -20,6 +21,7 @@ import {
   copyTextToClipboard,
   createShortShareLink
 } from '../utils/shareRancho';
+import { generateRanchoPdf } from '../utils/generateRanchoPdf';
 import { RanchoJaIcon } from './RanchoJaLogo';
 
 interface ShareRanchoModalProps {
@@ -152,6 +154,17 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
     }
   };
 
+  // Direct PDF Download for Offline Use
+  const handleDownloadPdf = () => {
+    generateRanchoPdf({
+      items,
+      budgetLimit,
+      householdType,
+      neighborhood,
+      cityName,
+    });
+  };
+
   const total = items.reduce((acc, i) => acc + i.totalPrice, 0);
 
   return (
@@ -167,11 +180,11 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
             <RanchoJaIcon size={40} />
             <div>
               <h2 className="text-lg sm:text-xl font-bold font-display flex items-center gap-2">
-                <span>Compartilhar Meu Rancho</span>
+                <span>Compartilhar & Exportar Rancho</span>
                 <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-md bg-emerald-600 text-white">RanchoJá</span>
               </h2>
               <p className="text-xs text-slate-300">
-                Gere um link encurtado para importar a lista em outro navegador ou envie no WhatsApp
+                Exporte em PDF pronto para imprimir, envie no WhatsApp ou gere link encurtado
               </p>
             </div>
           </div>
@@ -186,16 +199,28 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
         </div>
 
         {/* Action Buttons Row */}
-        <div className="p-4 sm:p-5 bg-emerald-50/60 border-b border-emerald-100 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        <div className="p-4 sm:p-5 bg-emerald-50/60 border-b border-emerald-100 grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {/* PDF Export Button */}
+          <button
+            id="btn-baixar-pdf-modal"
+            type="button"
+            onClick={handleDownloadPdf}
+            className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs transition active:scale-98"
+            title="Baixar arquivo PDF com caixas de marcação para imprimir ou usar sem internet"
+          >
+            <FileDown className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>Exportar PDF</span>
+          </button>
+
           {/* WhatsApp Primary Button */}
           <button
             id="btn-compartilhar-whatsapp"
             type="button"
             onClick={handleSendWhatsApp}
-            className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-sm transition active:scale-98"
+            className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition active:scale-98"
           >
             <MessageCircle className="w-4 h-4 fill-current text-white shrink-0" />
-            <span>Enviar no WhatsApp</span>
+            <span>WhatsApp</span>
           </button>
 
           {/* Copy Formatted Text Button */}
@@ -203,21 +228,21 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
             id="btn-copiar-texto-rancho"
             type="button"
             onClick={handleCopyText}
-            className={`flex items-center justify-center gap-2 px-4 py-3 rounded-2xl font-bold text-xs sm:text-sm border transition shadow-2xs active:scale-98 ${
+            className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-2xl font-bold text-xs border transition shadow-2xs active:scale-98 ${
               copiedText
-                ? 'bg-slate-900 text-white border-slate-900'
+                ? 'bg-slate-800 text-white border-slate-800'
                 : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-300'
             }`}
           >
             {copiedText ? (
               <>
-                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Texto Copiado!</span>
+                <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span>Copiado!</span>
               </>
             ) : (
               <>
-                <Copy className="w-4 h-4 text-slate-600 shrink-0" />
-                <span>Copiar Mensagem</span>
+                <Copy className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                <span>Copiar Texto</span>
               </>
             )}
           </button>
@@ -227,7 +252,7 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
             id="btn-copiar-link-rancho"
             type="button"
             onClick={handleCopyLink}
-            className={`flex items-center justify-center gap-2 px-4 py-3 rounded-2xl font-bold text-xs sm:text-sm border transition shadow-2xs active:scale-98 ${
+            className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-2xl font-bold text-xs border transition shadow-2xs active:scale-98 ${
               copiedLink
                 ? 'bg-emerald-800 text-white border-emerald-800'
                 : 'bg-white hover:bg-slate-50 text-emerald-800 border-emerald-300'
@@ -235,13 +260,13 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
           >
             {copiedLink ? (
               <>
-                <Check className="w-4 h-4 text-emerald-300 shrink-0" />
+                <Check className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
                 <span>Link Copiado!</span>
               </>
             ) : (
               <>
-                <Link2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Copiar Link Encurtado</span>
+                <Link2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Copiar Link</span>
               </>
             )}
           </button>
