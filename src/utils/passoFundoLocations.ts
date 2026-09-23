@@ -59,6 +59,7 @@ export const PASSO_FUNDO_NEIGHBORHOODS: NeighborhoodCoord[] = [
 ];
 
 export const PASSO_FUNDO_STORES: SupermarketStore[] = [
+  // 1. GRANDES ATACAREJOS & FILIAIS
   {
     id: 'stok-boqueirao',
     name: 'Stok Center - Boqueirão',
@@ -70,18 +71,9 @@ export const PASSO_FUNDO_STORES: SupermarketStore[] = [
     openHours: 'Seg a Sáb: 07:30 às 21:00 • Dom: 08:00 às 20:00',
     highlightPromo: 'Maior atacarejo do Boqueirão: Arroz 5kg a R$ 24,90, Ovos 30un a R$ 16,90',
     phone: '(54) 3316-4000',
-  },
-  {
-    id: 'super-boqueirao',
-    name: 'Supermercado Boqueirão',
-    chain: 'Supermercado Boqueirão',
-    neighborhood: 'Boqueirão',
-    address: 'Av. Brasil Oeste, 2884 - Boqueirão',
-    lat: -28.2680,
-    lng: -52.4298,
-    openHours: 'Seg a Sáb: 08:00 às 20:30 • Dom: 08:00 às 13:00',
-    highlightPromo: 'Açougue tradicional do Boqueirão com cortes frescos e padaria artesanal',
-    phone: '(54) 3313-1520',
+    storeType: 'atacarejo',
+    tagline: 'Grande atacarejo com descontos por volume e fardos',
+    specialties: ['Cesta básica no fardo', 'Bebidas no atacado', 'Produtos de limpeza pesada'],
   },
   {
     id: 'stok-petropolis',
@@ -94,6 +86,9 @@ export const PASSO_FUNDO_STORES: SupermarketStore[] = [
     openHours: 'Seg a Sáb: 07:30 às 21:00 • Dom: 08:00 às 20:00',
     highlightPromo: 'Pioneiro em atacado de Passo Fundo: Fardos de leite, café e óleo com desconto',
     phone: '(54) 3316-4100',
+    storeType: 'atacarejo',
+    tagline: 'Grande filial atacarejo na Av. Brasil Leste',
+    specialties: ['Fardos fechados', 'Laticínios industriais', 'Higiene econômica'],
   },
   {
     id: 'atacadao-pf',
@@ -106,42 +101,26 @@ export const PASSO_FUNDO_STORES: SupermarketStore[] = [
     openHours: 'Seg a Sáb: 07:00 às 22:00 • Dom: 08:00 às 18:00',
     highlightPromo: 'Preço de atacado em escala: Descontos extras no Cartão Atacadão/Carrefour',
     phone: '(54) 3045-8000',
+    storeType: 'atacarejo',
+    tagline: 'Maior atacado de autosserviço da região norte do RS',
+    specialties: ['Grandes embalagens', 'Preço de pessoa jurídica e física', 'Alimentos secos'],
   },
+
+  // 2. MERCADOS DE BAIRRO (Próximos do comprador, rápidos e sem gasto de gasolina)
   {
-    id: 'zaffari-centro',
-    name: 'Comercial Zaffari - Centro',
-    chain: 'Zaffari',
-    neighborhood: 'Centro',
-    address: 'Rua General Netto, 443 - Centro',
-    lat: -28.2615,
-    lng: -52.4085,
-    openHours: 'Seg a Sáb: 08:00 às 20:30 • Dom: Fechado',
-    highlightPromo: 'Feira tradicional de frutas e legumes terça e quarta, conveniência no Centro',
-    phone: '(54) 3316-3000',
-  },
-  {
-    id: 'zaffari-vergueiro',
-    name: 'Hiper Zaffari - Vergueiro',
-    chain: 'Zaffari',
-    neighborhood: 'Vergueiro',
-    address: 'Rua Cel. Chicuta, 355 - Vergueiro',
-    lat: -28.2635,
-    lng: -52.4130,
-    openHours: 'Seg a Sáb: 08:00 às 21:00 • Dom: 08:30 às 20:00',
-    highlightPromo: 'Higiene e perfumaria, vinhos da Serra Gaúcha e padaria fina',
-    phone: '(54) 3316-3200',
-  },
-  {
-    id: 'bourbon-shopping',
-    name: 'Bourbon Hipermercado Passo Fundo',
-    chain: 'Bourbon',
-    neighborhood: 'São Cristóvão',
-    address: 'Passo Fundo Shopping - Av. Pres. Vargas, 1610',
-    lat: -28.2725,
-    lng: -52.3995,
-    openHours: 'Seg a Sáb: 08:30 às 22:00 • Dom: 09:00 às 21:00',
-    highlightPromo: 'Variedade premium, cortes especiais e promoções no Clube Zaffari Card',
-    phone: '(54) 3601-5000',
+    id: 'super-boqueirao',
+    name: 'Supermercado Boqueirão',
+    chain: 'Supermercado Boqueirão',
+    neighborhood: 'Boqueirão',
+    address: 'Av. Brasil Oeste, 2884 - Boqueirão',
+    lat: -28.2680,
+    lng: -52.4298,
+    openHours: 'Seg a Sáb: 08:00 às 20:30 • Dom: 08:00 às 13:00',
+    highlightPromo: 'Açougue tradicional do Boqueirão com carnes frescas desossadas na hora',
+    phone: '(54) 3313-1520',
+    storeType: 'bairro',
+    tagline: 'Mercado de bairro completo, perto de casa e com atendimento de balcão',
+    specialties: ['Açougue de bairro', 'Pães quentes a toda hora', 'Hortifrúti selecionado'],
   },
   {
     id: 'coqueiros-sao-cristovao',
@@ -154,8 +133,223 @@ export const PASSO_FUNDO_STORES: SupermarketStore[] = [
     openHours: 'Seg a Sáb: 08:00 às 20:30 • Dom: 08:00 às 13:00',
     highlightPromo: 'Feirão de quarta, linguiças artesanais e hortifrúti fresco para a região',
     phone: '(54) 3313-7500',
+    storeType: 'bairro',
+    tagline: 'Supermercado tradicional do São Cristóvão com preços populares',
+    specialties: ['Quarta da feira', 'Embutidos regionais', 'Mercearia ágil'],
+  },
+  {
+    id: 'mercado-vera-cruz',
+    name: 'Mercado & Açougue Vera Cruz',
+    chain: 'Mercado Vera Cruz',
+    neighborhood: 'Vera Cruz',
+    address: 'Rua Independência, 1140 - Vera Cruz',
+    lat: -28.2720,
+    lng: -52.4430,
+    openHours: 'Seg a Sáb: 07:30 às 20:00 • Dom: 08:00 às 12:30',
+    highlightPromo: 'Moída de primeira R$ 26,90/kg e coxas de frango frescas para o bairro',
+    phone: '(54) 3311-2090',
+    storeType: 'bairro',
+    tagline: 'Mercado de vizinhança: economia a poucos passos de casa',
+    specialties: ['Carnes frescas', 'Bebidas geladas sem taxa', 'Mantimentos essenciais'],
+  },
+  {
+    id: 'mercado-sao-jose-petropolis',
+    name: 'Mercado & Mercearia São José',
+    chain: 'Mercado São José',
+    neighborhood: 'Petrópolis',
+    address: 'Rua Morom, 2890 - Petrópolis',
+    lat: -28.2510,
+    lng: -52.3880,
+    openHours: 'Seg a Sáb: 08:00 às 20:00 • Dom: 08:00 às 12:00',
+    highlightPromo: 'Promoção relâmpago de leite e queijo gaúcho na porta de casa',
+    phone: '(54) 3314-4320',
+    storeType: 'bairro',
+    tagline: 'Mercado do bairro Petrópolis com comodidade total',
+    specialties: ['Padaria do bairro', 'Laticínios coloniais', 'Cesta rápida'],
+  },
+  {
+    id: 'super-dal-moro',
+    name: 'Supermercado Dal Moro',
+    chain: 'Super Dal Moro',
+    neighborhood: 'Centro',
+    address: 'Rua Fagundes dos Reis, 650 - Centro',
+    lat: -28.2605,
+    lng: -52.4060,
+    openHours: 'Seg a Sáb: 08:00 às 20:30 • Dom: Fechado',
+    highlightPromo: 'Mercado tradicional com frios fatiados na hora e hortifrúti diário',
+    phone: '(54) 3312-8800',
+    storeType: 'bairro',
+    tagline: 'Mercado central para compras do dia a dia a pé',
+    specialties: ['Frios frescos', 'Frutas e verduras diárias', 'Conveniência'],
+  },
+  {
+    id: 'mercado-lucas-araujo',
+    name: 'Mercado & Frios Lucas Araújo',
+    chain: 'Mercado Lucas Araújo',
+    neighborhood: 'Lucas Araújo',
+    address: 'Rua Capitão Araújo, 412 - Lucas Araújo',
+    lat: -28.2575,
+    lng: -52.4210,
+    openHours: 'Seg a Sáb: 08:00 às 20:00 • Dom: 08:30 às 12:30',
+    highlightPromo: 'Ovos caipiras, queijo colonial e farinhas regionais em promoção',
+    phone: '(54) 3315-6210',
+    storeType: 'bairro',
+    tagline: 'Minimercado de confiança no coração do Lucas Araújo',
+    specialties: ['Produtos coloniais', 'Hortaliças frescas', 'Básico da casa'],
+  },
+  {
+    id: 'mercado-popular-integracao',
+    name: 'Mercado Popular Integração',
+    chain: 'Mercado Integração',
+    neighborhood: 'Integração',
+    address: 'Rua São Lázaro, 420 - Integração',
+    lat: -28.2410,
+    lng: -52.4020,
+    openHours: 'Seg a Sáb: 07:30 às 20:00 • Dom: 08:00 às 13:00',
+    highlightPromo: 'Pacotão de arroz e feijão com desconto para moradores da zona norte',
+    phone: '(54) 3318-1140',
+    storeType: 'bairro',
+    tagline: 'Mercado popular da zona norte de Passo Fundo',
+    specialties: ['Preços comunitários', 'Cestas econômicas', 'Carnes diárias'],
+  },
+
+  // 3. MERCADOS COM GRANDES FILIAIS & REDES
+  {
+    id: 'zaffari-centro',
+    name: 'Comercial Zaffari - Centro',
+    chain: 'Zaffari',
+    neighborhood: 'Centro',
+    address: 'Rua General Netto, 443 - Centro',
+    lat: -28.2615,
+    lng: -52.4085,
+    openHours: 'Seg a Sáb: 08:00 às 20:30 • Dom: Fechado',
+    highlightPromo: 'Feira tradicional de frutas e legumes terça e quarta, conveniência no Centro',
+    phone: '(54) 3316-3000',
+    storeType: 'rede',
+    tagline: 'Rede histórica de Passo Fundo com grande mix de marcas',
+    specialties: ['Terça e Quarta da Feira', 'Padaria própria', 'Açougue inspecionado'],
+  },
+  {
+    id: 'zaffari-vergueiro',
+    name: 'Hiper Zaffari - Vergueiro',
+    chain: 'Zaffari',
+    neighborhood: 'Vergueiro',
+    address: 'Rua Cel. Chicuta, 355 - Vergueiro',
+    lat: -28.2635,
+    lng: -52.4130,
+    openHours: 'Seg a Sáb: 08:00 às 21:00 • Dom: 08:30 às 20:00',
+    highlightPromo: 'Higiene e perfumaria, vinhos da Serra Gaúcha e padaria fina',
+    phone: '(54) 3316-3200',
+    storeType: 'rede',
+    tagline: 'Hipermercado de rede no Vergueiro com estacionamento amplo',
+    specialties: ['Importados e especiais', 'Higiene e cosméticos', 'Adega gaúcha'],
+  },
+  {
+    id: 'bourbon-shopping',
+    name: 'Bourbon Hipermercado Passo Fundo',
+    chain: 'Bourbon',
+    neighborhood: 'São Cristóvão',
+    address: 'Passo Fundo Shopping - Av. Pres. Vargas, 1610',
+    lat: -28.2725,
+    lng: -52.3995,
+    openHours: 'Seg a Sáb: 08:30 às 22:00 • Dom: 09:00 às 21:00',
+    highlightPromo: 'Variedade premium, cortes especiais e promoções no Clube Zaffari Card',
+    phone: '(54) 3601-5000',
+    storeType: 'rede',
+    tagline: 'Grande hipermercado no Passo Fundo Shopping com horário estendido',
+    specialties: ['Cortes nobres', 'Gastronomia pronta', 'Clube de fidelidade'],
+  },
+
+  // 4. MERCADOS ÚNICOS INDEPENDENTES COM OFERTAS PONTUAIS ARRASADORAS
+  {
+    id: 'casa-carnes-central',
+    name: 'Casa de Carnes & Mercado Central',
+    chain: 'Mercado Central',
+    neighborhood: 'Centro',
+    address: 'Rua Morom, 1420 - Centro',
+    lat: -28.2610,
+    lng: -52.4110,
+    openHours: 'Seg a Sáb: 07:30 às 19:30 • Dom: 08:00 às 12:30',
+    highlightPromo: 'Sexta da Carne: Filé de frango a R$ 18,90/kg e coxão mole a R$ 34,90/kg',
+    phone: '(54) 3311-9080',
+    storeType: 'independente',
+    tagline: 'Mercado único tradicional que cobre o preço de atacado nas carnes',
+    specialties: ['Açougue de alta rotatividade', 'Temperos e churrasco', 'Ofertas relâmpago de sexta'],
+  },
+  {
+    id: 'sacolao-economia-boqueirao',
+    name: 'Sacolão & Mercearia da Economia',
+    chain: 'Sacolão Economia',
+    neighborhood: 'Boqueirão',
+    address: 'Rua Uruguai, 890 - Boqueirão',
+    lat: -28.2670,
+    lng: -52.4280,
+    openHours: 'Seg a Sáb: 08:00 às 19:45 • Dom: 08:00 às 12:00',
+    highlightPromo: 'Quarta da Terra: Batata, cebola e tomate até 35% mais baratos que grandes redes',
+    phone: '(54) 3317-5420',
+    storeType: 'independente',
+    tagline: 'Mercado único focado em hortifrúti barato direto dos produtores',
+    specialties: ['Preço imbatível da quarta-feira', 'Ovos frescos da granja', 'Frutas por quilo'],
+  },
+  {
+    id: 'emporio-sul-petropolis',
+    name: 'Empório Sul & Mercado Gaúcho',
+    chain: 'Empório Sul',
+    neighborhood: 'Petrópolis',
+    address: 'Av. Brasil Leste, 1540 - Petrópolis',
+    lat: -28.2540,
+    lng: -52.3850,
+    openHours: 'Seg a Sáb: 08:00 às 20:00 • Dom: 08:30 às 12:30',
+    highlightPromo: 'Erva-mate a preço de produtor e queijo mussarela colonial por R$ 36,90/kg',
+    phone: '(54) 3313-9930',
+    storeType: 'independente',
+    tagline: 'Mercado regional único com ofertas pontuais e produtos gaúchos',
+    specialties: ['Erva-mate e chimarrão', 'Queijos e embutidos coloniais', 'Cestas de café da manhã'],
   },
 ];
+
+const CUSTOM_STORES_KEY = 'rancho_custom_stores_v1';
+
+export function getCustomStoresFromStorage(): SupermarketStore[] {
+  try {
+    const raw = localStorage.getItem(CUSTOM_STORES_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch (e) {
+    return [];
+  }
+}
+
+export function saveCustomStoreToStorage(newStore: Omit<SupermarketStore, 'id' | 'isUserAdded'>): SupermarketStore {
+  const current = getCustomStoresFromStorage();
+  const storeWithId: SupermarketStore = {
+    ...newStore,
+    id: `custom-market-${Date.now()}`,
+    isUserAdded: true,
+  };
+  const updated = [storeWithId, ...current];
+  try {
+    localStorage.setItem(CUSTOM_STORES_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Failed to save custom store', e);
+  }
+  return storeWithId;
+}
+
+export function removeCustomStoreFromStorage(id: string): void {
+  const current = getCustomStoresFromStorage();
+  const updated = current.filter(s => s.id !== id);
+  try {
+    localStorage.setItem(CUSTOM_STORES_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Failed to remove custom store', e);
+  }
+}
+
+export function getAllPassoFundoStores(): SupermarketStore[] {
+  const custom = getCustomStoresFromStorage();
+  return [...custom, ...PASSO_FUNDO_STORES];
+}
 
 /**
  * Fórmula de Haversine para calcular distância real em km

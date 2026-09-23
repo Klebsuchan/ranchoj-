@@ -3,10 +3,11 @@ import {
   SupermarketName, 
   PassoFundoNeighborhood, 
   ProductCategory,
-  PromotionItem 
+  PromotionItem,
+  StoreCategoryType
 } from '../types';
 import { 
-  PASSO_FUNDO_STORES, 
+  getAllPassoFundoStores,
   PASSO_FUNDO_NEIGHBORHOODS, 
   calculateDistanceKm,
   calculateFuelAndTrip,
@@ -23,6 +24,7 @@ export interface StoreNearbyInfo {
   role: string;
   openHours?: string;
   highlightPromo?: string;
+  storeType?: StoreCategoryType;
 }
 
 export interface RanchoProntoOption {
@@ -1037,12 +1039,14 @@ export function generateRanchoProntoOptions({
   const safeBudget = Math.max(150, Math.round(budget || 450));
   const userLoc = resolveCoordinates(userCoords, userNeighborhood);
 
-  // Calculate distance from user location to all Passo Fundo supermarkets
-  const storesWithDistance = PASSO_FUNDO_STORES.map((store) => {
+  const allAvailableStores = getAllPassoFundoStores();
+
+  // Calculate distance from user location to all Passo Fundo supermarkets (bairro, grandes redes, atacarejos, únicos)
+  const storesWithDistance = allAvailableStores.map((store) => {
     const dist = calculateDistanceKm(userLoc.lat, userLoc.lng, store.lat, store.lng);
     const promoCount = availablePromotions.filter((p) =>
       p.prices.some((pr) => pr.supermarket === store.chain && pr.isPromo)
-    ).length || (store.chain === 'Stock Center' ? 24 : store.chain === 'Atacadão' ? 20 : 15);
+    ).length || (store.storeType === 'atacarejo' ? 24 : store.storeType === 'bairro' ? 18 : 15);
 
     return {
       ...store,
@@ -1051,17 +1055,17 @@ export function generateRanchoProntoOptions({
     };
   }).sort((a, b) => a.distanceKm - b.distanceKm);
 
-  // 1. Identify Nearest Wholesale Store (Stok Center or Atacadão)
+  // 1. Identify Nearest Wholesale Store (Stok Center, Atacadão, etc.)
   const nearestWholesale = storesWithDistance.find(
-    (s) => s.chain === 'Stock Center' || s.chain === 'Atacadão'
+    (s) => s.storeType === 'atacarejo' || s.chain === 'Stock Center' || s.chain === 'Atacadão'
   ) || storesWithDistance[0];
 
-  // 2. Identify Strictly Closest Supermarket (Regardless of chain)
+  // 2. Identify Strictly Closest Supermarket (Can be a neighborhood market or independent store right near the buyer)
   const strictlyClosest = storesWithDistance[0];
 
-  // 3. Identify Complementary Fresh/Quality Store (Zaffari or Supermercado Boqueirão)
+  // 3. Identify Complementary Fresh/Quality Store (Açougue independente, Sacolão, ou Mercado de Bairro)
   const complementaryStore = storesWithDistance.find(
-    (s) => (s.chain === 'Zaffari' || s.chain === 'Supermercado Boqueirão') && s.id !== nearestWholesale.id
+    (s) => (s.storeType === 'independente' || s.storeType === 'bairro' || s.chain === 'Supermercado Boqueirão') && s.id !== nearestWholesale.id
   ) || storesWithDistance[1] || storesWithDistance[0];
 
   /**
@@ -1090,7 +1094,27 @@ export function generateRanchoProntoOptions({
         }
       }
 
-      const unitPrice = staple.prices[marketToUse] || staple.prices['Stock Center'] || 5.0;
+      let unitPrice = staple.prices[marketToUse];
+      if (!unitPrice) {
+        // Intelligent pricing per store type if not explicitly set
+        const storeObj = allAvailableStores.find(s => s.chain === marketToUse || s.name === marketToUse);
+        const storeType = storeObj?.storeType || 'bairro';
+        const basePrice = staple.prices['Stock Center'] || 5.0;
+
+        if (storeType === 'atacarejo') {
+          unitPrice = basePrice;
+        } else if (storeType === 'bairro') {
+          unitPrice = Number((basePrice * 1.04).toFixed(2));
+        } else if (storeType === 'independente') {
+          if (staple.category === 'hortifruti' || staple.category === 'carnes_proteinas') {
+            unitPrice = Number((basePrice * 0.95).toFixed(2)); // Oferta agressiva no mercado único especializado
+          } else {
+            unitPrice = Number((basePrice * 1.03).toFixed(2));
+          }
+        } else {
+          unitPrice = Number((basePrice * 1.08).toFixed(2));
+        }
+      }
 
       // Base quantity from profile
       let baseProfileQty = householdType === 'casal' 
@@ -1161,9 +1185,12 @@ export function generateRanchoProntoOptions({
     address: nearestWholesale.address,
     distanceKm: nearestWholesale.distanceKm,
     dealCount: nearestWholesale.dealCount,
-    role: 'Atacarejo campeão de preços em Passo Fundo com maior volume de fardos e alimentos',
+    role: nearestWholesale.storeType === 'atacarejo'
+      ? 'Atacarejo campeão de preços em volume e fardos econômicos'
+      : 'Grande filial com alto volume e promoções',
     openHours: nearestWholesale.openHours,
     highlightPromo: nearestWholesale.highlightPromo,
+    storeType: nearestWholesale.storeType || 'atacarejo',
   };
 
   const option1: RanchoProntoOption = {
@@ -1197,6 +1224,14 @@ export function generateRanchoProntoOptions({
   const savings2 = opt2Data.savings;
   const netSavings2 = Math.max(0, Number((savings2 - fuel2.fuelCost).toFixed(2)));
 
+  const opt2TypeLabel = strictlyClosest.storeType === 'bairro'
+    ? 'Mercado de Bairro'
+    : strictlyClosest.storeType === 'independente'
+      ? 'Mercado Único / Ofertas'
+      : strictlyClosest.storeType === 'rede'
+        ? 'Grande Rede'
+        : 'Atacarejo';
+
   const opt2StoreInfo: StoreNearbyInfo = {
     id: strictlyClosest.id,
     name: strictlyClosest.chain,
@@ -1204,18 +1239,19 @@ export function generateRanchoProntoOptions({
     address: strictlyClosest.address,
     distanceKm: strictlyClosest.distanceKm,
     dealCount: strictlyClosest.dealCount,
-    role: `Supermercado mais perto do seu bairro (${strictlyClosest.neighborhood})`,
+    role: `${opt2TypeLabel} mais perto de você em Passo Fundo (${strictlyClosest.neighborhood})`,
     openHours: strictlyClosest.openHours,
     highlightPromo: strictlyClosest.highlightPromo,
+    storeType: strictlyClosest.storeType || 'bairro',
   };
 
   const option2: RanchoProntoOption = {
     id: 'mais-proximo',
-    title: `Rancho Prático • ${strictlyClosest.name}`,
-    subtitle: `Apenas ${strictlyClosest.distanceKm} km • Menor tempo e mínimo de gasolina`,
+    title: `Rancho no ${opt2TypeLabel} • ${strictlyClosest.name}`,
+    subtitle: `Apenas ${strictlyClosest.distanceKm} km • Quase na sua porta, sem perder tempo no trânsito`,
     badge: 'Mais Perto de Você',
     badgeType: 'blue',
-    description: `O mercado mais perto da sua localização atual (${strictlyClosest.name}). Ideal para quem não quer perder tempo no trânsito nem gastar combustível rodando pela cidade.`,
+    description: `Compre no ${opt2TypeLabel.toLowerCase()} mais próximo da sua localização (${strictlyClosest.name}). Ideal para quem prioriza proximidade, sem gastar gasolina nem perder horas no trânsito.`,
     strategy: 'Conveniência & Proximidade Imediata',
     targetBudget: safeBudget,
     totalPrice: opt2Data.total,
@@ -1248,7 +1284,10 @@ export function generateRanchoProntoOptions({
     address: nearestWholesale.address,
     distanceKm: nearestWholesale.distanceKm,
     dealCount: nearestWholesale.dealCount,
-    role: 'Básicos de mercearia, arroz, grãos e produtos de limpeza pesada',
+    role: 'Básicos de mercearia, fardos e produtos de limpeza',
+    openHours: nearestWholesale.openHours,
+    highlightPromo: nearestWholesale.highlightPromo,
+    storeType: nearestWholesale.storeType || 'atacarejo',
   };
   const opt3Store2: StoreNearbyInfo = {
     id: complementaryStore.id,
@@ -1257,7 +1296,12 @@ export function generateRanchoProntoOptions({
     address: complementaryStore.address,
     distanceKm: complementaryStore.distanceKm,
     dealCount: complementaryStore.dealCount,
-    role: 'Açougue, carnes frescas, hortifrúti selecionado e feira da semana',
+    role: complementaryStore.storeType === 'independente'
+      ? 'Mercado único especializado com as melhores ofertas em carnes e feira'
+      : 'Mercado de bairro para carnes frescas, açougue e feira selecionada',
+    openHours: complementaryStore.openHours,
+    highlightPromo: complementaryStore.highlightPromo,
+    storeType: complementaryStore.storeType || 'independente',
   };
 
   const option3: RanchoProntoOption = {

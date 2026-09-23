@@ -19,11 +19,13 @@ export type PassoFundoNeighborhood =
   | 'Lucas Araújo' 
   | 'Integração';
 
+export type StoreCategoryType = 'bairro' | 'rede' | 'atacarejo' | 'independente';
+
 export interface SupermarketStore {
   id: string;
   name: string;
   chain: SupermarketName;
-  neighborhood: PassoFundoNeighborhood;
+  neighborhood: PassoFundoNeighborhood | string;
   address: string;
   lat: number;
   lng: number;
@@ -31,6 +33,10 @@ export interface SupermarketStore {
   highlightPromo: string;
   phone?: string;
   distanceKm?: number;
+  storeType?: StoreCategoryType; // 'bairro' (mercado de bairro), 'rede' (grandes filiais), 'atacarejo' (grandes atacados), 'independente' (mercado único com promoções)
+  tagline?: string;
+  specialties?: string[];
+  isUserAdded?: boolean;
 }
 
 export interface UserProfile {

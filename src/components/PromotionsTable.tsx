@@ -38,7 +38,7 @@ import { extractProductPackageInfo, calculateUnitPrice } from '../utils/unitPric
 import { PackageComparisonModal } from './PackageComparisonModal';
 import { SubstitutesExplorerModal } from './SubstitutesExplorerModal';
 import { PriceAlertModal } from './PriceAlertModal';
-import { PASSO_FUNDO_STORES, calculateDistanceKm } from '../utils/passoFundoLocations';
+import { getAllPassoFundoStores, calculateDistanceKm } from '../utils/passoFundoLocations';
 import { 
   getSubstitutesForProduct, 
   ProductSubstitute 
@@ -149,6 +149,9 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
     setPriceAlerts(updated);
   };
 
+  // Supermarket category filter
+  const [selectedMarketTypeFilter, setSelectedMarketTypeFilter] = useState<'all' | 'bairro' | 'atacarejo' | 'independente'>('all');
+
   // User location & supermarket distances
   const userLat = userProfile?.coordinates?.lat ?? -28.2685;
   const userLng = userProfile?.coordinates?.lng ?? -52.4310;
@@ -156,21 +159,16 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
     ? `${userProfile.city} (${userProfile.neighborhood})` 
     : (userProfile?.neighborhood || 'Boqueirão');
 
-  // Calculate distance to closest branch of each supermarket chain
-  const marketDistances = useMemo(() => {
-    const map: Record<SupermarketName, { distanceKm: number; etaMinutes: number; address: string; name: string }> = {
-      'Stock Center': { distanceKm: 99, etaMinutes: 99, address: '', name: '' },
-      'Supermercado Boqueirão': { distanceKm: 99, etaMinutes: 99, address: '', name: '' },
-      'Atacadão': { distanceKm: 99, etaMinutes: 99, address: '', name: '' },
-      'Zaffari': { distanceKm: 99, etaMinutes: 99, address: '', name: '' },
-      'Bourbon': { distanceKm: 99, etaMinutes: 99, address: '', name: '' },
-      'Coqueiros': { distanceKm: 99, etaMinutes: 99, address: '', name: '' },
-    };
+  const allStores = useMemo(() => getAllPassoFundoStores(), []);
 
-    PASSO_FUNDO_STORES.forEach((store) => {
+  // Calculate distance to closest branch of each supermarket
+  const marketDistances = useMemo(() => {
+    const map: Record<string, { distanceKm: number; etaMinutes: number; address: string; name: string }> = {};
+
+    allStores.forEach((store) => {
       const d = calculateDistanceKm(userLat, userLng, store.lat, store.lng);
       const chain = store.chain;
-      if (d < map[chain].distanceKm) {
+      if (!map[chain] || d < map[chain].distanceKm) {
         map[chain] = {
           distanceKm: d,
           etaMinutes: Math.max(2, Math.round((d / 25) * 60)),
@@ -181,23 +179,55 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
     });
 
     return map;
-  }, [userLat, userLng]);
+  }, [allStores, userLat, userLng]);
 
-  const allMarkets: SupermarketName[] = [
-    'Stock Center',
-    'Supermercado Boqueirão',
-    'Atacadão',
-    'Zaffari',
-    'Bourbon',
-    'Coqueiros',
-  ];
+  // Dynamically collect all unique markets
+  const allMarkets: SupermarketName[] = useMemo(() => {
+    const set = new Set<string>();
+    allStores.forEach((s) => set.add(s.chain));
+    items.forEach((it) => {
+      it.prices.forEach((p) => set.add(p.supermarket));
+    });
+    return Array.from(set) as SupermarketName[];
+  }, [allStores, items]);
+
+  const closestMarket = useMemo(() => {
+    if (allMarkets.length === 0) return null;
+    const sorted = [...allMarkets].sort((a, b) => {
+      const distA = marketDistances[a]?.distanceKm ?? 999;
+      const distB = marketDistances[b]?.distanceKm ?? 999;
+      return distA - distB;
+    });
+    const top = sorted[0];
+    const info = marketDistances[top];
+    return { name: top, distanceKm: info?.distanceKm ?? 0 };
+  }, [allMarkets, marketDistances]);
 
   const activeMarkets = useMemo(() => {
-    if (!onlyNearby) return allMarkets;
-    const threshold = userProfile?.radiusKm || 5.0;
-    const filtered = allMarkets.filter((m) => marketDistances[m].distanceKm <= threshold);
-    return filtered.length > 0 ? filtered : allMarkets.slice(0, 3);
-  }, [onlyNearby, marketDistances, userProfile?.radiusKm]);
+    let list = allMarkets;
+
+    if (selectedMarketTypeFilter === 'bairro') {
+      const bairroChains = new Set(allStores.filter(s => s.storeType === 'bairro').map(s => s.chain));
+      const filtered = list.filter(m => bairroChains.has(m));
+      if (filtered.length > 0) list = filtered;
+    } else if (selectedMarketTypeFilter === 'atacarejo') {
+      const atacarejoChains = new Set(allStores.filter(s => s.storeType === 'atacarejo' || s.storeType === 'rede').map(s => s.chain));
+      const filtered = list.filter(m => atacarejoChains.has(m));
+      if (filtered.length > 0) list = filtered;
+    } else if (selectedMarketTypeFilter === 'independente') {
+      const indepChains = new Set(allStores.filter(s => s.storeType === 'independente').map(s => s.chain));
+      const filtered = list.filter(m => indepChains.has(m));
+      if (filtered.length > 0) list = filtered;
+    }
+
+    if (onlyNearby) {
+      const threshold = userProfile?.radiusKm || 5.0;
+      const filtered = list.filter((m) => (marketDistances[m]?.distanceKm ?? 99) <= threshold);
+      if (filtered.length > 0) list = filtered;
+    }
+
+    return list.slice(0, 8);
+  }, [allMarkets, allStores, selectedMarketTypeFilter, onlyNearby, marketDistances, userProfile?.radiusKm]);
 
   const itemsWithSubstitutesCount = useMemo(() => {
     return items.filter((item) => getSubstitutesForProduct(item).length > 0).length;
@@ -546,11 +576,63 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
             </span>
           </div>
           <div className="text-[11px] text-slate-500">
-            Mercado mais perto: <strong className="text-red-600">
-              {allMarkets.sort((a,b) => marketDistances[a].distanceKm - marketDistances[b].distanceKm)[0]} 
-              {' '}({marketDistances[allMarkets.sort((a,b) => marketDistances[a].distanceKm - marketDistances[b].distanceKm)[0]].distanceKm.toFixed(1)} km)
-            </strong>
+            Mercado mais perto: {closestMarket ? (
+              <strong className="text-red-600">
+                {closestMarket.name} ({closestMarket.distanceKm < 1 ? `${Math.round(closestMarket.distanceKm * 1000)}m` : `${closestMarket.distanceKm.toFixed(1)} km`})
+              </strong>
+            ) : (
+              <span className="text-slate-400">Calculando...</span>
+            )}
           </div>
+        </div>
+
+        {/* Supermarket Type Filters (Bairro, Rede/Atacarejo, Único/Promo) */}
+        <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1 text-xs scrollbar-none">
+          <span className="text-[11px] font-bold text-slate-500 shrink-0">Tipo de Mercado:</span>
+          <button
+            type="button"
+            onClick={() => setSelectedMarketTypeFilter('all')}
+            className={`px-2.5 py-1 rounded-lg font-bold transition shrink-0 text-[11px] ${
+              selectedMarketTypeFilter === 'all'
+                ? 'bg-slate-900 text-white'
+                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+            }`}
+          >
+            Todos os Mercados
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedMarketTypeFilter('bairro')}
+            className={`px-2.5 py-1 rounded-lg font-bold transition shrink-0 text-[11px] flex items-center gap-1 ${
+              selectedMarketTypeFilter === 'bairro'
+                ? 'bg-sky-600 text-white'
+                : 'bg-sky-50 text-sky-800 hover:bg-sky-100 border border-sky-200'
+            }`}
+          >
+            🏠 Mercados de Bairro
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedMarketTypeFilter('atacarejo')}
+            className={`px-2.5 py-1 rounded-lg font-bold transition shrink-0 text-[11px] flex items-center gap-1 ${
+              selectedMarketTypeFilter === 'atacarejo'
+                ? 'bg-red-600 text-white'
+                : 'bg-red-50 text-red-800 hover:bg-red-100 border border-red-200'
+            }`}
+          >
+            🏢 Redes & Atacarejos
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedMarketTypeFilter('independente')}
+            className={`px-2.5 py-1 rounded-lg font-bold transition shrink-0 text-[11px] flex items-center gap-1 ${
+              selectedMarketTypeFilter === 'independente'
+                ? 'bg-amber-600 text-white'
+                : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200'
+            }`}
+          >
+            ⚡ Mercados Únicos & Ofertas
+          </button>
         </div>
 
         {/* Category Tabs with Quick Icons */}
@@ -891,9 +973,8 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                   )}
                 </th>
                 {activeMarkets.map((mkt) => {
-                  const info = marketDistances[mkt];
-                  const sortedByDist = [...allMarkets].sort((a,b) => marketDistances[a].distanceKm - marketDistances[b].distanceKm);
-                  const isNearest = mkt === sortedByDist[0];
+                  const info = marketDistances[mkt] || { distanceKm: 4.5, etaMinutes: 10, address: '', name: mkt };
+                  const isNearest = closestMarket?.name === mkt;
                   return (
                     <th key={mkt} className="py-3 px-3 text-center min-w-[115px]">
                       <div className="font-bold text-slate-900 flex items-center justify-center gap-1">

@@ -22,7 +22,7 @@ import { UserProfileModal } from './components/UserProfileModal';
 import { RanchoJaLogo } from './components/RanchoJaLogo';
 import { GoogleAuthButton } from './components/GoogleAuthButton';
 import { initFirebaseAuthListener, cleanAvatarUrl } from './utils/googleAuth';
-import { PASSO_FUNDO_NEIGHBORHOODS } from './utils/passoFundoLocations';
+import { PASSO_FUNDO_NEIGHBORHOODS, getAllPassoFundoStores } from './utils/passoFundoLocations';
 import { ProductSubstitute } from './utils/productSubstitutes';
 import { getDefaultPromotionsCatalogue } from './utils/catalogueData';
 import { decodeRanchoFromUrl, fetchShortRancho } from './utils/shareRancho';
@@ -502,6 +502,17 @@ export default function App() {
   useEffect(() => {
     loadPromotions(false, userProfile.city);
   }, [userProfile.city]);
+
+  // Dynamically collect all available market chains for shopping mode
+  const allAvailableMarketNames = useMemo(() => {
+    const stores = getAllPassoFundoStores();
+    const set = new Set<string>();
+    stores.forEach((s) => set.add(s.chain));
+    promotions.forEach((p) => {
+      p.prices.forEach((pr) => set.add(pr.supermarket));
+    });
+    return Array.from(set);
+  }, [promotions]);
 
   // Compute total current cost of the shopping list
   const totalRancho = useMemo(() => {
@@ -1300,16 +1311,7 @@ export default function App() {
               monthlyIncome={profile.monthlyIncome}
               familyMembers={profile.familyMembers || (profile.householdType === 'casal' ? 2 : 1)}
               cityName={userProfile.city || 'Passo Fundo'}
-              availableMarkets={[
-                'Stock Center',
-                'Atacadão',
-                'Supermercado Boqueirão',
-                'Zaffari',
-                'Bourbon',
-                'Coqueiros',
-                'Carrefour',
-                'Assaí'
-              ]}
+              availableMarkets={allAvailableMarketNames}
               onSaveToHistory={() => {
                 handleSaveCurrentRancho(
                   new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
@@ -1451,7 +1453,7 @@ export default function App() {
             <div className="relative">
               <Zap className={`w-5 h-5 ${activeTab === 'rancho' ? 'stroke-[2.5] text-red-600 fill-red-100' : 'text-amber-500 fill-amber-400'}`} />
             </div>
-            <span className="text-[10px] mt-0.5 tracking-tight font-bold">Rancho 30d</span>
+            <span className="text-[10px] mt-0.5 tracking-tight font-bold">Rancho</span>
           </button>
 
           {/* 3. Comparador Multi-Mercados */}

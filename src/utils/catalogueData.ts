@@ -791,19 +791,26 @@ export function generateOrEstimateProduct(query: string, cityName: string = 'Pas
   // Capitalize title
   const formattedName = query.trim().replace(/(^\w|\s\w)/g, (m) => m.toUpperCase());
 
-  // Generate realistic competitive market prices for Passo Fundo
-  // Stok Center (wholesaler, usually 12-15% cheaper)
+  // Generate realistic competitive market prices for Passo Fundo across all types of stores:
+  // Atacarejos (volume/fardos)
   const stokPrice = Number((basePrice * 0.88).toFixed(2));
-  // Boqueirão (strong neighborhood market, very competitive)
-  const boqueiraoPrice = Number((basePrice * 0.94).toFixed(2));
-  // Atacadão (large wholesaler on BR-285)
   const atacadaoPrice = Number((basePrice * 0.90).toFixed(2));
-  // Coqueiros (regional supermarket in São Cristóvão)
-  const coqueirosPrice = Number((basePrice * 0.98).toFixed(2));
-  // Bourbon (Passo Fundo Shopping, premium experience)
-  const bourbonPrice = Number((basePrice * 1.15).toFixed(2));
-  // Zaffari (Centro and Vergueiro, high quality)
-  const zaffariPrice = Number((basePrice * 1.10).toFixed(2));
+  // Mercados de Bairro (muito próximos, sem gasto de gasolina)
+  const boqueiraoPrice = Number((basePrice * 0.93).toFixed(2));
+  const coqueirosPrice = Number((basePrice * 0.96).toFixed(2));
+  const veraCruzPrice = Number((basePrice * 0.94).toFixed(2));
+  // Mercados com Grandes Redes
+  const zaffariPrice = Number((basePrice * 1.08).toFixed(2));
+  const bourbonPrice = Number((basePrice * 1.14).toFixed(2));
+  // Mercados Únicos Independentes com ofertas pontuais arrasadoras
+  const isMeatOrProtein = category === 'carnes_proteinas';
+  const isProduce = category === 'hortifruti';
+  const carnesCentralPrice = isMeatOrProtein 
+    ? Number((basePrice * 0.84).toFixed(2)) // Desconto pontual agressivo no açougue independente
+    : Number((basePrice * 1.02).toFixed(2));
+  const sacolaoEconomiaPrice = isProduce 
+    ? Number((basePrice * 0.82).toFixed(2)) // Feirão pontual imbatível no hortifrúti
+    : Number((basePrice * 1.04).toFixed(2));
 
   const prices: SupermarketPrice[] = [
     {
@@ -818,21 +825,43 @@ export function generateOrEstimateProduct(query: string, cityName: string = 'Pas
       price: boqueiraoPrice,
       regularPrice: Number((basePrice * 1.05).toFixed(2)),
       isPromo: true,
-      promoNote: 'Oferta da semana no Boqueirão',
+      promoNote: 'Oferta da semana no mercado do bairro',
     },
     {
       supermarket: 'Atacadão',
       price: atacadaoPrice,
       regularPrice: Number((basePrice * 1.05).toFixed(2)),
       isPromo: true,
-      promoNote: 'Preço fardo / unidade Atacadão',
+      promoNote: 'Preço fardo / atacado',
     },
     {
       supermarket: 'Coqueiros',
       price: coqueirosPrice,
       regularPrice: Number((basePrice * 1.08).toFixed(2)),
       isPromo: false,
+      promoNote: 'Mercado de bairro São Cristóvão',
     },
+    {
+      supermarket: 'Mercado Vera Cruz',
+      price: veraCruzPrice,
+      regularPrice: Number((basePrice * 1.06).toFixed(2)),
+      isPromo: true,
+      promoNote: 'Oferta local perto de casa',
+    },
+    ...(isMeatOrProtein ? [{
+      supermarket: 'Casa de Carnes Central' as SupermarketName,
+      price: carnesCentralPrice,
+      regularPrice: Number((basePrice * 1.10).toFixed(2)),
+      isPromo: true,
+      promoNote: 'Sexta da Carne: Mercado único com corte fresco mais barato da cidade',
+    }] : []),
+    ...(isProduce ? [{
+      supermarket: 'Sacolão Economia' as SupermarketName,
+      price: sacolaoEconomiaPrice,
+      regularPrice: Number((basePrice * 1.08).toFixed(2)),
+      isPromo: true,
+      promoNote: 'Quarta da Feira: Mercado único com menor preço direto do produtor',
+    }] : []),
     {
       supermarket: 'Zaffari',
       price: zaffariPrice,
