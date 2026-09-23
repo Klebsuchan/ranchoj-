@@ -4,7 +4,7 @@ import { ShoppingListItem, SupermarketName } from '../types';
 interface PdfRanchoOptions {
   items: ShoppingListItem[];
   budgetLimit?: number;
-  householdType?: 'solo' | 'casal';
+  householdType?: 'solo' | 'casal' | 'familia';
   neighborhood?: string;
   cityName?: string;
   selectedMarket?: string;
@@ -35,7 +35,7 @@ export function generateRanchoPdf({
   const formattedTime = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
   // 1. Header background bar
-  doc.setFillColor(15, 23, 42); // slate-900
+  doc.setFillColor(234, 29, 44); // iFood Red #EA1D2C
   doc.roundedRect(margin, y, contentWidth, 22, 2.5, 2.5, 'F');
 
   // Title
@@ -47,7 +47,7 @@ export function generateRanchoPdf({
   // Subtitle / Location / Time
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8);
-  doc.setTextColor(203, 213, 225); // slate-300
+  doc.setTextColor(254, 226, 226); // red-100
   const locationInfo = cityName ? `${cityName}${neighborhood && neighborhood !== cityName ? ` (${neighborhood})` : ''}` : neighborhood;
   const marketInfo = selectedMarket ? ` • Mercado: ${selectedMarket}` : '';
   const profileInfo = householdType === 'solo' ? 'Individual' : 'Casal / Família';
@@ -76,7 +76,7 @@ export function generateRanchoPdf({
     doc.setTextColor(225, 29, 72); // rose-600
     doc.text(`Excesso: R$ ${Math.abs(diff).toFixed(2)}`, margin + 125, y + 6.5);
   } else {
-    doc.setTextColor(16, 185, 129); // emerald-600
+    doc.setTextColor(16, 185, 129); // positive green balance
     doc.text(`Economia / Saldo: R$ ${diff.toFixed(2)}`, margin + 125, y + 6.5);
   }
 

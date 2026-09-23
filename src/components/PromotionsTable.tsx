@@ -11,6 +11,7 @@ import {
   Search, 
   RefreshCw, 
   Plus, 
+  Minus,
   Check, 
   TrendingDown, 
   Flame, 
@@ -57,6 +58,8 @@ interface PromotionsTableProps {
   lastUpdated: string;
   shoppingList: ShoppingListItem[];
   onAddToRancho: (item: PromotionItem) => void;
+  onUpdateQuantity?: (id: string, delta: number) => void;
+  onRemoveItem?: (id: string) => void;
   onAddSubstituteToRancho?: (sub: ProductSubstitute, replaceOriginalName?: string) => void;
   onAddCustomProduct?: (item: PromotionItem) => void;
   sources: { title: string; uri: string }[];
@@ -80,6 +83,8 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
   lastUpdated,
   shoppingList,
   onAddToRancho,
+  onUpdateQuantity,
+  onRemoveItem,
   onAddSubstituteToRancho,
   onAddCustomProduct,
   sources,
@@ -292,6 +297,10 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
     return shoppingList.some((s) => s.name.toLowerCase() === itemName.toLowerCase());
   };
 
+  const getShoppingItem = (itemName: string) => {
+    return shoppingList.find((s) => s.name.toLowerCase() === itemName.toLowerCase());
+  };
+
   const getPriceForMarket = (item: PromotionItem, market: SupermarketName) => {
     return item.prices.find((p) => p.supermarket === market);
   };
@@ -306,8 +315,8 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
               <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight font-display">
                 Tabela de Promoções & Alertas
               </h2>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-100 text-red-800 border border-red-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
                 Ao Vivo da Internet
               </span>
               {activeCount > 0 && (
@@ -331,7 +340,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
               className="min-h-[44px] inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs transition shadow-2xs disabled:opacity-50 active:scale-95"
               title="Buscar dados mais recentes da web via Gemini com Google Search"
             >
-              <RefreshCw className={`w-3.5 h-3.5 text-emerald-600 ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-red-600 ${isLoading ? 'animate-spin' : ''}`} />
               {isLoading ? 'Verificando...' : 'Atualizar Preços'}
             </button>
             <span className="text-[11px] text-slate-400 hidden lg:inline">
@@ -344,7 +353,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
         {/* NOTIFICATION SYSTEM: Triggered Price Alerts stored in localStorage */}
         {/* ========================================================================= */}
         {triggeredAlerts.length > 0 && !dismissedNotification && (
-          <div className="mt-4 p-4 rounded-2xl bg-linear-to-r from-amber-500 via-amber-600 to-emerald-700 text-white shadow-md border border-amber-300/40 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="mt-4 p-4 rounded-2xl bg-linear-to-r from-amber-500 via-amber-600 to-red-700 text-white shadow-md border border-amber-300/40 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0 border border-white/25 mt-0.5">
@@ -376,7 +385,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                           <div>
                             <div className="flex items-center justify-between gap-1">
                               <span className="font-bold text-xs text-slate-900 truncate">{alert.itemName}</span>
-                              <span className="text-[10px] font-black text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded">
+                              <span className="text-[10px] font-black text-red-600 bg-red-100 px-1.5 py-0.2 rounded">
                                 R$ {alert.currentLowestPrice.toFixed(2)}
                               </span>
                             </div>
@@ -386,7 +395,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                           </div>
                           
                           <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
-                            <span className="text-[10px] text-emerald-800 font-bold">
+                            <span className="text-[10px] text-red-700 font-bold">
                               Economia: R$ {(alert.targetPrice - alert.currentLowestPrice).toFixed(2)} abaixo da meta
                             </span>
                             {itemObj && (
@@ -396,10 +405,10 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                                 className={`text-[11px] font-bold px-2 py-1 rounded-lg transition flex items-center gap-1 ${
                                   isAdded 
                                     ? 'bg-slate-100 text-slate-600'
-                                    : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs'
+                                    : 'bg-red-600 hover:bg-red-700 text-white shadow-2xs'
                                 }`}
                               >
-                                {isAdded ? <Check className="w-3 h-3 text-emerald-600" /> : <Plus className="w-3 h-3" />}
+                                {isAdded ? <Check className="w-3 h-3 text-red-600" /> : <Plus className="w-3 h-3" />}
                                 <span>{isAdded ? 'No Rancho' : '+ Rancho'}</span>
                               </button>
                             )}
@@ -434,8 +443,18 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar arroz, feijão, café, ovos, leite, frango..."
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 rounded-full"
+                title="Limpar busca"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
           {/* Quick toggle pills - scrollable row for mobile thumbs */}
@@ -456,7 +475,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
               <Star className={`w-3.5 h-3.5 ${onlyFavorites ? 'fill-white text-white' : 'fill-amber-500 text-amber-500'}`} />
               <span>Favoritos & Alertas ({activeCount})</span>
               {triggeredAlerts.length > 0 && (
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span className="w-2 h-2 rounded-full bg-red-400 animate-ping"></span>
               )}
             </button>
 
@@ -486,7 +505,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                   : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
               }`}
             >
-              <Scale className={`w-3.5 h-3.5 ${showUnitPrice ? 'text-emerald-400' : 'text-slate-500'}`} />
+              <Scale className={`w-3.5 h-3.5 ${showUnitPrice ? 'text-red-400' : 'text-slate-500'}`} />
               R$/Kg / Litro
             </button>
 
@@ -495,9 +514,9 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
               id="btn-abrir-comparador-embalagens"
               type="button"
               onClick={() => handleOpenComparison()}
-              className="min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 rounded-xl font-semibold transition border bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100 shadow-2xs"
+              className="min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 rounded-xl font-semibold transition border bg-red-50 text-red-800 border-red-200 hover:bg-red-100 shadow-2xs"
             >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <Sparkles className="w-3.5 h-3.5 text-red-600" />
               Comparador
             </button>
 
@@ -508,8 +527,8 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
               onClick={() => setOnlyNearby(!onlyNearby)}
               className={`min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold transition border ${
                 onlyNearby
-                  ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs ring-2 ring-emerald-400/30'
-                  : 'bg-white text-emerald-900 border-emerald-300 hover:bg-emerald-50'
+                  ? 'bg-red-600 text-white border-red-600 shadow-xs ring-2 ring-red-400/30'
+                  : 'bg-white text-red-900 border-red-200 hover:bg-red-50'
               }`}
             >
               <Navigation className="w-3.5 h-3.5" />
@@ -521,46 +540,57 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
         {/* Location reference info */}
         <div className="mt-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-600">
           <div className="flex items-center gap-2">
-            <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <MapPin className="w-3.5 h-3.5 text-red-600 shrink-0" />
             <span>
               Local de Referência: <strong className="text-slate-900">{userLocationLabel}</strong>
             </span>
           </div>
           <div className="text-[11px] text-slate-500">
-            Mercado mais perto: <strong className="text-emerald-700">
+            Mercado mais perto: <strong className="text-red-600">
               {allMarkets.sort((a,b) => marketDistances[a].distanceKm - marketDistances[b].distanceKm)[0]} 
               {' '}({marketDistances[allMarkets.sort((a,b) => marketDistances[a].distanceKm - marketDistances[b].distanceKm)[0]].distanceKm.toFixed(1)} km)
             </strong>
           </div>
         </div>
 
-        {/* Category Tabs */}
+        {/* Category Tabs with Quick Icons */}
         <div className="mt-4 flex gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
           <button
             type="button"
             onClick={() => setSelectedCategory('all')}
-            className={`min-h-[38px] px-3.5 py-1.5 rounded-xl whitespace-nowrap font-bold transition ${
+            className={`min-h-[38px] px-3.5 py-1.5 rounded-xl whitespace-nowrap font-extrabold transition flex items-center gap-1.5 active:scale-95 ${
               selectedCategory === 'all'
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                ? 'bg-red-600 text-white shadow-xs shadow-red-600/30'
+                : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            Todas as Categorias ({items.length})
+            <span>⚡</span>
+            <span>Todas ({items.length})</span>
           </button>
-          {Object.entries(categoryLabels).map(([key, label]) => {
+          {[
+            { key: 'carnes_proteinas', icon: '🥩' },
+            { key: 'laticinios_frios', icon: '🥛' },
+            { key: 'cesta_basica', icon: '🌾' },
+            { key: 'hortifruti', icon: '🥬' },
+            { key: 'limpeza_higiene', icon: '🧼' },
+            { key: 'outros', icon: '🥤' },
+          ].map(({ key, icon }) => {
+            const label = categoryLabels[key as ProductCategory];
             const count = items.filter((i) => i.category === key).length;
+            const isSelected = selectedCategory === key;
             return (
               <button
                 key={key}
                 type="button"
                 onClick={() => setSelectedCategory(key)}
-                className={`min-h-[38px] px-3.5 py-1.5 rounded-xl whitespace-nowrap font-bold transition ${
-                  selectedCategory === key
-                    ? 'bg-slate-900 text-white shadow-xs'
-                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                className={`min-h-[38px] px-3.5 py-1.5 rounded-xl whitespace-nowrap font-extrabold transition flex items-center gap-1.5 active:scale-95 ${
+                  isSelected
+                    ? 'bg-red-600 text-white shadow-xs shadow-red-600/30'
+                    : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
                 }`}
               >
-                {label} ({count})
+                <span>{icon}</span>
+                <span>{label} ({count})</span>
               </button>
             );
           })}
@@ -574,7 +604,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
         <div className="p-3 sm:p-5">
           {filteredItems.length === 0 ? (
             <div className="py-8 px-4 text-center bg-slate-50 border border-dashed border-slate-300 rounded-2xl my-2">
-              <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto mb-2.5">
+              <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-2.5">
                 <Sparkles className="w-5 h-5" />
               </div>
               <p className="font-bold text-slate-800 text-sm">
@@ -589,7 +619,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                 <button
                   type="button"
                   onClick={() => handleAddSearchedItemDirectly(searchQuery)}
-                  className="mt-3.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition inline-flex items-center gap-2"
+                  className="mt-3.5 px-4 py-2.5 bg-red-600 hover:bg-red-500 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition inline-flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Adicionar "{searchQuery}" com Preços Comparados</span>
@@ -600,6 +630,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
               {filteredItems.map((item) => {
                 const alreadyAdded = isItemInRancho(item.name);
+                const shopItem = getShoppingItem(item.name);
                 const packageInfo = extractProductPackageInfo(item.name, item.unit);
                 const bestUnitCalc = calculateUnitPrice(item.lowestPrice, packageInfo);
                 const substitutes = getSubstitutesForProduct(item);
@@ -674,7 +705,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                       {alert && (
                         <div className={`mt-2 p-1.5 rounded-lg text-[11px] font-bold flex items-center justify-between ${
                           isAlertTriggered
-                            ? 'bg-emerald-100 text-emerald-950 border border-emerald-300'
+                            ? 'bg-red-100 text-red-950 border border-red-300'
                             : 'bg-amber-50 text-amber-900 border border-amber-200'
                         }`}>
                           <div className="flex items-center gap-1">
@@ -682,7 +713,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                             <span>Meta salva: <strong>R$ {alert.targetPrice.toFixed(2)}</strong></span>
                           </div>
                           {isAlertTriggered && (
-                            <span className="text-[10px] bg-emerald-600 text-white px-1.5 py-0.2 rounded font-black">
+                            <span className="text-[10px] bg-red-600 text-white px-1.5 py-0.2 rounded font-black">
                               Atingida!
                             </span>
                           )}
@@ -690,17 +721,17 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                       )}
 
                       {/* Main Price & Lowest Market Card */}
-                      <div className="mt-3 p-3 rounded-xl bg-emerald-50/80 border border-emerald-200/80 flex items-center justify-between">
+                      <div className="mt-3 p-3 rounded-xl bg-red-50/80 border border-red-200/80 flex items-center justify-between">
                         <div>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-red-800 block">
                             Melhor Preço
                           </span>
                           <div className="flex items-baseline gap-1.5">
-                            <span className="font-black text-xl text-emerald-950">
+                            <span className="font-black text-xl text-red-600">
                               R$ {item.lowestPrice.toFixed(2)}
                             </span>
                             {showUnitPrice && (
-                              <span className="text-xs font-bold text-emerald-700">
+                              <span className="text-xs font-bold text-red-500">
                                 R$ {bestUnitCalc.shortLabel}
                               </span>
                             )}
@@ -708,12 +739,12 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                         </div>
 
                         <div className="text-right">
-                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-700 text-white text-xs font-bold shadow-2xs">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-600 text-white text-xs font-bold shadow-2xs">
                             <Store className="w-3 h-3" />
                             {item.cheapestMarket}
                           </span>
                           {item.savingsAmount > 0 && (
-                            <span className="text-[10px] font-bold text-emerald-800 block mt-0.5">
+                            <span className="text-[10px] font-bold text-red-700 block mt-0.5">
                               Economia de R$ {item.savingsAmount.toFixed(2)}
                             </span>
                           )}
@@ -731,9 +762,9 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                             const isCheapest = item.cheapestMarket === mkt;
                             return (
                               <div 
-                                key={mkt}
+                                key={mkt} 
                                 className={`p-1.5 rounded-lg flex items-center justify-between ${
-                                  isCheapest ? 'bg-emerald-100/70 font-bold text-emerald-950' : 'bg-slate-50 text-slate-700'
+                                  isCheapest ? 'bg-red-100/70 font-bold text-red-900' : 'bg-slate-50 text-slate-700'
                                 }`}
                               >
                                 <span className="truncate pr-1">{mkt}:</span>
@@ -752,7 +783,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                               <Lightbulb className="w-3.5 h-3.5 text-amber-600" />
                               Substituto: {bestSub.substituteName}
                             </span>
-                            <span className="font-black text-emerald-800 text-[11px]">
+                            <span className="font-black text-red-700 text-[11px]">
                               R$ {bestSub.estimatedPrice.toFixed(2)}
                             </span>
                           </div>
@@ -775,32 +806,64 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                         className="min-h-[44px] px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold flex items-center justify-center gap-1 transition"
                         title="Calcular preço por medida"
                       >
-                        <Scale className="w-3.5 h-3.5 text-emerald-600" />
+                        <Scale className="w-3.5 h-3.5 text-red-600" />
                         <span>Medida</span>
                       </button>
 
-                      <button
-                        id={`btn-adicionar-${item.id}`}
-                        type="button"
-                        onClick={() => onAddToRancho(item)}
-                        className={`min-h-[44px] flex-1 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 active:scale-98 shadow-sm ${
-                          alreadyAdded
-                            ? 'bg-slate-200 hover:bg-slate-300 text-slate-800'
-                            : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                        }`}
-                      >
-                        {alreadyAdded ? (
-                          <>
-                            <Check className="w-4 h-4 text-emerald-700" />
-                            <span>Já no Rancho</span>
-                          </>
-                        ) : (
-                          <>
+                      {shopItem ? (
+                        <div className="flex-1 flex items-center justify-between bg-red-50/90 border border-red-200/90 rounded-xl p-1 shadow-2xs">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (shopItem.quantity <= 1 && onRemoveItem) {
+                                onRemoveItem(shopItem.id);
+                              } else if (onUpdateQuantity) {
+                                onUpdateQuantity(shopItem.id, -1);
+                              }
+                            }}
+                            className="min-h-[36px] w-10 rounded-lg bg-white hover:bg-red-100 text-red-600 font-black flex items-center justify-center transition border border-red-200 active:scale-90"
+                            title="Diminuir quantidade"
+                          >
+                            <Minus className="w-4 h-4" />
+                          </button>
+                          
+                          <div className="px-2 text-center">
+                            <span className="font-black text-sm text-red-950 block leading-none">
+                              {shopItem.quantity} un
+                            </span>
+                            <span className="text-[9px] text-red-600 font-bold uppercase leading-none">
+                              no rancho
+                            </span>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (onUpdateQuantity) {
+                                onUpdateQuantity(shopItem.id, 1);
+                              } else {
+                                onAddToRancho(item);
+                              }
+                            }}
+                            className="min-h-[36px] w-10 rounded-lg bg-red-600 hover:bg-red-700 text-white font-black flex items-center justify-center transition shadow-xs active:scale-90"
+                            title="Aumentar quantidade"
+                          >
                             <Plus className="w-4 h-4" />
-                            <span>Adicionar ao Rancho</span>
-                          </>
-                        )}
-                      </button>
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          id={`btn-adicionar-${item.id}`}
+                          type="button"
+                          onClick={() => onAddToRancho(item)}
+                          className="min-h-[44px] flex-1 rounded-xl font-bold text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white shadow-xs shadow-red-600/20 active:scale-95 transition flex items-center justify-center gap-1.5"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>Adicionar</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
@@ -822,7 +885,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                 <th className="py-3 px-4">
                   <div>Produto & Embalagem</div>
                   {showUnitPrice && (
-                    <div className="text-[10px] text-emerald-700 font-semibold lowercase">
+                    <div className="text-[10px] text-red-700 font-semibold lowercase">
                       com cálculo de R$/kg ou un
                     </div>
                   )}
@@ -839,7 +902,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                       <div className="flex items-center justify-center gap-1 mt-0.5">
                         <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
                           isNearest 
-                            ? 'bg-emerald-100 text-emerald-900 border border-emerald-300 shadow-2xs' 
+                            ? 'bg-red-100 text-red-900 border border-red-300 shadow-2xs' 
                             : 'bg-slate-100 text-slate-600'
                         }`}>
                           {info.distanceKm < 1 ? `${Math.round(info.distanceKm * 1000)}m` : `${info.distanceKm.toFixed(1)} km`}
@@ -852,7 +915,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                 <th className="py-3 px-4 text-center">
                   <div>Melhor Preço</div>
                   {showUnitPrice && (
-                    <div className="text-[10px] text-emerald-700 font-bold lowercase">
+                    <div className="text-[10px] text-red-600 font-bold lowercase">
                       menor R$/medida
                     </div>
                   )}
@@ -878,7 +941,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                           <button
                             type="button"
                             onClick={() => handleAddSearchedItemDirectly(searchQuery)}
-                            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition inline-flex items-center gap-1.5"
+                            className="px-4 py-2 bg-red-600 hover:bg-red-500 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition inline-flex items-center gap-1.5"
                           >
                             <Plus className="w-4 h-4" />
                             <span>Adicionar "{searchQuery}" com Preços Comparados</span>
@@ -891,6 +954,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
               ) : (
                 filteredItems.map((item) => {
                   const alreadyAdded = isItemInRancho(item.name);
+                  const shopItem = getShoppingItem(item.name);
                   const packageInfo = extractProductPackageInfo(item.name, item.unit);
                   const bestUnitCalc = calculateUnitPrice(item.lowestPrice, packageInfo);
                   const substitutes = getSubstitutesForProduct(item);
@@ -930,7 +994,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                         <td className="py-3 px-4">
                           <div className="flex items-start gap-2.5">
                             <div>
-                              <div className="font-semibold text-slate-900 group-hover:text-emerald-950 flex items-center gap-1.5 flex-wrap">
+                              <div className="font-semibold text-slate-900 group-hover:text-red-600 flex items-center gap-1.5 flex-wrap">
                                 {item.name}
                                 {item.isEssential ? (
                                   <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
@@ -951,7 +1015,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                                 {alert && (
                                   <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold ${
                                     isAlertTriggered 
-                                      ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' 
+                                      ? 'bg-red-100 text-red-900 border border-red-300' 
                                       : 'bg-amber-100 text-amber-900 border border-amber-300'
                                   }`}>
                                     <Bell className="w-2.5 h-2.5" />
@@ -971,9 +1035,9 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                                 <button
                                   type="button"
                                   onClick={() => handleOpenComparison(item)}
-                                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-900 hover:border-emerald-300 px-2 py-0.5 rounded-md border border-slate-200 transition"
+                                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-slate-100 hover:bg-red-50 hover:text-red-900 hover:border-red-300 px-2 py-0.5 rounded-md border border-slate-200 transition"
                                 >
-                                  <Scale className="w-3 h-3 text-emerald-600" />
+                                  <Scale className="w-3 h-3 text-red-600" />
                                   <span>Embalagem: <strong>{packageInfo.displayMeasure}</strong></span>
                                 </button>
 
@@ -1005,7 +1069,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                           return (
                             <td 
                               key={mkt} 
-                              className={`py-3 px-3 text-center ${isCheapest ? 'bg-emerald-50/60 font-bold' : ''}`}
+                              className={`py-3 px-3 text-center ${isCheapest ? 'bg-red-50/60 font-bold' : ''}`}
                             >
                               <div className="text-slate-900 font-semibold">
                                 R$ {p ? p.price.toFixed(2) : '-'}
@@ -1027,14 +1091,14 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
 
                         {/* Best Price */}
                         <td className="py-3 px-4 text-center">
-                          <div className="inline-block bg-emerald-100 text-emerald-900 px-2.5 py-1 rounded-lg">
-                            <div className="font-extrabold text-sm">R$ {item.lowestPrice.toFixed(2)}</div>
+                          <div className="inline-block bg-red-100 text-red-900 px-2.5 py-1 rounded-lg">
+                            <div className="font-extrabold text-sm text-red-600">R$ {item.lowestPrice.toFixed(2)}</div>
                             {showUnitPrice && (
-                              <div className="text-[10px] font-black text-emerald-800">
+                              <div className="text-[10px] font-black text-red-800">
                                 R$ {bestUnitCalc.shortLabel}
                               </div>
                             )}
-                            <div className="text-[10px] font-semibold text-emerald-700 flex items-center justify-center gap-0.5 mt-0.5">
+                            <div className="text-[10px] font-semibold text-red-700 flex items-center justify-center gap-0.5 mt-0.5">
                               <Store className="w-2.5 h-2.5" />
                               {item.cheapestMarket}
                             </div>
@@ -1043,28 +1107,51 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
 
                         {/* Add to Rancho button */}
                         <td className="py-3 px-4 text-right">
-                          <button
-                            id={`btn-adicionar-${item.id}`}
-                            type="button"
-                            onClick={() => onAddToRancho(item)}
-                            className={`min-h-[38px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                              alreadyAdded
-                                ? 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs'
-                            }`}
-                          >
-                            {alreadyAdded ? (
-                              <>
-                                <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                <span>No Rancho</span>
-                              </>
-                            ) : (
-                              <>
+                          {shopItem ? (
+                            <div className="inline-flex items-center gap-1 bg-red-50 border border-red-200/90 rounded-lg p-0.5 shadow-2xs">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (shopItem.quantity <= 1 && onRemoveItem) {
+                                    onRemoveItem(shopItem.id);
+                                  } else if (onUpdateQuantity) {
+                                    onUpdateQuantity(shopItem.id, -1);
+                                  }
+                                }}
+                                className="w-7 h-7 rounded bg-white text-red-600 font-black flex items-center justify-center hover:bg-red-100 transition active:scale-90"
+                                title="Diminuir"
+                              >
+                                <Minus className="w-3.5 h-3.5" />
+                              </button>
+                              <span className="font-black text-xs text-red-950 px-1.5 min-w-[22px] text-center">
+                                {shopItem.quantity}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (onUpdateQuantity) {
+                                    onUpdateQuantity(shopItem.id, 1);
+                                  } else {
+                                    onAddToRancho(item);
+                                  }
+                                }}
+                                className="w-7 h-7 rounded bg-red-600 text-white font-black flex items-center justify-center hover:bg-red-700 shadow-2xs transition active:scale-90"
+                                title="Aumentar"
+                              >
                                 <Plus className="w-3.5 h-3.5" />
-                                <span>+ Rancho</span>
-                              </>
-                            )}
-                          </button>
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              id={`btn-adicionar-${item.id}`}
+                              type="button"
+                              onClick={() => onAddToRancho(item)}
+                              className="min-h-[36px] inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-red-600 hover:bg-red-700 text-white shadow-2xs transition active:scale-95"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                              <span>+ Rancho</span>
+                            </button>
+                          )}
                         </td>
                       </tr>
 
@@ -1090,7 +1177,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                                     <span className="font-extrabold text-slate-900 text-sm">
                                       {bestSub.substituteName}
                                     </span>
-                                    <span className="font-extrabold text-emerald-700 text-sm bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                                    <span className="font-extrabold text-red-700 text-sm bg-red-50 px-2 py-0.5 rounded-md border border-red-200">
                                       R$ {bestSub.estimatedPrice.toFixed(2)}
                                     </span>
                                   </div>
@@ -1142,7 +1229,7 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
           <button
             type="button"
             onClick={() => setShowSources(!showSources)}
-            className="inline-flex items-center gap-1 text-emerald-700 hover:text-emerald-800 font-semibold"
+            className="inline-flex items-center gap-1 text-red-700 hover:text-red-800 font-semibold"
           >
             {showSources ? 'Ocultar Links' : `Ver ${sources.length} Fontes de Encartes`}
             <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showSources ? 'rotate-180' : ''}`} />
@@ -1157,12 +1244,12 @@ export const PromotionsTable: React.FC<PromotionsTableProps> = ({
                 href={source.uri}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition group"
+                className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 hover:border-red-300 hover:bg-red-50/50 transition group"
               >
-                <span className="truncate font-medium text-slate-700 group-hover:text-emerald-900 text-[11px]">
+                <span className="truncate font-medium text-slate-700 group-hover:text-red-900 text-[11px]">
                   {source.title}
                 </span>
-                <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-emerald-600 shrink-0 ml-1.5" />
+                <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-red-600 shrink-0 ml-1.5" />
               </a>
             ))}
           </div>

@@ -68,7 +68,7 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
             id="btn-google-header-logado"
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="flex items-center gap-1.5 py-1 px-2 rounded-full border border-emerald-300 bg-emerald-50/80 hover:bg-emerald-100 text-slate-800 text-[11px] font-bold transition shadow-2xs active:scale-95"
+            className="flex items-center gap-1.5 py-1 px-2 rounded-full border border-red-300 bg-red-50/80 hover:bg-red-100 text-slate-800 text-[11px] font-bold transition shadow-2xs active:scale-95"
             title={`Logado como ${currentUser.name} (${currentUser.email})`}
           >
             {currentUser.photoUrl && !headerAvatarError ? (
@@ -78,25 +78,25 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
                 referrerPolicy="no-referrer"
                 crossOrigin="anonymous"
                 onError={() => setHeaderAvatarError(true)}
-                className="w-5 h-5 rounded-full object-cover border border-emerald-500 shrink-0"
+                className="w-5 h-5 rounded-full object-cover border border-red-500 shrink-0"
               />
             ) : (
-              <div className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[9px] font-black flex items-center justify-center shrink-0">
+              <div className="w-5 h-5 rounded-full bg-red-600 text-white text-[9px] font-black flex items-center justify-center shrink-0">
                 {currentUser.name ? currentUser.name.slice(0, 1).toUpperCase() : 'G'}
               </div>
             )}
             <span className="truncate max-w-[80px] text-[11px] font-extrabold text-slate-800">
               {currentUser.givenName || currentUser.name.split(' ')[0]}
             </span>
-            <ChevronDown className="w-3 h-3 text-emerald-700 shrink-0" />
+            <ChevronDown className="w-3 h-3 text-red-700 shrink-0" />
           </button>
 
           {/* Quick Dropdown Menu */}
           {isMenuOpen && (
             <div className="absolute right-0 mt-1.5 w-60 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 text-slate-700 animate-in fade-in slide-in-from-top-1">
               <div className="px-3.5 py-2 border-b border-slate-100">
-                <div className="flex items-center gap-1 text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider mb-0.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <div className="flex items-center gap-1 text-[10px] font-extrabold text-red-700 uppercase tracking-wider mb-0.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-red-600" />
                   Conta Google Conectada
                 </div>
                 <p className="text-xs font-bold text-slate-900 truncate">{currentUser.name}</p>
@@ -137,7 +137,7 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
         id="btn-google-header-login"
         type="button"
         onClick={onOpenProfile}
-        className={`flex items-center gap-1.5 py-1 px-2.5 rounded-full border border-slate-300 hover:border-emerald-400 bg-white hover:bg-slate-50 text-slate-700 text-[11px] font-bold transition shadow-2xs active:scale-95 shrink-0 ${className}`}
+        className={`flex items-center gap-1.5 py-1 px-2.5 rounded-full border border-slate-300 hover:border-red-400 bg-white hover:bg-slate-50 text-slate-700 text-[11px] font-bold transition shadow-2xs active:scale-95 shrink-0 ${className}`}
         title="Fazer Login com sua Conta Google para sincronizar seu rancho"
       >
         <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
@@ -176,18 +176,18 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
                 referrerPolicy="no-referrer"
                 crossOrigin="anonymous"
                 onError={() => setBannerAvatarError(true)}
-                className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500 shadow-2xs shrink-0"
+                className="w-10 h-10 rounded-full object-cover border-2 border-red-500 shadow-2xs shrink-0"
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-sm shadow-xs shrink-0">
+              <div className="w-10 h-10 rounded-full bg-red-600 text-white font-bold flex items-center justify-center text-sm shadow-xs shrink-0">
                 {currentUser.name ? currentUser.name.slice(0, 1).toUpperCase() : 'G'}
               </div>
             )}
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <p className="text-sm font-bold text-slate-900 truncate">{currentUser.name}</p>
-                <span className="inline-flex items-center gap-0.5 text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                  <Check className="w-2.5 h-2.5 text-emerald-600" /> Google
+                <span className="inline-flex items-center gap-0.5 text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full bg-red-100 text-red-800">
+                  <Check className="w-2.5 h-2.5 text-red-600" /> Google
                 </span>
               </div>
               <p className="text-xs text-slate-500 truncate">{currentUser.email}</p>

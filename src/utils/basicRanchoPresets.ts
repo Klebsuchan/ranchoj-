@@ -8,7 +8,7 @@ export interface BasicRanchoCategoryBreakdown {
 }
 
 export interface BasicRanchoBudgetAnalysis {
-  type: 'solo' | 'casal';
+  type: 'solo' | 'casal' | 'familia';
   title: string;
   peopleCount: number;
   minWage: number;
@@ -23,7 +23,7 @@ export interface BasicRanchoBudgetAnalysis {
   passoFundoTips: string[];
 }
 
-export const BASIC_RANCHO_ANALYSIS: Record<'solo' | 'casal', BasicRanchoBudgetAnalysis> = {
+export const BASIC_RANCHO_ANALYSIS: Record<'solo' | 'casal' | 'familia', BasicRanchoBudgetAnalysis> = {
   solo: {
     type: 'solo',
     title: 'Rancho Básico de Sobrevivência - 1 Pessoa (Sozinho)',
@@ -126,14 +126,65 @@ export const BASIC_RANCHO_ANALYSIS: Record<'solo' | 'casal', BasicRanchoBudgetAn
       'Evitar marcas líderes de marketing em produtos de limpeza: marcas gaúchas regionais (como Minuano, Limpol, Ypê básico, QBoa) cumprem o mesmo papel com 30% a 40% de economia.',
     ],
   },
+  familia: {
+    type: 'familia',
+    title: 'Rancho do Mês Completo - Família (3 a 4 Pessoas)',
+    peopleCount: 4,
+    minWage: 4230.00,
+    fixedExpenses: 3000.00,
+    ranchoBudget: 1200.00,
+    estimatedCostStokCenter: 1150.80,
+    estimatedCostAtacadao: 1172.50,
+    estimatedCostBoqueirao: 1235.00,
+    estimatedCostBourbon: 1440.00,
+    estimatedSavings: 289.20,
+    categories: [
+      {
+        categoryName: 'Cesta Básica & Carboidratos (Sustento)',
+        allocatedAmount: 320.00,
+        percentage: 28,
+        itemsSummary: '3x Arroz 5kg (15kg total), 3x Feijão 1kg, 8x Massas 500g, 3x Óleos, 3x Cafés 500g, 3x Farinhas, Açúcar 5kg',
+      },
+      {
+        categoryName: 'Carnes & Proteínas de Rendimento',
+        allocatedAmount: 410.00,
+        percentage: 35,
+        itemsSummary: '2x Bandejas 30 ovos (60 ovos), 6kg Peito e coxa de frango, 4kg Carne moída / acém bovino',
+      },
+      {
+        categoryName: 'Hortifrúti Essencial da Semana',
+        allocatedAmount: 145.00,
+        percentage: 12,
+        itemsSummary: '6kg Batata inglesa, 3kg Cebola, Alho, 6kg Banana caturra/prata, Tomate',
+      },
+      {
+        categoryName: 'Material de Limpeza da Casa',
+        allocatedAmount: 140.00,
+        percentage: 12,
+        itemsSummary: '6x Detergentes 500ml, 3kg Sabão em pó/líquido, 3L Água sanitária, Desinfetante 2L, Esponjas 6un',
+      },
+      {
+        categoryName: 'Higiene Pessoal Indispensável',
+        allocatedAmount: 135.00,
+        percentage: 13,
+        itemsSummary: '3x Fardos papel higiênico 12un (36 rolos), 8x Sabonetes, 4x Cremes dentais 90g, 3x Shampoos econômicos',
+      },
+    ],
+    passoFundoTips: [
+      'Para famílias, comprar em atacarejo (Stok Center ou Atacadão) é indispensável: a economia passa de R$ 280,00 por mês em comparação com hipermercados convencionais.',
+      'Comprar fardos fechados de papel higiênico, leite e sabão em pó gera desconto de atacado direto no caixa.',
+      'Fracionar o frango e a carne moída em porções diárias de 500g no congelador evita desperdício e garante proteína todos os dias.',
+    ],
+  },
 };
 
 /**
- * Returns a complete, realistic shopping list for Solo (R$ 400) or Casal (R$ 800)
+ * Returns a complete, realistic shopping list for Solo (R$ 400), Casal (R$ 800) or Familia (R$ 1200)
  * with verified pricing across Passo Fundo supermarkets.
  */
-export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingListItem[] {
+export function buildBasicRanchoItems(household: 'solo' | 'casal' | 'familia'): ShoppingListItem[] {
   const isCasal = household === 'casal';
+  const isFamilia = household === 'familia';
 
   // Base items mapped with real Passo Fundo prices and quantities tailored to budget
   const items: Array<{
@@ -153,7 +204,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Arroz Branco Tipo 1 (5kg)',
       category: 'cesta_basica',
-      quantity: isCasal ? 2 : 1,
+      quantity: isFamilia ? 3 : isCasal ? 2 : 1,
       unit: '5kg',
       brand: 'Tio João / Prato Fino / Blue Ville',
       stokPrice: 24.90,
@@ -166,7 +217,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Feijão Preto Tipo 1 (1kg)',
       category: 'cesta_basica',
-      quantity: isCasal ? 2 : 1,
+      quantity: isFamilia ? 3 : isCasal ? 2 : 1,
       unit: '1kg',
       brand: 'Caldo Nobre / Kicaldo / Tio Bonato',
       stokPrice: 5.79,
@@ -179,7 +230,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Massa Espaguete / Parafuso Sêmola (500g)',
       category: 'cesta_basica',
-      quantity: isCasal ? 5 : 3,
+      quantity: isFamilia ? 8 : isCasal ? 5 : 3,
       unit: '500g',
       brand: 'Isabela / Orquídea / Renata',
       stokPrice: 3.49,
@@ -192,7 +243,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Óleo de Soja Refinado (900ml)',
       category: 'cesta_basica',
-      quantity: isCasal ? 2 : 1,
+      quantity: isFamilia ? 3 : isCasal ? 2 : 1,
       unit: '900ml',
       brand: 'Soya / Liza / Leve',
       stokPrice: 5.89,
@@ -205,7 +256,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Farinha de Trigo Tradicional Tipo 1 (1kg)',
       category: 'cesta_basica',
-      quantity: isCasal ? 2 : 1,
+      quantity: isFamilia ? 3 : isCasal ? 2 : 1,
       unit: '1kg',
       brand: 'Orquídea / Rosa Branca / Maria Inês',
       stokPrice: 3.89,
@@ -218,7 +269,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Café Torrado e Moído Tradicional (500g)',
       category: 'cesta_basica',
-      quantity: isCasal ? 2 : 1,
+      quantity: isFamilia ? 3 : isCasal ? 2 : 1,
       unit: '500g',
       brand: 'Melitta / Caboclo / Pilão',
       stokPrice: 17.90,
@@ -231,7 +282,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Leite UHT Integral (1 Litro)',
       category: 'cesta_basica',
-      quantity: isCasal ? 6 : 3,
+      quantity: isFamilia ? 12 : isCasal ? 6 : 3,
       unit: '1L',
       brand: 'Elegê / Piracanjuba / Piá',
       stokPrice: 4.19,
@@ -246,7 +297,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Ovos Brancos Médios (Bandeja 30 un)',
       category: 'carnes_proteinas',
-      quantity: isCasal ? 2 : 1,
+      quantity: isFamilia ? 2 : isCasal ? 2 : 1,
       unit: '30 un',
       brand: 'Granja Local Passo Fundo / Naturovos',
       stokPrice: 16.90,
@@ -259,7 +310,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Peito de Frango com Osso / Congelado (kg)',
       category: 'carnes_proteinas',
-      quantity: isCasal ? 3.5 : 2,
+      quantity: isFamilia ? 6 : isCasal ? 3.5 : 2,
       unit: 'kg',
       brand: 'Seara / Sadia / Aurora',
       stokPrice: 12.99,
@@ -272,7 +323,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Carne Moída de Segunda / Acém Bovina (kg)',
       category: 'carnes_proteinas',
-      quantity: isCasal ? 2.5 : 1.5,
+      quantity: isFamilia ? 4 : isCasal ? 2.5 : 1.5,
       unit: 'kg',
       brand: 'Açougue Local PF / Friboi',
       stokPrice: 22.90,
@@ -287,7 +338,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Batata Inglesa Lavada (kg)',
       category: 'hortifruti',
-      quantity: isCasal ? 4 : 2,
+      quantity: isFamilia ? 6 : isCasal ? 4 : 2,
       unit: 'kg',
       brand: 'Produtor Regional RS',
       stokPrice: 4.49,
@@ -300,7 +351,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Cebola Nacional Selecionada (kg)',
       category: 'hortifruti',
-      quantity: isCasal ? 2 : 1,
+      quantity: isFamilia ? 3 : isCasal ? 2 : 1,
       unit: 'kg',
       brand: 'Hortifrúti Regional',
       stokPrice: 3.89,
@@ -313,7 +364,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Banana Prata / Caturra Selecionada (kg)',
       category: 'hortifruti',
-      quantity: isCasal ? 3 : 2,
+      quantity: isFamilia ? 5 : isCasal ? 3 : 2,
       unit: 'kg',
       brand: 'Feira Regional',
       stokPrice: 3.99,
@@ -326,7 +377,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Alho Granel / Cartela (200g)',
       category: 'hortifruti',
-      quantity: 1,
+      quantity: isFamilia ? 2 : 1,
       unit: '200g',
       brand: 'Alho Nacional',
       stokPrice: 5.99,
@@ -341,7 +392,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Detergente Líquido Lava-Louças (500ml)',
       category: 'limpeza_higiene',
-      quantity: isCasal ? 4 : 2,
+      quantity: isFamilia ? 6 : isCasal ? 4 : 2,
       unit: '500ml',
       brand: 'Ypê / Limpol / Minuano',
       stokPrice: 2.19,
@@ -354,7 +405,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Sabão em Pó / Líquido para Roupas (1kg)',
       category: 'limpeza_higiene',
-      quantity: isCasal ? 2 : 1,
+      quantity: isFamilia ? 3 : isCasal ? 2 : 1,
       unit: '1kg',
       brand: 'Tixan Ypê / Omo / Brilhante',
       stokPrice: 10.90,
@@ -367,7 +418,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Água Sanitária Cloro Ativo (1 Litro)',
       category: 'limpeza_higiene',
-      quantity: isCasal ? 2 : 1,
+      quantity: isFamilia ? 3 : isCasal ? 2 : 1,
       unit: '1L',
       brand: 'QBoa / Ypê / Da Ilha',
       stokPrice: 3.49,
@@ -380,7 +431,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Esponja de Louça Multiuso (Pacote 3un)',
       category: 'limpeza_higiene',
-      quantity: 1,
+      quantity: isFamilia ? 2 : 1,
       unit: '3 un',
       brand: 'Scotch-Brite / Bettanin / EsfreBom',
       stokPrice: 3.89,
@@ -395,7 +446,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Papel Higiênico Folha Dupla (Pacote 12 un)',
       category: 'limpeza_higiene',
-      quantity: isCasal ? 2 : 1,
+      quantity: isFamilia ? 3 : isCasal ? 2 : 1,
       unit: '12 un',
       brand: 'Neve / Personal / Sublime',
       stokPrice: 14.90,
@@ -408,7 +459,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Sabonete em Barra Hidratante (90g)',
       category: 'limpeza_higiene',
-      quantity: isCasal ? 6 : 3,
+      quantity: isFamilia ? 8 : isCasal ? 6 : 3,
       unit: '90g',
       brand: 'Palmolive / Protex / Francis / Lux',
       stokPrice: 2.19,
@@ -421,7 +472,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Creme Dental Anticáries Tradicional (90g)',
       category: 'limpeza_higiene',
-      quantity: isCasal ? 2 : 1,
+      quantity: isFamilia ? 4 : isCasal ? 2 : 1,
       unit: '90g',
       brand: 'Sorriso / Colgate / Oral-B',
       stokPrice: 3.89,
@@ -434,7 +485,7 @@ export function buildBasicRanchoItems(household: 'solo' | 'casal'): ShoppingList
     {
       name: 'Shampoo Suave Neutro Familiar (350ml)',
       category: 'limpeza_higiene',
-      quantity: isCasal ? 2 : 1,
+      quantity: isFamilia ? 3 : isCasal ? 2 : 1,
       unit: '350ml',
       brand: 'Seda / Suave / Palmolive',
       stokPrice: 7.89,

@@ -286,3 +286,40 @@ export function getStoresSortedByDistance(
   }).sort((a, b) => a.distanceKm - b.distanceKm);
 }
 
+export interface FuelTripEstimate {
+  distanceKm: number;
+  roundTripKm: number;
+  fuelCost: number;
+  fuelLiters: number;
+  driveTimeMinutes: number;
+  roundTripTimeMinutes: number;
+  isSuperClose: boolean;
+}
+
+/**
+ * Calcula custo de combustível e tempo de deslocamento ida e volta em Passo Fundo
+ * Premissas: Gasolina média no RS R$ 6,29/L e consumo urbano de 10 km/L
+ */
+export function calculateFuelAndTrip(
+  distanceKm: number,
+  fuelPricePerLiter = 6.29,
+  kmPerLiter = 10.0
+): FuelTripEstimate {
+  const roundTripKm = Number((distanceKm * 2).toFixed(2));
+  const fuelLiters = Number((roundTripKm / kmPerLiter).toFixed(2));
+  const fuelCost = Number((fuelLiters * fuelPricePerLiter).toFixed(2));
+  const driveTimeMinutes = Math.max(2, Math.round((distanceKm / 30) * 60));
+  const roundTripTimeMinutes = driveTimeMinutes * 2;
+  const isSuperClose = distanceKm <= 2.5;
+
+  return {
+    distanceKm,
+    roundTripKm,
+    fuelCost,
+    fuelLiters,
+    driveTimeMinutes,
+    roundTripTimeMinutes,
+    isSuperClose,
+  };
+}
+

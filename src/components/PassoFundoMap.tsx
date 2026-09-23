@@ -96,8 +96,8 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
     // 1. Add User Location Marker with pulse
     const userIconHtml = `
       <div class="relative flex items-center justify-center">
-        <div class="absolute w-8 h-8 rounded-full bg-emerald-500/40 animate-ping"></div>
-        <div class="relative w-7 h-7 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-[10px] shadow-lg border-2 border-white">
+        <div class="absolute w-8 h-8 rounded-full bg-red-500/40 animate-ping"></div>
+        <div class="relative w-7 h-7 rounded-full bg-red-600 text-white font-bold flex items-center justify-center text-[10px] shadow-lg border-2 border-white">
           VOCÊ
         </div>
       </div>
@@ -113,7 +113,7 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
     const userMarker = L.marker([userLat, userLng], { icon: userMarkerIcon }).addTo(markersGroup);
     userMarker.bindPopup(`
       <div style="font-family: system-ui; font-size: 12px; padding: 4px;">
-        <strong style="color: #065f46;">Sua Localização Atual</strong><br/>
+        <strong style="color: #b91c1c;">Sua Localização Atual</strong><br/>
         Bairro: <b>${userProfile.neighborhood}</b>, Passo Fundo<br/>
         <span style="color: #64748b;">Mercados mais próximos destacados abaixo.</span>
       </div>
@@ -128,7 +128,7 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
       let badgeLabel = store.chain;
 
       if (store.chain === 'Stock Center') {
-        badgeBg = '#047857'; // emerald-700
+        badgeBg = '#ea1d2c'; // ifood red
       } else if (store.chain === 'Supermercado Boqueirão') {
         badgeBg = '#0284c7'; // sky-600
       } else if (store.chain === 'Atacadão') {
@@ -220,7 +220,7 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
                 <Compass className="w-3.5 h-3.5" /> Geolocalização Passo Fundo
               </span>
               <span className="text-xs text-slate-400">
@@ -228,7 +228,7 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
               </span>
             </div>
             <h3 className="text-lg sm:text-xl font-bold font-display tracking-tight text-white flex items-center gap-2">
-              <Navigation className="w-5 h-5 text-emerald-400" />
+              <Navigation className="w-5 h-5 text-red-500" />
               Mercados Próximos da Sua Localização
             </h3>
             <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
@@ -248,7 +248,7 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
                   onClick={() => handleNeighborhoodChange(b)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
                     isCurrent
-                      ? 'bg-emerald-500 text-slate-950 shadow-xs'
+                      ? 'bg-red-600 text-white shadow-xs'
                       : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
                   }`}
                 >
@@ -274,10 +274,10 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
           {/* Map Overlay Badge */}
           <div className="absolute top-3 left-3 z-20 bg-white/95 backdrop-blur-xs p-2.5 rounded-xl shadow-md border border-slate-200 text-xs">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-emerald-600 animate-pulse"></div>
+              <div className="w-3 h-3 rounded-full bg-red-600 animate-pulse"></div>
               <span className="font-bold text-slate-900">Passo Fundo - RS</span>
               <span className="text-slate-400">|</span>
-              <span className="text-emerald-700 font-semibold">{userProfile.neighborhood}</span>
+              <span className="text-red-700 font-semibold">{userProfile.neighborhood}</span>
             </div>
             <p className="text-[10px] text-slate-500 mt-0.5">
               Clique em qualquer mercado no mapa para ver ofertas
@@ -287,7 +287,7 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
           {/* Map Footer Bar with Proximity Filter */}
           <div className="p-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2 text-slate-600">
-              <Info className="w-4 h-4 text-emerald-600 shrink-0" />
+              <Info className="w-4 h-4 text-red-600 shrink-0" />
               <span>
                 <strong>{storesWithDistance.filter((s) => s.distanceKm <= 3.5).length} supermercados</strong> a menos de 3.5 km de você.
               </span>
@@ -298,7 +298,7 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
               onClick={handleToggleNearbyFilter}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition text-xs border ${
                 onlyNearbyFiltered
-                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs'
+                  ? 'bg-red-600 text-white border-red-600 shadow-2xs'
                   : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
               }`}
             >
@@ -313,7 +313,7 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
           <div>
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                <Store className="w-4 h-4 text-emerald-600" />
+                <Store className="w-4 h-4 text-red-600" />
                 Mercados Ordenados por Proximidade:
               </h4>
               <span className="text-[11px] font-semibold text-slate-500">
@@ -339,14 +339,14 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
                     }}
                     className={`w-full text-left p-3 rounded-2xl transition border flex items-center justify-between gap-3 ${
                       isSelected
-                        ? 'bg-white border-emerald-500 shadow-sm ring-2 ring-emerald-500/20'
+                        ? 'bg-white border-red-500 shadow-sm ring-2 ring-red-500/20'
                         : 'bg-white/80 hover:bg-white border-slate-200'
                     }`}
                   >
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
                         {isNearest && (
-                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-red-100 text-red-800">
                             MAIS PERTO
                           </span>
                         )}
@@ -375,13 +375,13 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
           <div className="mt-4 p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
             <div className="flex items-start justify-between gap-2 mb-2">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-red-700 bg-red-50 px-2 py-0.5 rounded-md">
                   {selectedStore.chain} • {selectedStore.neighborhood}
                 </span>
                 <h5 className="font-bold text-slate-900 text-sm mt-1">{selectedStore.name}</h5>
               </div>
               <div className="text-right">
-                <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200">
+                <span className="text-xs font-extrabold text-red-600 bg-red-50 px-2 py-1 rounded-lg border border-red-200">
                   {selectedStore.distanceKm.toFixed(1)} km
                 </span>
               </div>

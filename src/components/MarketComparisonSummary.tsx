@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingListItem, SupermarketName } from '../types';
+import { ShoppingListItem, SupermarketName, UserProfile } from '../types';
 import { 
   DollarSign, 
   TrendingDown, 
@@ -10,24 +10,50 @@ import {
   CheckCircle2, 
   HelpCircle,
   Copy,
-  MessageCircle
+  MessageCircle,
+  Fuel,
+  Clock,
+  MapPin
 } from 'lucide-react';
 import { ShareRanchoModal } from './ShareRanchoModal';
 import { copyTextToClipboard } from '../utils/shareRancho';
+import { PASSO_FUNDO_STORES, calculateDistanceKm, calculateFuelAndTrip, FuelTripEstimate } from '../utils/passoFundoLocations';
 
 interface MarketComparisonSummaryProps {
   items: ShoppingListItem[];
   budgetLimit: number;
+  userProfile?: UserProfile;
 }
 
 export const MarketComparisonSummary: React.FC<MarketComparisonSummaryProps> = ({
   items,
   budgetLimit,
+  userProfile,
 }) => {
   const [copied, setCopied] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   if (items.length === 0) return null;
+
+  // Calculate distance for each supermarket chain in Passo Fundo
+  const userLat = userProfile?.coordinates?.lat || -28.2618;
+  const userLng = userProfile?.coordinates?.lng || -52.4080;
+
+  const getMarketProximity = (market: SupermarketName) => {
+    const stores = PASSO_FUNDO_STORES.filter(s => s.chain === market);
+    if (stores.length === 0) return { distanceKm: 3.0, fuel: calculateFuelAndTrip(3.0) };
+    
+    // Find closest branch of this chain
+    let minD = Infinity;
+    for (const s of stores) {
+      const d = calculateDistanceKm(userLat, userLng, s.lat, s.lng);
+      if (d < minD) minD = d;
+    }
+    return {
+      distanceKm: minD,
+      fuel: calculateFuelAndTrip(minD),
+    };
+  };
 
   // Calculate totals per market
   const totals: Record<SupermarketName, number> = {
@@ -122,7 +148,7 @@ export const MarketComparisonSummary: React.FC<MarketComparisonSummaryProps> = (
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 border-b border-slate-200/80 pb-4">
         <div>
           <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-            <Store className="w-5 h-5 text-emerald-600" />
+            <Store className="w-5 h-5 text-red-600" />
             Comparativo Geral de Custo em Passo Fundo
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -134,7 +160,7 @@ export const MarketComparisonSummary: React.FC<MarketComparisonSummaryProps> = (
           <button
             type="button"
             onClick={() => setIsShareModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-2xs"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition shadow-2xs"
           >
             <Share2 className="w-4 h-4" />
             <span>Compartilhar Rancho</span>
@@ -147,7 +173,7 @@ export const MarketComparisonSummary: React.FC<MarketComparisonSummaryProps> = (
           >
             {copied ? (
               <>
-                <Check className="w-4 h-4 text-emerald-600" />
+                <Check className="w-4 h-4 text-red-600" />
                 <span>Copiado!</span>
               </>
             ) : (
@@ -160,37 +186,64 @@ export const MarketComparisonSummary: React.FC<MarketComparisonSummaryProps> = (
         </div>
       </div>
 
-      {/* Grid of Supermarkets Totals */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      {/* Grid of Supermarkets Totals (Swipeable on mobile, Grid on desktop) */}
+      <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none -mx-1 px-1">
         {marketEntries.map(([market, total], idx) => {
           const isCheapest = idx === 0;
           const diffFromLowest = total - splitOptimizedTotal;
+          const proximity = getMarketProximity(market);
+          const trueTotalWithFuel = total + proximity.fuel.fuelCost;
 
           return (
             <div
               key={market}
-              className={`rounded-xl p-3.5 border transition-all ${
+              className={`w-[80vw] max-w-[280px] sm:w-auto sm:max-w-none shrink-0 snap-center rounded-2xl p-3.5 border transition-all flex flex-col justify-between ${
                 isCheapest
-                  ? 'bg-emerald-50/70 border-emerald-300 ring-1 ring-emerald-400'
-                  : 'bg-slate-50/70 border-slate-200'
+                  ? 'bg-red-50/70 border-red-300 ring-2 ring-red-500 shadow-xs'
+                  : 'bg-slate-50/80 border-slate-200'
               }`}
             >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-slate-700">{market}</span>
-                {isCheapest && (
-                  <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-600 text-white">
-                    1º Lugar
-                  </span>
-                )}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-bold text-slate-800 truncate">{market}</span>
+                  {isCheapest && (
+                    <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-red-600 text-white shrink-0">
+                      1º Lugar
+                    </span>
+                  )}
+                </div>
+                <div className="text-lg sm:text-xl font-extrabold text-slate-900">
+                  R$ {total.toFixed(2)}
+                </div>
+
+                {/* Distance and fuel info */}
+                <div className="mt-2 pt-2 border-t border-slate-200/70 space-y-1 text-[11px] text-slate-600">
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1 text-slate-500">
+                      <MapPin className="w-3 h-3 text-red-500" />
+                      Distância:
+                    </span>
+                    <span className="font-semibold text-slate-700">{proximity.distanceKm} km</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1 text-slate-500">
+                      <Fuel className="w-3 h-3 text-amber-500" />
+                      Gasolina:
+                    </span>
+                    <span className="font-semibold text-slate-700">~R$ {proximity.fuel.fuelCost.toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] font-bold text-slate-800 pt-0.5">
+                    <span>Total c/ Frete/Gasolina:</span>
+                    <span>R$ {trueTotalWithFuel.toFixed(2)}</span>
+                  </div>
+                </div>
               </div>
-              <div className="text-lg sm:text-xl font-extrabold text-slate-900">
-                R$ {total.toFixed(2)}
-              </div>
-              <div className="text-[11px] text-slate-500 mt-1">
+
+              <div className="text-[11px] text-slate-500 mt-2 pt-1 border-t border-slate-200/50">
                 {isCheapest ? (
-                  <span className="text-emerald-700 font-semibold">Melhor rede única</span>
+                  <span className="text-red-700 font-bold">★ Menor preço de gôndola</span>
                 ) : (
-                  <span>+ R$ {diffFromLowest.toFixed(2)} mais caro</span>
+                  <span>+ R$ {diffFromLowest.toFixed(2)} nos produtos</span>
                 )}
               </div>
             </div>
@@ -198,14 +251,14 @@ export const MarketComparisonSummary: React.FC<MarketComparisonSummaryProps> = (
         })}
 
         {/* Optimized Split Card */}
-        <div className="rounded-xl p-3.5 border bg-slate-900 text-white border-slate-800 shadow-sm flex flex-col justify-between">
+        <div className="w-[80vw] max-w-[280px] sm:w-auto sm:max-w-none shrink-0 snap-center rounded-2xl p-3.5 border bg-slate-900 text-white border-slate-800 shadow-sm flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-bold text-emerald-300 flex items-center gap-1">
+              <span className="text-xs font-bold text-red-300 flex items-center gap-1">
                 <Sparkles className="w-3 h-3 text-amber-300" />
                 Rancho Dividido
               </span>
-              <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-500 text-slate-950">
+              <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-red-600 text-white">
                 Máxima Economia
               </span>
             </div>
@@ -217,7 +270,7 @@ export const MarketComparisonSummary: React.FC<MarketComparisonSummaryProps> = (
             </p>
           </div>
 
-          <div className="mt-2 pt-2 border-t border-slate-800 flex items-center gap-1 text-[11px] text-emerald-300 font-semibold">
+          <div className="mt-2 pt-2 border-t border-slate-800 flex items-center gap-1 text-[11px] text-red-300 font-semibold">
             <TrendingDown className="w-3.5 h-3.5" />
             Economia de R$ {totalMaxSavings.toFixed(2)} ({percentSaved}%)
           </div>

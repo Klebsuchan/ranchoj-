@@ -341,10 +341,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         aria-modal="true"
       >
         {/* Header */}
-        <div className="p-4 sm:p-6 bg-linear-to-br from-slate-900 via-slate-800 to-emerald-950 text-white flex items-center justify-between shrink-0">
+        <div className="p-4 sm:p-6 bg-linear-to-br from-slate-900 via-slate-800 to-red-950 text-white flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white/10 flex items-center justify-center border border-white/15 shrink-0">
-              <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
+              <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />
             </div>
             <div>
               <h2 className="text-base sm:text-xl font-bold font-display">Conta & Localização Móvel</h2>
@@ -370,8 +370,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Autenticação Google</span>
                 {profile.isConnectedWithGoogle && (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Conectado
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-800 border border-red-300">
+                    <ShieldCheck className="w-3.5 h-3.5 text-red-600" /> Conectado
                   </span>
                 )}
               </div>
@@ -387,17 +387,17 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       referrerPolicy="no-referrer"
                       crossOrigin="anonymous"
                       onError={() => setAvatarLoadError(true)}
-                      className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500 shadow-2xs shrink-0" 
+                      className="w-10 h-10 rounded-full object-cover border-2 border-red-500 shadow-2xs shrink-0" 
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-red-600 text-white font-extrabold flex items-center justify-center text-sm shadow-xs shrink-0">
                       {profile.name ? profile.name.slice(0, 1).toUpperCase() : 'G'}
                     </div>
                   )}
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-slate-900 truncate">{profile.name}</p>
                     <p className="text-xs text-slate-500 truncate">{profile.email}</p>
-                    <p className="text-[10px] text-emerald-700 font-semibold mt-0.5">Sincronizado via Google</p>
+                    <p className="text-[10px] text-red-700 font-semibold mt-0.5">Sincronizado via Google</p>
                   </div>
                 </div>
                 <button
@@ -411,14 +411,14 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             ) : (
               <div className="space-y-3">
                 {/* Firebase Authentication Status Banner */}
-                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 text-xs text-emerald-950 flex items-start gap-2.5">
-                  <Flame className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div className="bg-red-50 border border-red-200 rounded-2xl p-3.5 text-xs text-red-950 flex items-start gap-2.5">
+                  <Flame className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
                   <div className="space-y-0.5 text-[11px] leading-relaxed">
-                    <p className="font-bold text-emerald-900 text-xs flex items-center gap-1.5">
+                    <p className="font-bold text-red-900 text-xs flex items-center gap-1.5">
                       <span>Firebase Authentication & Firestore Ativos</span>
-                      <span className="bg-emerald-200 text-emerald-900 font-extrabold text-[9px] px-1.5 py-0.2 rounded-full">Oficial</span>
+                      <span className="bg-red-200 text-red-900 font-extrabold text-[9px] px-1.5 py-0.2 rounded-full">Oficial</span>
                     </p>
-                    <p className="text-emerald-800">
+                    <p className="text-red-800">
                       Faça login com sua <strong>Conta Google</strong> para manter suas listas de compras, histórico de gastos e alertas salvos na nuvem Firebase.
                     </p>
                   </div>
@@ -432,7 +432,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Braian Camargo"
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                     />
                   </div>
                   <div>
@@ -442,7 +442,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="braian.kleber.camargo@gmail.com"
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                     />
                   </div>
                 </div>
@@ -452,7 +452,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   type="button"
                   onClick={handleGoogleConnect}
                   disabled={isLoggingIn}
-                  className="w-full min-h-[46px] inline-flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border-2 border-slate-300 text-slate-800 font-bold text-xs sm:text-sm shadow-xs transition hover:border-emerald-500 active:scale-98 disabled:opacity-70"
+                  className="w-full min-h-[46px] inline-flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border-2 border-slate-300 text-slate-800 font-bold text-xs sm:text-sm shadow-xs transition hover:border-red-500 active:scale-98 disabled:opacity-70"
                 >
                   <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
                     <path
@@ -479,21 +479,21 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           </div>
 
           {/* 2. Geolocation anywhere in the world */}
-          <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200">
+          <div className="p-4 rounded-2xl bg-red-50/70 border border-red-200">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-emerald-700" />
-                <h3 className="text-sm font-bold text-emerald-950">Localização em Tempo Real (Qualquer Cidade)</h3>
+                <Globe className="w-4 h-4 text-red-700" />
+                <h3 className="text-sm font-bold text-red-950">Localização em Tempo Real (Qualquer Cidade)</h3>
               </div>
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${
-                watchActive ? 'bg-emerald-200 text-emerald-950 animate-pulse' : 'bg-slate-200 text-slate-700'
+                watchActive ? 'bg-red-200 text-red-950 animate-pulse' : 'bg-slate-200 text-slate-700'
               }`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${watchActive ? 'bg-emerald-600' : 'bg-slate-400'}`}></span>
+                <span className={`w-1.5 h-1.5 rounded-full ${watchActive ? 'bg-red-600' : 'bg-slate-400'}`}></span>
                 {watchActive ? 'GPS Ao Vivo' : 'Pausado'}
               </span>
             </div>
 
-            <p className="text-xs text-emerald-800/90 mb-3 leading-relaxed">
+            <p className="text-xs text-red-800/90 mb-3 leading-relaxed">
               Você pode usar o aplicativo de <strong>qualquer cidade ou estado do Brasil</strong>. O sistema calcula rotas e distâncias reais até atacarejos e hipermercados (Atacadão, Stok Center, Zaffari, Bourbon).
             </p>
 
@@ -503,9 +503,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 type="button"
                 onClick={handleTrackCurrentLocation}
                 disabled={isLocating}
-                className="min-h-[44px] inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-white hover:bg-emerald-100/50 border-2 border-emerald-300 text-emerald-900 font-bold text-xs sm:text-sm shadow-xs transition active:scale-98"
+                className="min-h-[44px] inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-white hover:bg-red-100/50 border-2 border-red-300 text-red-900 font-bold text-xs sm:text-sm shadow-xs transition active:scale-98"
               >
-                <LocateFixed className={`w-4 h-4 text-emerald-600 ${isLocating ? 'animate-spin' : ''}`} />
+                <LocateFixed className={`w-4 h-4 text-red-600 ${isLocating ? 'animate-spin' : ''}`} />
                 <span>Usar Meu GPS Atual Agora</span>
               </button>
 
@@ -515,7 +515,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 className={`min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-xs transition active:scale-98 ${
                   watchActive
                     ? 'bg-rose-600 hover:bg-rose-700 text-white'
-                    : 'bg-emerald-700 hover:bg-emerald-800 text-white'
+                    : 'bg-red-600 hover:bg-red-700 text-white'
                 }`}
               >
                 {watchActive ? (
@@ -533,18 +533,18 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             </div>
 
             {profile.coordinates && (
-              <div className="mt-2.5 flex items-center justify-between text-[11px] text-emerald-900 bg-white/90 p-2.5 rounded-xl border border-emerald-200">
+              <div className="mt-2.5 flex items-center justify-between text-[11px] text-red-900 bg-white/90 p-2.5 rounded-xl border border-red-200">
                 <div className="flex items-center gap-1.5">
-                  <Compass className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <Compass className="w-3.5 h-3.5 text-red-600 shrink-0" />
                   <span>Coordenadas: <strong>{profile.coordinates.lat.toFixed(4)}, {profile.coordinates.lng.toFixed(4)}</strong></span>
                 </div>
-                <span className="font-bold text-emerald-700">{cityName}</span>
+                <span className="font-bold text-red-700">{cityName}</span>
               </div>
             )}
 
             {locationStatus && (
-              <div className="mt-3 p-2.5 rounded-xl bg-white/95 border border-emerald-300/80 text-xs text-emerald-950 flex items-start gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+              <div className="mt-3 p-2.5 rounded-xl bg-white/95 border border-red-300/80 text-xs text-red-950 flex items-start gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-red-600 shrink-0 mt-0.5" />
                 <span className="leading-tight">{locationStatus}</span>
               </div>
             )}
@@ -595,12 +595,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       value={customCityInput}
                       onChange={(e) => setCustomCityInput(e.target.value)}
                       placeholder="Ex: Caxias do Sul, Chapecó, Pelotas, Curitiba, São Paulo..."
-                      className="flex-1 px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                      className="flex-1 px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                     />
                     <button
                       type="submit"
                       disabled={!customCityInput.trim()}
-                      className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition shadow-xs shrink-0"
+                      className="px-3.5 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition shadow-xs shrink-0"
                     >
                       Buscar
                     </button>
@@ -628,7 +628,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                           <p className="font-bold">{c.name}</p>
                           <p className={`text-[10px] ${isSelected ? 'text-slate-300' : 'text-slate-500'}`}>{c.state} {c.isBaseMarket ? '• Base PF' : ''}</p>
                         </div>
-                        {isSelected && <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
+                        {isSelected && <Check className="w-3.5 h-3.5 text-red-400 shrink-0" />}
                       </button>
                     );
                   })}
@@ -648,16 +648,16 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                         isSelected
                           ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
                           : isBoqueirao
-                          ? 'bg-emerald-50/80 text-emerald-950 border-emerald-300 hover:bg-emerald-100'
+                          ? 'bg-red-50/80 text-red-950 border-red-300 hover:bg-red-100'
                           : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-center justify-between w-full">
                         <span>{n.neighborhood}</span>
-                        {isSelected && <Check className="w-3.5 h-3.5 text-emerald-400" />}
+                        {isSelected && <Check className="w-3.5 h-3.5 text-red-400" />}
                       </div>
                       {isBoqueirao && (
-                        <span className={`text-[9px] font-bold mt-1 ${isSelected ? 'text-emerald-300' : 'text-emerald-700'}`}>
+                        <span className={`text-[9px] font-bold mt-1 ${isSelected ? 'text-red-300' : 'text-red-700'}`}>
                           ★ Stok & Boqueirão
                         </span>
                       )}
@@ -672,7 +672,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
             <div className="flex items-center justify-between mb-1.5">
               <span className="font-bold text-slate-700">Raio de Proximidade dos Mercados:</span>
-              <span className="font-extrabold text-emerald-700">{radiusKm} km</span>
+              <span className="font-extrabold text-red-700">{radiusKm} km</span>
             </div>
             <input 
               type="range"
@@ -685,7 +685,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 setRadiusKm(val);
                 onUpdateProfile({ ...profile, radiusKm: val });
               }}
-              className="w-full accent-emerald-600 h-2 bg-slate-200 rounded-lg cursor-pointer"
+              className="w-full accent-red-600 h-2 bg-slate-200 rounded-lg cursor-pointer"
             />
             <div className="flex justify-between text-[10px] text-slate-400 mt-1">
               <span>2 km (Bairro)</span>
@@ -697,7 +697,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           {/* 5. Supermarkets Closest to Current Location */}
           <div className="border-t border-slate-200 pt-3">
             <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <Store className="w-3.5 h-3.5 text-emerald-600" />
+              <Store className="w-3.5 h-3.5 text-red-600" />
               Mercados Próximos de {cityName} ({neighborhood}):
             </h4>
             <div className="space-y-2">
@@ -708,7 +708,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 >
                   <div className="min-w-0">
                     <p className="font-bold text-slate-900 truncate">
-                      {idx === 0 && <span className="text-emerald-600 mr-1">🥇 Mais Perto:</span>}
+                      {idx === 0 && <span className="text-red-600 mr-1">🥇 Mais Perto:</span>}
                       {st.name}
                     </p>
                     <p className="text-[11px] text-slate-500 truncate">{st.address}</p>

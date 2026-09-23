@@ -109,7 +109,7 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
             <div className="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-200/80 text-xs">
               <span className="text-slate-600">Melhor preço atual:</span>
               <div className="text-right">
-                <span className="font-black text-emerald-700 text-sm">R$ {currentPrice.toFixed(2)}</span>
+                <span className="font-black text-red-700 text-sm">R$ {currentPrice.toFixed(2)}</span>
                 <span className="text-[10px] text-slate-500 block">no {item.cheapestMarket}</span>
               </div>
             </div>

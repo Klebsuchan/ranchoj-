@@ -8,7 +8,9 @@ import {
 import { 
   PASSO_FUNDO_STORES, 
   PASSO_FUNDO_NEIGHBORHOODS, 
-  calculateDistanceKm 
+  calculateDistanceKm,
+  calculateFuelAndTrip,
+  FuelTripEstimate
 } from './passoFundoLocations';
 import { BASE_CATALOGUE_RAW } from './catalogueData';
 
@@ -29,7 +31,7 @@ export interface RanchoProntoOption {
   title: string;
   subtitle: string;
   badge: string;
-  badgeType: 'emerald' | 'blue' | 'purple';
+  badgeType: 'red' | 'blue' | 'purple';
   description: string;
   strategy: string;
   targetBudget: number;
@@ -40,6 +42,8 @@ export interface RanchoProntoOption {
   stores: StoreNearbyInfo[];
   items: ShoppingListItem[];
   highlights: string[];
+  fuelEstimate: FuelTripEstimate;
+  netSavings: number;
 }
 
 interface ItemConfig {
@@ -549,6 +553,10 @@ export function generateRanchoProntoOptions({
 
   // --- OPÇÃO 1: MÁXIMA ECONOMIA (ATACAREJO MAIS BARATO PERTO) ---
   const opt1Data = buildItemsList(nearestWholesale.chain);
+  const fuel1 = calculateFuelAndTrip(nearestWholesale.distanceKm);
+  const savings1 = opt1Data.savings || Number((safeBudget * 0.22).toFixed(2));
+  const netSavings1 = Math.max(0, Number((savings1 - fuel1.fuelCost).toFixed(2)));
+
   const opt1StoreInfo: StoreNearbyInfo = {
     id: nearestWholesale.id,
     name: nearestWholesale.chain,
@@ -563,29 +571,35 @@ export function generateRanchoProntoOptions({
 
   const option1: RanchoProntoOption = {
     id: 'maxima-economia',
-    title: `Rancho Hiper-Econômico • ${nearestWholesale.chain}`,
-    subtitle: `Maior poder de compra • ${nearestWholesale.distanceKm} km de você`,
+    title: `Rancho no Atacarejo • ${nearestWholesale.chain}`,
+    subtitle: `Apenas ${nearestWholesale.distanceKm} km • Economia real sem rodar à toa`,
     badge: 'Maior Economia',
-    badgeType: 'emerald',
-    description: `Concentra as compras no maior atacarejo perto de você (${nearestWholesale.name}), aproveitando preços de fardos e cesta básica com o menor custo por quilo.`,
-    strategy: 'Economia Extrema em 1 Único Lugar',
+    badgeType: 'red',
+    description: `Concentra 100% das compras no maior atacarejo perto de você (${nearestWholesale.name}). Você faz 1 única viagem, gasta menos de R$ ${fuel1.fuelCost.toFixed(2)} em gasolina e garante o menor custo nos itens essenciais do mês.`,
+    strategy: 'Economia Extrema em 1 Único Lugar (Economiza Gasolina)',
     targetBudget: safeBudget,
     totalPrice: opt1Data.total,
     remainingAmount: Number((safeBudget - opt1Data.total).toFixed(2)),
-    savingsAmount: opt1Data.savings || Number((safeBudget * 0.22).toFixed(2)),
+    savingsAmount: savings1,
+    netSavings: netSavings1,
+    fuelEstimate: fuel1,
     itemCount: opt1Data.items.length,
     stores: [opt1StoreInfo],
     items: opt1Data.items,
     highlights: [
-      `Foco no ${nearestWholesale.name} (${nearestWholesale.distanceKm} km)`,
-      `Economia estimada de R$ ${opt1Data.savings.toFixed(2)} vs média da cidade`,
-      `${opt1Data.items.length} itens essenciais completos sem estourar os R$ ${safeBudget}`,
-      'Inclui alimentos calóricos, proteínas, legumes e higiene completa',
+      `1 única parada: ${nearestWholesale.name} a ${nearestWholesale.distanceKm} km (~${fuel1.driveTimeMinutes} min)`,
+      `Gasto de gasolina: apenas R$ ${fuel1.fuelCost.toFixed(2)} (${fuel1.roundTripKm} km ida e volta)`,
+      `Economia líquida de R$ ${netSavings1.toFixed(2)} já descontando o combustível`,
+      `${opt1Data.items.length} itens essenciais completos para durar os 30 dias do mês`,
     ],
   };
 
   // --- OPÇÃO 2: MAIS PRÓXIMO / RÁPIDO (MENOR DESLOCAMENTO) ---
   const opt2Data = buildItemsList(strictlyClosest.chain);
+  const fuel2 = calculateFuelAndTrip(strictlyClosest.distanceKm);
+  const savings2 = opt2Data.savings;
+  const netSavings2 = Math.max(0, Number((savings2 - fuel2.fuelCost).toFixed(2)));
+
   const opt2StoreInfo: StoreNearbyInfo = {
     id: strictlyClosest.id,
     name: strictlyClosest.chain,
@@ -601,28 +615,35 @@ export function generateRanchoProntoOptions({
   const option2: RanchoProntoOption = {
     id: 'mais-proximo',
     title: `Rancho Prático • ${strictlyClosest.name}`,
-    subtitle: `Apenas ${strictlyClosest.distanceKm} km • Zero desperdício de gasolina`,
+    subtitle: `Apenas ${strictlyClosest.distanceKm} km • Menor tempo e mínimo de gasolina`,
     badge: 'Mais Perto de Você',
     badgeType: 'blue',
-    description: `O mercado mais perto da sua localização atual (${strictlyClosest.name}). Ideal para quem não quer perder tempo no trânsito nem gastar combustível.`,
+    description: `O mercado mais perto da sua localização atual (${strictlyClosest.name}). Ideal para quem não quer perder tempo no trânsito nem gastar combustível rodando pela cidade.`,
     strategy: 'Conveniência & Proximidade Imediata',
     targetBudget: safeBudget,
     totalPrice: opt2Data.total,
     remainingAmount: Number((safeBudget - opt2Data.total).toFixed(2)),
-    savingsAmount: opt2Data.savings,
+    savingsAmount: savings2,
+    netSavings: netSavings2,
+    fuelEstimate: fuel2,
     itemCount: opt2Data.items.length,
     stores: [opt2StoreInfo],
     items: opt2Data.items,
     highlights: [
-      `Apenas ${strictlyClosest.distanceKm} km da sua casa (${strictlyClosest.neighborhood})`,
-      'Economia de transporte, combustível e tempo de fila',
-      'Itens selecionados diretamente nas ofertas ativas deste mercado',
+      `Vizinho à sua casa: ${strictlyClosest.name} a ${strictlyClosest.distanceKm} km (~${fuel2.driveTimeMinutes} min)`,
+      `Mínimo consumo: R$ ${fuel2.fuelCost.toFixed(2)} de combustível (${fuel2.roundTripKm} km)`,
+      'Chegue rápido, compre sem estresse e volte em menos de 40 min',
       `Sobra de R$ ${(safeBudget - opt2Data.total).toFixed(2)} no seu bolso`,
     ],
   };
 
   // --- OPÇÃO 3: COMBO INTELIGENTE (2 MELHORES VIZINHOS) ---
   const opt3Data = buildItemsList(nearestWholesale.chain, complementaryStore.chain, true);
+  const combinedDistance = Number(((nearestWholesale.distanceKm + complementaryStore.distanceKm) * 0.75).toFixed(2));
+  const fuel3 = calculateFuelAndTrip(combinedDistance);
+  const savings3 = Number((opt3Data.savings + 14.5).toFixed(2));
+  const netSavings3 = Math.max(0, Number((savings3 - fuel3.fuelCost).toFixed(2)));
+
   const opt3Store1: StoreNearbyInfo = {
     id: nearestWholesale.id,
     name: nearestWholesale.chain,
@@ -648,20 +669,22 @@ export function generateRanchoProntoOptions({
     subtitle: `Melhor Custo x Benefício • 2 mercados próximos`,
     badge: 'Combo Inteligente',
     badgeType: 'purple',
-    description: `Combinação estratégica: mercearia e limpeza no atacarejo (${nearestWholesale.chain}) e hortifrúti/carnes no mercado mais próximo (${complementaryStore.chain}).`,
+    description: `Combinação estratégica: mercearia e limpeza no atacarejo (${nearestWholesale.chain}) e hortifrúti/carnes no mercado mais próximo (${complementaryStore.chain}). Só vale se a economia cobrir o combustível.`,
     strategy: 'Divisão Inteligente dos Melhores Setores',
     targetBudget: safeBudget,
     totalPrice: opt3Data.total,
     remainingAmount: Number((safeBudget - opt3Data.total).toFixed(2)),
-    savingsAmount: Number((opt3Data.savings + 14.5).toFixed(2)), // Extra synergy savings
+    savingsAmount: savings3,
+    netSavings: netSavings3,
+    fuelEstimate: fuel3,
     itemCount: opt3Data.items.length,
     stores: [opt3Store1, opt3Store2],
     items: opt3Data.items,
     highlights: [
       `Arroz, feijão e limpeza no ${nearestWholesale.chain} (${nearestWholesale.distanceKm} km)`,
       `Carnes e feira fresca no ${complementaryStore.chain} (${complementaryStore.distanceKm} km)`,
-      'Máxima qualidade nos frescos sem pagar caro na mercearia seca',
-      `Equilíbrio perfeito de qualidade e preço dentro dos R$ ${safeBudget}`,
+      `Combustível total do trajeto: R$ ${fuel3.fuelCost.toFixed(2)} (${fuel3.roundTripKm} km)`,
+      `Economia líquida de R$ ${netSavings3.toFixed(2)} (a economia compensa o trajeto)`,
     ],
   };
 

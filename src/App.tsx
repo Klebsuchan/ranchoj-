@@ -11,7 +11,6 @@ import {
 } from './types';
 import { BudgetProfileBar } from './components/BudgetProfileBar';
 import { PromotionsTable } from './components/PromotionsTable';
-import { ProductSearchAdd } from './components/ProductSearchAdd';
 import { ShoppingListSection } from './components/ShoppingListSection';
 import { MarketComparisonSummary } from './components/MarketComparisonSummary';
 import { SingleMarketShoppingMode } from './components/SingleMarketShoppingMode';
@@ -27,11 +26,9 @@ import { PASSO_FUNDO_NEIGHBORHOODS } from './utils/passoFundoLocations';
 import { ProductSubstitute } from './utils/productSubstitutes';
 import { getDefaultPromotionsCatalogue } from './utils/catalogueData';
 import { decodeRanchoFromUrl, fetchShortRancho } from './utils/shareRancho';
-import { StepProgressBar, ShoppingStep } from './components/StepProgressBar';
 import { BudgetStepView } from './components/BudgetStepView';
 import { CompactBudgetHeader } from './components/CompactBudgetHeader';
-import { DailySuggestionCard } from './components/DailySuggestionCard';
-import { QuickExpressRanchoBar } from './components/QuickExpressRanchoBar';
+import { RanchoProntoSelector } from './components/RanchoProntoSelector';
 import { FloatingQuickCartBar } from './components/FloatingQuickCartBar';
 import { 
   ShoppingCart, 
@@ -272,7 +269,7 @@ export default function App() {
   ]);
   const [isLoadingPromotions, setIsLoadingPromotions] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string>('Preços atualizados');
-  const [activeTab, setActiveTab] = useState<'orcamento' | 'promocoes' | 'comparador' | 'carrinho' | 'rancho' | 'mapa' | 'historico'>('orcamento');
+  const [activeTab, setActiveTab] = useState<'orcamento' | 'promocoes' | 'comparador' | 'carrinho' | 'rancho' | 'mapa' | 'historico'>('promocoes');
   const [ranchoViewMode, setRanchoViewMode] = useState<'single_market' | 'comparator'>('single_market');
 
   // 6. Budget Advisor State
@@ -837,10 +834,10 @@ export default function App() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto min-h-full min-h-[100dvh] bg-slate-50 text-slate-800 relative flex flex-col shadow-2xl sm:border-x sm:border-slate-200 pb-24 overflow-x-hidden">
+    <div className="w-full max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-4xl mx-auto min-h-full min-h-[100dvh] bg-slate-50 text-slate-800 relative flex flex-col shadow-2xl sm:border-x sm:border-slate-200 pb-[calc(env(safe-area-inset-bottom,0px)+125px)] sm:pb-28 overflow-x-hidden">
       {/* Top Application Header - Mobile Native Style */}
       <header className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 shadow-2xs">
-        <div className="px-3.5 py-2.5 flex items-center justify-between">
+        <div className="px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <RanchoJaLogo size="sm" showText={true} />
             <div className="hidden sm:block border-l border-slate-200 pl-2">
@@ -850,32 +847,18 @@ export default function App() {
             </div>
           </div>
 
-          {/* Quick Header actions: 1-Clique Express, Location & Login */}
+          {/* Quick Header actions: Location & Login */}
           <div className="flex items-center gap-1.5 shrink-0">
-            <button
-              id="btn-modo-expresso-topo"
-              type="button"
-              onClick={() => {
-                setActiveTab('promocoes');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="flex items-center gap-1 py-1 px-2.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 font-black text-[11px] shadow-xs active:scale-95 transition"
-              title="Modo Expresso em 1 Toque para quem não quer perder tempo"
-            >
-              <Zap className="w-3.5 h-3.5 fill-slate-950 text-slate-950" />
-              <span>1-Clique</span>
-            </button>
-
             <button
               id="btn-abrir-perfil-usuario"
               type="button"
               onClick={() => setIsProfileModalOpen(true)}
-              className="flex items-center gap-1 py-1 px-2 rounded-full border border-slate-200 hover:border-emerald-300 bg-slate-50 active:bg-slate-100 text-slate-700 text-[11px] font-bold transition active:scale-95"
+              className="flex items-center gap-1.5 py-1 px-2.5 rounded-full border border-slate-200 hover:border-red-300 bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-semibold transition active:scale-95"
               title="Localização e raio de mercados"
             >
-              <MapPin className="w-3 h-3 text-emerald-600 shrink-0" />
-              <span className="truncate max-w-[85px] text-[11px]">
-                {userProfile.city ? userProfile.city : (userProfile.neighborhood || 'Passo Fundo')}
+              <MapPin className="w-3.5 h-3.5 text-red-600 shrink-0" />
+              <span className="truncate max-w-[90px] sm:max-w-[130px]">
+                {userProfile.neighborhood || userProfile.city || 'Passo Fundo'}
               </span>
             </button>
 
@@ -887,36 +870,63 @@ export default function App() {
 
       {/* Main Content Container - Optimized Mobile Width & Spacing */}
       <main className="px-3 pt-3 flex-1">
-        {/* Step Progress Bar (4 Etapas Principais) */}
-        <StepProgressBar
-          currentStep={
-            activeTab === 'orcamento' ? 'orcamento' :
-            activeTab === 'promocoes' ? 'promocoes' :
-            activeTab === 'comparador' ? 'comparador' :
-            'carrinho'
-          }
-          onSelectStep={(step) => {
-            setActiveTab(step);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          itemsCount={shoppingList.length}
-          totalRancho={totalRancho}
-          budgetLimit={profile.ranchoBudget}
-        />
+        {/* Modern Dynamic Tab Navigation (iFood Style) */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-1 shadow-2xs mb-3 flex items-center justify-between gap-1 overflow-x-auto scrollbar-none">
+          {[
+            { id: 'promocoes', label: 'Ofertas', icon: Store },
+            { id: 'rancho', label: 'Rancho Pronto', icon: Zap, highlight: true },
+            { id: 'comparador', label: 'Comparador', icon: Layers },
+            { 
+              id: 'carrinho', 
+              label: 'Carrinho', 
+              icon: ShoppingCart, 
+              badge: shoppingList.length > 0 ? String(shoppingList.length) : undefined 
+            },
+          ].map((tab) => {
+            const isActive = activeTab === tab.id;
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                id={`tab-nav-${tab.id}`}
+                type="button"
+                onClick={() => {
+                  setActiveTab(tab.id as any);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`flex-1 py-2 px-2 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition active:scale-95 whitespace-nowrap ${
+                  isActive
+                    ? 'bg-red-600 text-white shadow-xs shadow-red-600/30'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : tab.highlight ? 'text-amber-500 fill-amber-500' : 'text-slate-500'}`} />
+                <span>{tab.label}</span>
+                {tab.badge && (
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-black leading-none ${
+                    isActive ? 'bg-white text-red-600' : 'bg-red-100 text-red-700'
+                  }`}>
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
         {/* Banner if loaded from a share link */}
         {importedShareBanner && (
-          <div className="mb-4 p-3.5 rounded-2xl bg-emerald-900 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md border border-emerald-500/30 animate-in fade-in slide-in-from-top-2">
+          <div className="mb-4 p-3.5 rounded-2xl bg-red-950 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md border border-red-500/30 animate-in fade-in slide-in-from-top-2">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-red-500/20 text-red-300 flex items-center justify-center shrink-0">
                 <Share2 className="w-4 h-4" />
               </div>
               <div>
                 <h4 className="font-bold text-xs text-white flex items-center gap-1.5">
                   <span>Lista de Rancho Compartilhada Carregada!</span>
-                  <span className="text-[10px] bg-emerald-700 px-2 py-0.5 rounded-full text-emerald-200">Via Link</span>
+                  <span className="text-[10px] bg-red-600 px-2 py-0.5 rounded-full text-white">Via Link</span>
                 </h4>
-                <p className="text-[11px] text-emerald-200 mt-0.5">
+                <p className="text-[11px] text-red-200 mt-0.5">
                   Importamos {importedShareBanner.count} {importedShareBanner.count === 1 ? 'item' : 'itens'} (Total estimado: R$ {importedShareBanner.total.toFixed(2)}).
                 </p>
               </div>
@@ -926,7 +936,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={handleRestorePreviousList}
-                  className="px-2.5 py-1 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-emerald-100 text-[11px] font-semibold transition"
+                  className="px-2.5 py-1 rounded-xl bg-red-800 hover:bg-red-700 text-white text-[11px] font-semibold transition"
                 >
                   Restaurar ({previousSavedList.length})
                 </button>
@@ -934,7 +944,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setImportedShareBanner(null)}
-                className="px-3 py-1 rounded-xl bg-white hover:bg-emerald-50 text-emerald-950 font-bold text-[11px] shadow-xs transition"
+                className="px-3 py-1 rounded-xl bg-white hover:bg-red-50 text-red-950 font-bold text-[11px] shadow-xs transition"
               >
                 OK, Manter
               </button>
@@ -944,19 +954,19 @@ export default function App() {
 
         {/* Banner when Rancho Pronto is applied */}
         {ranchoProntoSuccessBanner && (
-          <div className="mb-4 p-3.5 rounded-2xl bg-emerald-900 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md border border-emerald-500/30 animate-in fade-in slide-in-from-top-2">
+          <div className="mb-4 p-3.5 rounded-2xl bg-red-950 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md border border-red-500/30 animate-in fade-in slide-in-from-top-2">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-red-500/20 text-red-300 flex items-center justify-center shrink-0">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
                 <h4 className="font-bold text-xs text-white flex items-center gap-1.5">
                   <span>{ranchoProntoSuccessBanner.title} Montado!</span>
-                  <span className="text-[10px] bg-emerald-700 px-2 py-0.5 rounded-full text-emerald-200">
+                  <span className="text-[10px] bg-red-600 px-2 py-0.5 rounded-full text-white">
                     {ranchoProntoSuccessBanner.itemCount} itens
                   </span>
                 </h4>
-                <p className="text-[11px] text-emerald-200 mt-0.5">
+                <p className="text-[11px] text-red-200 mt-0.5">
                   Total de R$ {ranchoProntoSuccessBanner.total.toFixed(2)} (dentro do teto de R$ {ranchoProntoSuccessBanner.budget.toFixed(2)}). Itens prontos para você comparar ou ir ao mercado!
                 </p>
               </div>
@@ -968,14 +978,14 @@ export default function App() {
                   setActiveTab('carrinho');
                   setRanchoProntoSuccessBanner(null);
                 }}
-                className="px-3 py-1 rounded-xl bg-white hover:bg-emerald-50 text-emerald-950 font-bold text-[11px] shadow-xs transition"
+                className="px-3 py-1 rounded-xl bg-white hover:bg-red-50 text-red-950 font-bold text-[11px] shadow-xs transition"
               >
                 Ir para as Compras →
               </button>
               <button
                 type="button"
                 onClick={() => setRanchoProntoSuccessBanner(null)}
-                className="text-emerald-300 hover:text-white p-1 text-xs"
+                className="text-red-300 hover:text-white p-1 text-xs"
               >
                 ✕
               </button>
@@ -1005,9 +1015,9 @@ export default function App() {
           />
         )}
 
-        {/* ETAPA 2: Ofertas & Catálogo de Produtos */}
+        {/* VIEW: Ofertas & Catálogo de Produtos (Ultra-Rápido & Dinâmico) */}
         {activeTab === 'promocoes' && (
-          <div className="space-y-3">
+          <div className="space-y-3 pb-8">
             <CompactBudgetHeader
               totalRancho={totalRancho}
               budgetLimit={profile.ranchoBudget}
@@ -1017,52 +1027,29 @@ export default function App() {
               }}
             />
 
-            {/* Modo Expresso: 1-Clique Rancho por Valor & Adição Rápida de Essenciais */}
-            <QuickExpressRanchoBar
-              userProfile={userProfile}
-              promotions={promotions}
-              currentItemsCount={shoppingList.length}
-              currentTotal={totalRancho}
-              budgetLimit={profile.ranchoBudget}
-              onApplyRancho={handleApplyRanchoPronto}
-              onQuickAddItem={handleQuickAddStapleItem}
-              onGoToShoppingMode={() => {
-                setActiveTab('carrinho');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              onOpenMap={() => {
-                setActiveTab('mapa');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            />
-
-            {/* Card: Sugestão do Dia com base no histórico de compras e maior economia */}
-            <DailySuggestionCard
-              promotions={promotions}
-              shoppingList={shoppingList}
-              history={history}
-              onAddToRancho={handleAddToRancho}
-              cityName={userProfile.city || 'Passo Fundo'}
-            />
-
-            <ProductSearchAdd 
-              onAddCustomProduct={handleCustomProductAdd} 
-              cityName={userProfile.city || 'Passo Fundo'}
-            />
-
-            <div className="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 flex items-center justify-between gap-2 text-xs text-emerald-950">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <Navigation className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span className="truncate">
-                  Bairro <strong>{userProfile.neighborhood}</strong> • Mercados mais próximos priorizados
-                </span>
+            {/* Quick 1-Touch Banner for Rancho Pronto */}
+            <div className="p-3 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white shadow-xs flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                  <Zap className="w-5 h-5 fill-amber-300 text-amber-300" />
+                </div>
+                <div className="min-w-0">
+                  <h4 className="text-xs font-black truncate">Rancho do Mês em 1 Clique</h4>
+                  <p className="text-[11px] text-red-100 truncate">
+                    Cesta básica completa dentro do seu teto de R$ {profile.ranchoBudget.toFixed(0)}
+                  </p>
+                </div>
               </div>
               <button
                 type="button"
-                onClick={() => setActiveTab('mapa')}
-                className="font-bold text-emerald-700 hover:text-emerald-900 underline whitespace-nowrap text-[11px] shrink-0"
+                id="btn-gerar-rancho-banner"
+                onClick={() => {
+                  setActiveTab('rancho');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="py-2 px-3 rounded-xl bg-white text-red-600 font-black text-xs shrink-0 shadow-xs hover:bg-red-50 transition active:scale-95"
               >
-                Ver Mapa →
+                Gerar →
               </button>
             </div>
 
@@ -1073,36 +1060,43 @@ export default function App() {
               lastUpdated={lastUpdated}
               shoppingList={shoppingList}
               onAddToRancho={handleAddToRancho}
+              onUpdateQuantity={handleUpdateQuantity}
+              onRemoveItem={handleRemoveItem}
               onAddSubstituteToRancho={handleAddSubstituteToRancho}
               onAddCustomProduct={handleCustomProductAdd}
               sources={sources}
               userProfile={userProfile}
             />
+          </div>
+        )}
 
-            <div className="pt-3 pb-6 flex items-center justify-between gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('orcamento');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="py-2.5 px-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition"
-              >
-                ← Etapa 1: Teto
-              </button>
+        {/* VIEW: Rancho Pronto (Gerador Interativo em 1 Toque com Sliders & Perfis) */}
+        {activeTab === 'rancho' && (
+          <div className="space-y-3.5 pb-8 animate-in fade-in duration-200">
+            <CompactBudgetHeader
+              totalRancho={totalRancho}
+              budgetLimit={profile.ranchoBudget}
+              onAdjustBudget={() => {
+                setActiveTab('orcamento');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
 
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('comparador');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-xs transition flex items-center gap-1.5"
-              >
-                <span>Avançar: Comparar Mercados (Etapa 3)</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+            <RanchoProntoSelector
+              userProfile={userProfile}
+              promotions={promotions}
+              initialBudget={profile.ranchoBudget}
+              onApplyRancho={(items, budget, optionTitle) => {
+                handleApplyRanchoPronto(items, budget, optionTitle);
+                setActiveTab('carrinho');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onNavigateToCart={() => {
+                setActiveTab('carrinho');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onOpenMap={() => setActiveTab('mapa')}
+            />
           </div>
         )}
 
@@ -1133,7 +1127,7 @@ export default function App() {
 
             {shoppingList.length === 0 ? (
               <div className="p-8 text-center bg-white border border-dashed border-slate-200 rounded-3xl space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
+                <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto">
                   <Sparkles className="w-6 h-6" />
                 </div>
                 <div>
@@ -1150,7 +1144,7 @@ export default function App() {
                       setActiveTab('orcamento');
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs transition shadow-sm flex items-center justify-center gap-1.5"
+                    className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-black text-xs transition shadow-sm flex items-center justify-center gap-1.5"
                   >
                     <Sparkles className="w-4 h-4" />
                     <span>Ver 3 Opções de Rancho Pronto</span>
@@ -1173,17 +1167,18 @@ export default function App() {
                 <MarketComparisonSummary
                   items={shoppingList}
                   budgetLimit={profile.ranchoBudget}
+                  userProfile={userProfile}
                 />
 
-                <div className="p-3 bg-emerald-50/80 border border-emerald-200/80 rounded-2xl flex items-center justify-between text-xs text-emerald-950">
+                <div className="p-3 bg-red-50/80 border border-red-200/80 rounded-2xl flex items-center justify-between text-xs text-red-950">
                   <div className="flex items-center gap-2">
-                    <Navigation className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <Navigation className="w-4 h-4 text-red-600 shrink-0" />
                     <span>Deseja ver a localização dos mercados no mapa?</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setActiveTab('mapa')}
-                    className="font-bold text-emerald-700 hover:underline shrink-0"
+                    className="font-bold text-red-600 hover:underline shrink-0"
                   >
                     Ver no Mapa →
                   </button>
@@ -1200,7 +1195,7 @@ export default function App() {
                 }}
                 className="py-2.5 px-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition"
               >
-                ← Etapa 2: Produtos
+                ← Ver Ofertas
               </button>
 
               <button
@@ -1209,30 +1204,30 @@ export default function App() {
                   setActiveTab('carrinho');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-xs transition flex items-center gap-1.5"
+                className="py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs shadow-xs transition flex items-center gap-1.5"
               >
-                <span>Ir para as Compras (Etapa 4)</span>
+                <span>Ver Carrinho ({shoppingList.length})</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         )}
 
-        {/* ETAPA 4: No Mercado & Carrinho */}
-        {(activeTab === 'carrinho' || activeTab === 'rancho') && (
+        {/* VIEW: No Mercado & Carrinho */}
+        {activeTab === 'carrinho' && (
           <div className="space-y-3.5">
             {/* Top Bar with 'Compartilhar Lista' button */}
             <div className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-3.5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
+                <div className="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
                   <ShoppingCart className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">
-                      Etapa 4 de 4 • No Mercado
+                      Lista de Compras & No Mercado
                     </h3>
-                    <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+                    <span className="bg-red-100 text-red-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
                       {shoppingList.length} {shoppingList.length === 1 ? 'item' : 'itens'}
                     </span>
                   </div>
@@ -1254,7 +1249,7 @@ export default function App() {
                   className={`min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition shadow-xs active:scale-95 ${
                     shoppingList.length === 0
                       ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60'
-                      : 'bg-white hover:bg-slate-50 text-slate-900 border-2 border-slate-300 hover:border-emerald-600'
+                      : 'bg-white hover:bg-slate-50 text-slate-900 border-2 border-slate-300 hover:border-red-600'
                   }`}
                   title={
                     shoppingList.length === 0
@@ -1262,7 +1257,7 @@ export default function App() {
                       : 'Exportar arquivo PDF pronto para impressão ou leitura offline no supermercado'
                   }
                 >
-                  <FileDown className="w-4 h-4 text-emerald-600" />
+                  <FileDown className="w-4 h-4 text-red-600" />
                   <span>Exportar PDF</span>
                 </button>
 
@@ -1275,7 +1270,7 @@ export default function App() {
                   className={`min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition shadow-xs active:scale-95 ${
                     shoppingList.length === 0
                       ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60'
-                      : 'bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-500/30'
+                      : 'bg-red-600 hover:bg-red-700 text-white border border-red-500/30'
                   }`}
                   title={
                     shoppingList.length === 0
@@ -1283,7 +1278,7 @@ export default function App() {
                       : 'Gerar link encurtado para importar em outro navegador'
                   }
                 >
-                  <Share2 className="w-4 h-4 text-emerald-100" />
+                  <Share2 className="w-4 h-4 text-red-100" />
                   <span className="hidden sm:inline">Compartilhar</span>
                   <span className="sm:hidden">Enviar</span>
                 </button>
@@ -1330,12 +1325,12 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => {
-                  setActiveTab('comparador');
+                  setActiveTab('promocoes');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 className="py-2.5 px-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition"
               >
-                ← Etapa 3: Comparar
+                ← Ver Mais Ofertas
               </button>
 
               <button
@@ -1350,7 +1345,7 @@ export default function App() {
                 className="py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs shadow-xs transition flex items-center gap-1.5"
               >
                 <span>Finalizar & Ver Histórico</span>
-                <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+                <ArrowRight className="w-3.5 h-3.5 text-red-400" />
               </button>
             </div>
           </div>
@@ -1426,35 +1421,37 @@ export default function App() {
 
       {/* Fixed Mobile Bottom Navigation Bar (4 Etapas + Histórico) */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-lg pb-[calc(env(safe-area-inset-bottom,0px)+4px)] pt-1 px-1">
-        <div className="max-w-md mx-auto grid grid-cols-5 gap-0.5">
-          {/* 1. Teto / Orçamento */}
-          <button
-            id="mobile-nav-orcamento"
-            type="button"
-            onClick={() => { setActiveTab('orcamento'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            className={`min-h-[46px] flex flex-col items-center justify-center py-1 rounded-xl transition ${
-              activeTab === 'orcamento'
-                ? 'text-emerald-700 font-extrabold'
-                : 'text-slate-500 hover:text-slate-800 font-semibold'
-            }`}
-          >
-            <Banknote className={`w-5 h-5 ${activeTab === 'orcamento' ? 'stroke-[2.5]' : ''}`} />
-            <span className="text-[10px] mt-0.5 tracking-tight">1. Teto</span>
-          </button>
-
-          {/* 2. Ofertas & Produtos */}
+        <div className="max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-4xl mx-auto grid grid-cols-5 gap-0.5">
+          {/* 1. Ofertas & Produtos */}
           <button
             id="mobile-nav-promocoes"
             type="button"
             onClick={() => { setActiveTab('promocoes'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             className={`min-h-[46px] flex flex-col items-center justify-center py-1 rounded-xl transition ${
               activeTab === 'promocoes'
-                ? 'text-emerald-700 font-extrabold'
+                ? 'text-red-600 font-black'
                 : 'text-slate-500 hover:text-slate-800 font-semibold'
             }`}
           >
             <Store className={`w-5 h-5 ${activeTab === 'promocoes' ? 'stroke-[2.5]' : ''}`} />
-            <span className="text-[10px] mt-0.5 tracking-tight">2. Ofertas</span>
+            <span className="text-[10px] mt-0.5 tracking-tight">Ofertas</span>
+          </button>
+
+          {/* 2. Rancho Pronto (30 dias) */}
+          <button
+            id="mobile-nav-rancho"
+            type="button"
+            onClick={() => { setActiveTab('rancho'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            className={`min-h-[46px] flex flex-col items-center justify-center py-1 rounded-xl transition relative ${
+              activeTab === 'rancho'
+                ? 'text-red-600 font-black'
+                : 'text-slate-500 hover:text-slate-800 font-semibold'
+            }`}
+          >
+            <div className="relative">
+              <Zap className={`w-5 h-5 ${activeTab === 'rancho' ? 'stroke-[2.5] text-red-600 fill-red-100' : 'text-amber-500 fill-amber-400'}`} />
+            </div>
+            <span className="text-[10px] mt-0.5 tracking-tight font-bold">Rancho 30d</span>
           </button>
 
           {/* 3. Comparador Multi-Mercados */}
@@ -1464,12 +1461,12 @@ export default function App() {
             onClick={() => { setActiveTab('comparador'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             className={`min-h-[46px] flex flex-col items-center justify-center py-1 rounded-xl transition ${
               activeTab === 'comparador'
-                ? 'text-emerald-700 font-extrabold'
+                ? 'text-red-600 font-black'
                 : 'text-slate-500 hover:text-slate-800 font-semibold'
             }`}
           >
             <Layers className={`w-5 h-5 ${activeTab === 'comparador' ? 'stroke-[2.5]' : ''}`} />
-            <span className="text-[10px] mt-0.5 tracking-tight">3. Comparar</span>
+            <span className="text-[10px] mt-0.5 tracking-tight">Comparar</span>
           </button>
 
           {/* 4. No Mercado / Carrinho */}
@@ -1478,35 +1475,35 @@ export default function App() {
             type="button"
             onClick={() => { setActiveTab('carrinho'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             className={`min-h-[46px] relative flex flex-col items-center justify-center py-1 rounded-xl transition ${
-              activeTab === 'carrinho' || activeTab === 'rancho'
-                ? 'text-emerald-700 font-extrabold'
+              activeTab === 'carrinho'
+                ? 'text-red-600 font-black'
                 : 'text-slate-500 hover:text-slate-800 font-semibold'
             }`}
           >
             <div className="relative">
-              <ShoppingCart className={`w-5 h-5 ${activeTab === 'carrinho' || activeTab === 'rancho' ? 'stroke-[2.5]' : ''}`} />
+              <ShoppingCart className={`w-5 h-5 ${activeTab === 'carrinho' ? 'stroke-[2.5]' : ''}`} />
               {shoppingList.length > 0 && (
-                <span className="absolute -top-1.5 -right-2.5 bg-emerald-600 text-white font-black text-[9px] min-w-[16px] h-4 rounded-full flex items-center justify-center px-1 shadow-xs animate-in zoom-in">
+                <span className="absolute -top-1.5 -right-2.5 bg-red-600 text-white font-black text-[9px] min-w-[16px] h-4 rounded-full flex items-center justify-center px-1 shadow-xs animate-in zoom-in">
                   {shoppingList.length}
                 </span>
               )}
             </div>
-            <span className="text-[10px] mt-0.5 tracking-tight">4. Carrinho</span>
+            <span className="text-[10px] mt-0.5 tracking-tight">Carrinho</span>
           </button>
 
-          {/* 5. Histórico */}
+          {/* 5. Teto / Orçamento */}
           <button
-            id="mobile-nav-historico"
+            id="mobile-nav-orcamento"
             type="button"
-            onClick={() => { setActiveTab('historico'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            onClick={() => { setActiveTab('orcamento'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             className={`min-h-[46px] flex flex-col items-center justify-center py-1 rounded-xl transition ${
-              activeTab === 'historico'
-                ? 'text-emerald-700 font-extrabold'
+              activeTab === 'orcamento'
+                ? 'text-red-600 font-black'
                 : 'text-slate-500 hover:text-slate-800 font-semibold'
             }`}
           >
-            <LineChartIcon className={`w-5 h-5 ${activeTab === 'historico' ? 'stroke-[2.5]' : ''}`} />
-            <span className="text-[10px] mt-0.5 tracking-tight">Histórico</span>
+            <Banknote className={`w-5 h-5 ${activeTab === 'orcamento' ? 'stroke-[2.5]' : ''}`} />
+            <span className="text-[10px] mt-0.5 tracking-tight">Teto</span>
           </button>
         </div>
       </nav>

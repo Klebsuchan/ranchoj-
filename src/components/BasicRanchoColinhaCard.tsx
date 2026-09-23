@@ -48,15 +48,15 @@ export const BasicRanchoColinhaCard: React.FC<BasicRanchoColinhaCardProps> = ({
 
   return (
     <>
-      <div className="bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-emerald-500/20 shadow-lg mb-6 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-red-950 via-slate-900 to-slate-950 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-red-500/20 shadow-lg mb-6 relative overflow-hidden">
         {/* Subtle background glow */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-red-500/10 rounded-full blur-3xl pointer-events-none" />
         
         {/* Top Header */}
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1.5">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-500/20 text-red-300 border border-red-500/30">
                 <Sparkles className="w-3.5 h-3.5" />
                 Colinha do Rancho Básico
               </span>
@@ -77,7 +77,7 @@ export const BasicRanchoColinhaCard: React.FC<BasicRanchoColinhaCardProps> = ({
             onClick={() => setIsAnalysisModalOpen(true)}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold border border-slate-700 transition self-start md:self-center shrink-0"
           >
-            <Info className="w-4 h-4 text-emerald-400" />
+            <Info className="w-4 h-4 text-red-400" />
             <span>Ver Análise dos R$ 1.410</span>
           </button>
         </div>
@@ -92,7 +92,7 @@ export const BasicRanchoColinhaCard: React.FC<BasicRanchoColinhaCardProps> = ({
             <Drumstick className="w-3 h-3 text-rose-400" /> Ovos (30un), Frango & Carne
           </span>
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-800/80 text-slate-200 text-[11px]">
-            <Flame className="w-3 h-3 text-emerald-400" /> Batata, Cebola & Banana
+            <Flame className="w-3 h-3 text-red-400" /> Batata, Cebola & Banana
           </span>
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-800/80 text-slate-200 text-[11px]">
             <SprayCan className="w-3 h-3 text-sky-400" /> Detergente, Sabão & Água Sanitária
@@ -106,14 +106,14 @@ export const BasicRanchoColinhaCard: React.FC<BasicRanchoColinhaCardProps> = ({
         <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
           
           {/* Preset 1: Sozinho (R$ 400) */}
-          <div className="p-4 rounded-2xl bg-slate-800/70 border border-slate-700/80 hover:border-emerald-500/50 transition-all flex flex-col justify-between">
+          <div className="p-4 rounded-2xl bg-slate-800/70 border border-slate-700/80 hover:border-red-500/50 transition-all flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between gap-2 mb-2">
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-300">
                   <User className="w-3.5 h-3.5" />
                   Moro Sozinho (1 Pessoa)
                 </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/50 font-semibold">
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-red-950 text-red-300 border border-red-700/50 font-semibold">
                   Teto: R$ 400,00
                 </span>
               </div>
@@ -123,7 +123,7 @@ export const BasicRanchoColinhaCard: React.FC<BasicRanchoColinhaCardProps> = ({
                   <span className="text-2xl font-black text-white">
                     R$ {soloData.estimatedCostStokCenter.toFixed(2)}
                   </span>
-                  <span className="text-xs text-emerald-400 font-semibold">
+                  <span className="text-xs text-red-400 font-semibold">
                     no Stok Center PF
                   </span>
                 </div>
@@ -139,8 +139,8 @@ export const BasicRanchoColinhaCard: React.FC<BasicRanchoColinhaCardProps> = ({
               onClick={() => handleApply('solo')}
               className={`mt-4 w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition active:scale-98 shadow-md ${
                 successHousehold === 'solo'
-                  ? 'bg-emerald-500 text-slate-950'
-                  : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                  ? 'bg-red-500 text-white'
+                  : 'bg-red-600 hover:bg-red-500 text-white'
               }`}
             >
               {successHousehold === 'solo' ? (
@@ -158,14 +158,14 @@ export const BasicRanchoColinhaCard: React.FC<BasicRanchoColinhaCardProps> = ({
           </div>
 
           {/* Preset 2: Casal (R$ 800) */}
-          <div className="p-4 rounded-2xl bg-slate-800/70 border border-slate-700/80 hover:border-emerald-500/50 transition-all flex flex-col justify-between">
+          <div className="p-4 rounded-2xl bg-slate-800/70 border border-slate-700/80 hover:border-red-500/50 transition-all flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between gap-2 mb-2">
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-300">
                   <Users className="w-3.5 h-3.5" />
                   Em Casal (2 Pessoas)
                 </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/50 font-semibold">
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-red-950 text-red-300 border border-red-700/50 font-semibold">
                   Teto: R$ 800,00 estourando
                 </span>
               </div>
@@ -175,7 +175,7 @@ export const BasicRanchoColinhaCard: React.FC<BasicRanchoColinhaCardProps> = ({
                   <span className="text-2xl font-black text-white">
                     R$ {casalData.estimatedCostStokCenter.toFixed(2)}
                   </span>
-                  <span className="text-xs text-emerald-400 font-semibold">
+                  <span className="text-xs text-red-400 font-semibold">
                     no Stok Center PF
                   </span>
                 </div>
@@ -191,8 +191,8 @@ export const BasicRanchoColinhaCard: React.FC<BasicRanchoColinhaCardProps> = ({
               onClick={() => handleApply('casal')}
               className={`mt-4 w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition active:scale-98 shadow-md ${
                 successHousehold === 'casal'
-                  ? 'bg-emerald-500 text-slate-950'
-                  : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                  ? 'bg-red-500 text-white'
+                  : 'bg-red-600 hover:bg-red-500 text-white'
               }`}
             >
               {successHousehold === 'casal' ? (

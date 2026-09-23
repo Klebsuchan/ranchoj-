@@ -22,10 +22,10 @@ export const RanchoJaIcon: React.FC<{ size?: number; className?: string }> = ({
       aria-label="RanchoJá Ícone"
     >
       <defs>
-        {/* Background rounded squircle gradient */}
+        {/* Background rounded squircle gradient - iFood Red */}
         <linearGradient id="rjBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#10B981" />
-          <stop offset="100%" stopColor="#047857" />
+          <stop offset="0%" stopColor="#EA1D2C" />
+          <stop offset="100%" stopColor="#BA0C19" />
         </linearGradient>
 
         {/* Speed Lightning gradient */}
@@ -36,11 +36,11 @@ export const RanchoJaIcon: React.FC<{ size?: number; className?: string }> = ({
 
         {/* Soft shadow inside icon */}
         <filter id="rjShadow" x="-10%" y="-10%" width="120%" height="120%">
-          <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" floodColor="#064E3B" floodOpacity="0.35" />
+          <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" floodColor="#7F1D1D" floodOpacity="0.4" />
         </filter>
       </defs>
 
-      {/* Modern Squircle / Rounded Base */}
+      {/* Modern Squircle Base in iFood Red */}
       <rect
         x="2"
         y="2"
@@ -59,12 +59,12 @@ export const RanchoJaIcon: React.FC<{ size?: number; className?: string }> = ({
         height="42"
         rx="11"
         fill="none"
-        stroke="#6EE7B7"
+        stroke="#FCA5A5"
         strokeWidth="1"
-        strokeOpacity="0.45"
+        strokeOpacity="0.4"
       />
 
-      {/* Stylized Modern Shopping Cart Wireframe */}
+      {/* Stylized Shopping Cart Wireframe with iFood Smile vibe */}
       <g filter="url(#rjShadow)">
         {/* Handle and Cart Basket Line */}
         <path
@@ -75,15 +75,15 @@ export const RanchoJaIcon: React.FC<{ size?: number; className?: string }> = ({
           strokeLinejoin="round"
         />
 
-        {/* Front horizontal speed/tier lines */}
+        {/* Front horizontal speed line */}
         <path
           d="M19 22.5H35.5"
-          stroke="#A7F3D0"
+          stroke="#FECACA"
           strokeWidth="1.8"
           strokeLinecap="round"
         />
 
-        {/* Dynamic Speed Lightning Bolt (representing "JÁ" - velocity & instant savings) */}
+        {/* Dynamic Speed Lightning Bolt */}
         <path
           d="M27.5 11.5L22 20.5H27L25 28.5L33.5 18H28L30 11.5H27.5Z"
           fill="url(#rjBoltGrad)"
@@ -136,24 +136,23 @@ export const RanchoJaLogo: React.FC<RanchoJaLogoProps> = ({
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
-              Rancho
+              rancho
             </span>
             <span
-              className={`font-black italic ml-0.5 px-1 py-0.5 rounded-md bg-emerald-600 text-white shadow-2xs ${
+              className={`font-black italic ml-0.5 px-1.5 py-0.5 rounded-lg bg-red-600 text-white shadow-xs ${
                 size === 'xs' || size === 'sm' ? 'text-[11px]' : textClasses[size]
               }`}
-              style={{ fontStyle: 'italic' }}
             >
-              Já
+              já
             </span>
           </div>
           {(size === 'md' || size === 'lg' || size === 'xl') && (
             <span
               className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${
-                isDark ? 'text-emerald-400' : 'text-emerald-700'
+                isDark ? 'text-red-300' : 'text-red-600'
               }`}
             >
-              Economia em Minutos
+              Mercados & Preços
             </span>
           )}
         </div>

@@ -21,7 +21,7 @@ export const CompactBudgetHeader: React.FC<CompactBudgetHeaderProps> = ({
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between text-xs mb-1">
           <div className="flex items-center gap-1.5 font-bold text-slate-800">
-            <PiggyBank className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <PiggyBank className="w-3.5 h-3.5 text-red-600 shrink-0" />
             <span>Gasto: <strong className="text-slate-900 font-extrabold">R$ {totalRancho.toFixed(2)}</strong></span>
             <span className="text-slate-400 font-normal">/ R$ {budgetLimit.toFixed(0)}</span>
           </div>
@@ -33,7 +33,7 @@ export const CompactBudgetHeader: React.FC<CompactBudgetHeaderProps> = ({
                 Estourou R$ {Math.abs(remaining).toFixed(2)}
               </span>
             ) : (
-              <span className="text-emerald-700">
+              <span className="text-red-700">
                 Restam R$ {remaining.toFixed(2)}
               </span>
             )}
@@ -44,7 +44,7 @@ export const CompactBudgetHeader: React.FC<CompactBudgetHeaderProps> = ({
         <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-300 ${
-              isOver ? 'bg-rose-500' : percentage > 85 ? 'bg-amber-500' : 'bg-emerald-500'
+              isOver ? 'bg-rose-500' : percentage > 85 ? 'bg-amber-500' : 'bg-red-500'
             }`}
             style={{ width: `${Math.min(percentage, 100)}%` }}
           />

@@ -175,13 +175,13 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
         aria-modal="true"
       >
         {/* Header */}
-        <div className="p-5 sm:p-6 bg-linear-to-r from-emerald-950 via-slate-900 to-slate-900 text-white flex items-center justify-between">
+        <div className="p-5 sm:p-6 bg-linear-to-r from-red-950 via-slate-900 to-slate-900 text-white flex items-center justify-between">
           <div className="flex items-center gap-3">
             <RanchoJaIcon size={40} />
             <div>
               <h2 className="text-lg sm:text-xl font-bold font-display flex items-center gap-2">
                 <span>Compartilhar & Exportar Rancho</span>
-                <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-md bg-emerald-600 text-white">RanchoJá</span>
+                <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-md bg-red-600 text-white">RanchoJá</span>
               </h2>
               <p className="text-xs text-slate-300">
                 Exporte em PDF pronto para imprimir, envie no WhatsApp ou gere link encurtado
@@ -191,7 +191,7 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-white/10 text-emerald-100 hover:text-white transition"
+            className="p-2 rounded-full hover:bg-white/10 text-red-100 hover:text-white transition"
             title="Fechar"
           >
             <X className="w-5 h-5" />
@@ -199,7 +199,7 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
         </div>
 
         {/* Action Buttons Row */}
-        <div className="p-4 sm:p-5 bg-emerald-50/60 border-b border-emerald-100 grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="p-4 sm:p-5 bg-red-50/60 border-b border-red-100 grid grid-cols-2 sm:grid-cols-4 gap-2">
           {/* PDF Export Button */}
           <button
             id="btn-baixar-pdf-modal"
@@ -208,7 +208,7 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
             className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs transition active:scale-98"
             title="Baixar arquivo PDF com caixas de marcação para imprimir ou usar sem internet"
           >
-            <FileDown className="w-4 h-4 text-emerald-400 shrink-0" />
+            <FileDown className="w-4 h-4 text-red-400 shrink-0" />
             <span>Exportar PDF</span>
           </button>
 
@@ -217,7 +217,7 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
             id="btn-compartilhar-whatsapp"
             type="button"
             onClick={handleSendWhatsApp}
-            className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition active:scale-98"
+            className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-xs transition active:scale-98"
           >
             <MessageCircle className="w-4 h-4 fill-current text-white shrink-0" />
             <span>WhatsApp</span>
@@ -236,7 +236,7 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
           >
             {copiedText ? (
               <>
-                <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <Check className="w-3.5 h-3.5 text-red-500 shrink-0" />
                 <span>Copiado!</span>
               </>
             ) : (
@@ -254,18 +254,18 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
             onClick={handleCopyLink}
             className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-2xl font-bold text-xs border transition shadow-2xs active:scale-98 ${
               copiedLink
-                ? 'bg-emerald-800 text-white border-emerald-800'
-                : 'bg-white hover:bg-slate-50 text-emerald-800 border-emerald-300'
+                ? 'bg-red-800 text-white border-red-800'
+                : 'bg-white hover:bg-slate-50 text-red-800 border-red-300'
             }`}
           >
             {copiedLink ? (
               <>
-                <Check className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
+                <Check className="w-3.5 h-3.5 text-red-300 shrink-0" />
                 <span>Link Copiado!</span>
               </>
             ) : (
               <>
-                <Link2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <Link2 className="w-3.5 h-3.5 text-red-600 shrink-0" />
                 <span>Copiar Link</span>
               </>
             )}
@@ -279,14 +279,14 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
           <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
             <div className="flex items-center justify-between text-xs text-slate-600 mb-1.5">
               <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                <Link2 className="w-3.5 h-3.5 text-emerald-600" />
+                <Link2 className="w-3.5 h-3.5 text-red-600" />
                 <span>Link Encurtado para Importação:</span>
                 {isGeneratingShortUrl ? (
                   <span className="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded font-normal">
                     Gerando link...
                   </span>
                 ) : (
-                  <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">
+                  <span className="text-[10px] bg-red-100 text-red-800 px-1.5 py-0.5 rounded font-bold">
                     Pronto para compartilhar
                   </span>
                 )}
@@ -298,12 +298,12 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
                 type="text"
                 readOnly
                 value={activeShareUrl}
-                className="flex-1 px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl text-slate-700 font-mono select-all focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="flex-1 px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl text-slate-700 font-mono select-all focus:outline-none focus:ring-1 focus:ring-red-500"
               />
               <button
                 type="button"
                 onClick={handleCopyLink}
-                className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shrink-0 transition shadow-2xs"
+                className="px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shrink-0 transition shadow-2xs"
               >
                 {copiedLink ? 'Copiado!' : 'Copiar'}
               </button>
@@ -327,7 +327,7 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
           {/* Configuration Toggles */}
           <div className="p-3.5 rounded-2xl bg-white border border-slate-200">
             <div className="flex items-center gap-2 mb-2.5 text-xs font-bold text-slate-700">
-              <Settings2 className="w-3.5 h-3.5 text-emerald-600" />
+              <Settings2 className="w-3.5 h-3.5 text-red-600" />
               <span>Opções de Formatação da Mensagem:</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
@@ -336,7 +336,7 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
                   type="checkbox"
                   checked={includePrices}
                   onChange={(e) => setIncludePrices(e.target.checked)}
-                  className="rounded text-emerald-600 focus:ring-emerald-500"
+                  className="rounded text-red-600 focus:ring-red-500"
                 />
                 <span className="text-slate-700 font-medium text-[11px]">Incluir Preços</span>
               </label>
@@ -346,7 +346,7 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
                   type="checkbox"
                   checked={includeStores}
                   onChange={(e) => setIncludeStores(e.target.checked)}
-                  className="rounded text-emerald-600 focus:ring-emerald-500"
+                  className="rounded text-red-600 focus:ring-red-500"
                 />
                 <span className="text-slate-700 font-medium text-[11px]">Mercado Sugerido</span>
               </label>
@@ -356,7 +356,7 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
                   type="checkbox"
                   checked={includeLink}
                   onChange={(e) => setIncludeLink(e.target.checked)}
-                  className="rounded text-emerald-600 focus:ring-emerald-500"
+                  className="rounded text-red-600 focus:ring-red-500"
                 />
                 <span className="text-slate-700 font-medium text-[11px]">Link Interativo</span>
               </label>
@@ -366,7 +366,7 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
                   type="checkbox"
                   checked={includeOnlyPending}
                   onChange={(e) => setIncludeOnlyPending(e.target.checked)}
-                  className="rounded text-emerald-600 focus:ring-emerald-500"
+                  className="rounded text-red-600 focus:ring-red-500"
                 />
                 <span className="text-slate-700 font-medium text-[11px]">Só Não Comprados</span>
               </label>
@@ -394,7 +394,7 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
                 className="absolute top-3 right-3 p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition"
                 title="Copiar texto"
               >
-                {copiedText ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                {copiedText ? <Check className="w-4 h-4 text-red-400" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>

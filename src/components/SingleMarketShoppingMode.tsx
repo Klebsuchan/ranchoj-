@@ -237,13 +237,13 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
       <div className="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs">
         <div className="flex items-center justify-between gap-2 mb-2.5">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs">
               <Store className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
                 <span>Rancho & Compra do Mês</span>
-                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.5 rounded-md">
+                <span className="bg-red-100 text-red-800 text-[10px] font-bold px-1.5 py-0.5 rounded-md">
                   No {selectedMarket}
                 </span>
               </h3>
@@ -257,7 +257,7 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
             <button
               type="button"
               onClick={onSwitchToComparator}
-              className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-0.5 shrink-0"
+              className="text-[11px] font-bold text-red-600 hover:text-red-800 flex items-center gap-0.5 shrink-0"
               title="Comparar preços entre todos os supermercados"
             >
               <span>Ver Comparador Multi-Mercados</span>
@@ -288,7 +288,7 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
                 >
                   <span>{market}</span>
                   {isStockCenter && (
-                    <span className="text-[9px] bg-emerald-500 text-white px-1.5 py-0.5 rounded-full font-bold">
+                    <span className="text-[9px] bg-red-600 text-white px-1.5 py-0.5 rounded-full font-bold">
                       Preferido
                     </span>
                   )}
@@ -308,7 +308,7 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
         <div className="flex items-start justify-between gap-2 mb-2">
           <div>
             <div className="flex items-center gap-1.5">
-              <ShoppingBag className={`w-4 h-4 ${isOverBudget ? 'text-rose-600' : 'text-emerald-400'}`} />
+              <ShoppingBag className={`w-4 h-4 ${isOverBudget ? 'text-rose-600' : 'text-red-400'}`} />
               <span className="text-xs font-extrabold uppercase tracking-wide">
                 Total Previsto no {selectedMarket}
               </span>
@@ -327,7 +327,7 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
             <span className={`text-[10px] font-semibold block ${isOverBudget ? 'text-rose-700' : 'text-slate-400'}`}>
               Teto Máximo
             </span>
-            <span className={`text-sm font-extrabold ${isOverBudget ? 'text-rose-800' : 'text-emerald-400'}`}>
+            <span className={`text-sm font-extrabold ${isOverBudget ? 'text-rose-800' : 'text-red-400'}`}>
               R$ {budgetLimit.toFixed(2)}
             </span>
           </div>
@@ -337,7 +337,7 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
         <div className="w-full bg-black/20 h-2 rounded-full overflow-hidden mb-2">
           <div 
             className={`h-full rounded-full transition-all duration-300 ${
-              isOverBudget ? 'bg-rose-500' : 'bg-emerald-400'
+              isOverBudget ? 'bg-rose-500' : 'bg-red-500'
             }`}
             style={{ width: `${Math.min(100, budgetUsagePercent)}%` }}
           />
@@ -355,8 +355,8 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
               </>
             ) : (
               <>
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span className={isOverBudget ? 'text-rose-700' : 'text-emerald-300'}>
+                <ShieldCheck className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                <span className={isOverBudget ? 'text-rose-700' : 'text-red-200'}>
                   Resta R$ {remaining.toFixed(2)} livre no seu teto
                 </span>
               </>
@@ -385,14 +385,14 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
       <div className="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs space-y-3">
         <div className="flex items-center justify-between">
           <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-            <Search className="w-3.5 h-3.5 text-emerald-600" />
+            <Search className="w-3.5 h-3.5 text-red-600" />
             <span>Pesquisar Promoções no {selectedMarket}</span>
           </label>
 
           <button
             type="button"
             onClick={() => setShowAddCustom(!showAddCustom)}
-            className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1"
+            className="text-[11px] font-bold text-red-600 hover:text-red-800 flex items-center gap-1"
           >
             <PlusCircle className="w-3.5 h-3.5" />
             <span>{showAddCustom ? 'Fechar' : '+ Item Avulso'}</span>
@@ -406,7 +406,7 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={`Buscar arroz, feijão, café, frango no ${selectedMarket}...`}
-            className="w-full pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500"
           />
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           {searchQuery && (
@@ -436,7 +436,7 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
               onClick={() => setSelectedCategory(cat.id)}
               className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap transition ${
                 selectedCategory === cat.id
-                  ? 'bg-emerald-600 text-white'
+                  ? 'bg-red-600 text-white'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
@@ -447,12 +447,12 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
 
         {/* Custom shelf item drawer */}
         {showAddCustom && (
-          <form onSubmit={handleAddCustom} className="p-3 bg-emerald-50/60 border border-emerald-200 rounded-xl space-y-2 animate-in fade-in">
+          <form onSubmit={handleAddCustom} className="p-3 bg-red-50/60 border border-red-200 rounded-xl space-y-2 animate-in fade-in">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-emerald-950">
+              <span className="text-xs font-bold text-red-950">
                 Adicionar Item da Gôndola / Prateleira
               </span>
-              <span className="text-[10px] text-emerald-700">Preço no {selectedMarket}</span>
+              <span className="text-[10px] text-red-600">Preço no {selectedMarket}</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <div className="sm:col-span-2">
@@ -462,7 +462,7 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
                   placeholder="Nome do produto (ex: Detergente Ypê)"
-                  className="w-full px-3 py-1.5 bg-white border border-emerald-300 rounded-lg text-xs font-medium text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="w-full px-3 py-1.5 bg-white border border-red-200 rounded-lg text-xs font-medium text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
                 />
               </div>
               <div className="flex gap-2">
@@ -472,11 +472,11 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
                   value={customPrice}
                   onChange={(e) => setCustomPrice(e.target.value)}
                   placeholder="Preço R$ (ex: 2.39)"
-                  className="w-full px-2.5 py-1.5 bg-white border border-emerald-300 rounded-lg text-xs font-medium text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="w-full px-2.5 py-1.5 bg-white border border-red-200 rounded-lg text-xs font-medium text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
                 />
                 <button
                   type="submit"
-                  className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shrink-0 transition"
+                  className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold shrink-0 transition"
                 >
                   + Adicionar
                 </button>
@@ -503,14 +503,14 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
                       {item.name}
                     </span>
                     {item.isPromoInMarket && (
-                      <span className="bg-emerald-100 text-emerald-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shrink-0">
+                      <span className="bg-red-100 text-red-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shrink-0">
                         Promoção
                       </span>
                     )}
                   </div>
 
                   <div className="flex items-center gap-2 mt-0.5 text-[11px] text-slate-500">
-                    <span className="font-black text-emerald-700 text-xs">
+                    <span className="font-black text-red-600 text-xs">
                       R$ {item.priceInMarket.toFixed(2)}
                     </span>
                     <span>• {item.unit}</span>
@@ -528,7 +528,7 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
                   className={`min-h-[36px] px-3 rounded-lg text-xs font-bold transition flex items-center gap-1 shrink-0 ${
                     item.isInList
                       ? 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                      : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs active:scale-95'
+                      : 'bg-red-600 hover:bg-red-700 text-white shadow-2xs active:scale-95'
                   }`}
                 >
                   <Plus className="w-3.5 h-3.5" />
@@ -558,10 +558,10 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
               <button
                 type="button"
                 onClick={handleExportPdf}
-                className="py-1 px-2.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 text-[11px] font-bold flex items-center gap-1 transition shadow-2xs active:scale-95"
+                className="py-1 px-2.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-900 border border-red-200 text-[11px] font-bold flex items-center gap-1 transition shadow-2xs active:scale-95"
                 title="Exportar arquivo PDF para imprimir e levar às compras offline"
               >
-                <FileDown className="w-3.5 h-3.5 text-emerald-700" />
+                <FileDown className="w-3.5 h-3.5 text-red-600" />
                 <span>Exportar PDF</span>
               </button>
               <button
@@ -588,7 +588,7 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
               <button
                 type="button"
                 onClick={onSwitchToComparator}
-                className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-sm transition active:scale-95"
+                className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-black text-xs shadow-sm transition active:scale-95"
               >
                 <Sparkles className="w-4 h-4 text-amber-300" />
                 <span>⚡ Montar Rancho Pronto em 1 Toque</span>
@@ -603,7 +603,7 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
                 className={`p-3 rounded-xl border transition flex items-center justify-between gap-3 ${
                   item.isBought
                     ? 'bg-slate-100/70 border-slate-200 text-slate-400 opacity-70'
-                    : 'bg-white border-slate-200 hover:border-emerald-300 text-slate-800 shadow-2xs'
+                    : 'bg-white border-slate-200 hover:border-red-300 text-slate-800 shadow-2xs'
                 }`}
               >
                 {/* Checkbox for physical cart checklist */}
@@ -612,8 +612,8 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
                   onClick={() => onToggleBought(item.id)}
                   className={`w-6 h-6 rounded-lg border flex items-center justify-center shrink-0 transition ${
                     item.isBought
-                      ? 'bg-emerald-600 border-emerald-600 text-white'
-                      : 'border-slate-300 bg-white hover:border-emerald-500'
+                      ? 'bg-red-600 border-red-600 text-white'
+                      : 'border-slate-300 bg-white hover:border-red-500'
                   }`}
                   title={item.isBought ? "No carrinho (toque para desmarcar)" : "Marcar como colocado no carrinho"}
                 >
@@ -631,7 +631,7 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
                     <span className="font-semibold text-slate-700">
                       R$ {item.marketPrice.toFixed(2)} / un
                     </span>
-                    <span>• Total: <strong className="text-emerald-700">R$ {item.itemTotal.toFixed(2)}</strong></span>
+                    <span>• Total: <strong className="text-red-600">R$ {item.itemTotal.toFixed(2)}</strong></span>
                   </div>
                 </div>
 
@@ -677,14 +677,14 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
                 className="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-xs active:scale-98"
                 title="Gerar arquivo PDF formatado pronto para imprimir e levar ao supermercado sem internet"
               >
-                <FileDown className="w-3.5 h-3.5 text-emerald-400" />
+                <FileDown className="w-3.5 h-3.5 text-red-400" />
                 <span>Exportar PDF</span>
               </button>
 
               <button
                 type="button"
                 onClick={onOpenShareModal || handleShareWhatsApp}
-                className="py-2.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-xs active:scale-98"
+                className="py-2.5 px-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-xs active:scale-98"
                 title="Compartilhar lista por link encurtado ou WhatsApp"
               >
                 <Share2 className="w-3.5 h-3.5" />
@@ -697,7 +697,7 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
                   onClick={onSaveToHistory}
                   className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-2xs active:scale-98 border border-slate-200"
                 >
-                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <Check className="w-3.5 h-3.5 text-red-600" />
                   <span>Salvar no Histórico</span>
                 </button>
               )}

@@ -64,11 +64,11 @@ export const BasicRanchoAnalysisModal: React.FC<BasicRanchoAnalysisModalProps> =
         <div className="bg-slate-900 text-white p-5 sm:p-6 relative">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+              <div className="w-10 h-10 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center shrink-0 border border-red-500/30">
                 <Wallet className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[11px] font-bold tracking-wider uppercase text-emerald-400">
+                <span className="text-[11px] font-bold tracking-wider uppercase text-red-400">
                   Colinha de Economia Passo Fundo
                 </span>
                 <h3 className="text-lg sm:text-xl font-bold font-display text-white">
@@ -94,7 +94,7 @@ export const BasicRanchoAnalysisModal: React.FC<BasicRanchoAnalysisModalProps> =
               onClick={() => setSelectedTab('solo')}
               className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition ${
                 selectedTab === 'solo'
-                  ? 'bg-emerald-600 text-white shadow-sm'
+                  ? 'bg-red-600 text-white shadow-sm'
                   : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
               }`}
             >
@@ -106,7 +106,7 @@ export const BasicRanchoAnalysisModal: React.FC<BasicRanchoAnalysisModalProps> =
               onClick={() => setSelectedTab('casal')}
               className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition ${
                 selectedTab === 'casal'
-                  ? 'bg-emerald-600 text-white shadow-sm'
+                  ? 'bg-red-600 text-white shadow-sm'
                   : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
               }`}
             >
@@ -120,8 +120,8 @@ export const BasicRanchoAnalysisModal: React.FC<BasicRanchoAnalysisModalProps> =
         <div className="p-5 sm:p-6 space-y-6 max-h-[75vh] overflow-y-auto">
           {/* Notification banner if just applied */}
           {appliedNotification && (
-            <div className="p-3 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-xl flex items-center gap-2 font-bold text-xs animate-in zoom-in-95">
-              <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+            <div className="p-3 bg-red-100 text-red-900 border border-red-300 rounded-xl flex items-center gap-2 font-bold text-xs animate-in zoom-in-95">
+              <Check className="w-4 h-4 text-red-600 shrink-0" />
               <span>{appliedNotification}</span>
             </div>
           )}
@@ -154,12 +154,12 @@ export const BasicRanchoAnalysisModal: React.FC<BasicRanchoAnalysisModalProps> =
                 </span>
               </div>
 
-              <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-300 shadow-2xs">
-                <span className="text-[11px] text-emerald-800 font-bold block">Sobra Real para o Rancho</span>
-                <span className="text-lg font-black text-emerald-700">
+              <div className="bg-red-50 p-3 rounded-xl border border-red-300 shadow-2xs">
+                <span className="text-[11px] text-red-800 font-bold block">Sobra Real para o Rancho</span>
+                <span className="text-lg font-black text-red-700">
                   R$ {data.ranchoBudget.toFixed(2)}
                 </span>
-                <span className="text-[10px] text-emerald-600 block mt-0.5 font-medium">
+                <span className="text-[10px] text-red-600 block mt-0.5 font-medium">
                   {selectedTab === 'solo' ? 'Teto máximo cravado' : 'Estourando no limite'}
                 </span>
               </div>
@@ -174,7 +174,7 @@ export const BasicRanchoAnalysisModal: React.FC<BasicRanchoAnalysisModalProps> =
           <div>
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-                <ShoppingCart className="w-4 h-4 text-emerald-600" />
+                <ShoppingCart className="w-4 h-4 text-red-600" />
                 <span>Divisão da Colinha: O que Deve Entrar</span>
               </h4>
               <span className="text-[11px] text-slate-500">
@@ -187,7 +187,7 @@ export const BasicRanchoAnalysisModal: React.FC<BasicRanchoAnalysisModalProps> =
                 const iconMap: Record<number, React.ReactNode> = {
                   0: <Wheat className="w-4 h-4 text-amber-600" />,
                   1: <Drumstick className="w-4 h-4 text-rose-600" />,
-                  2: <Flame className="w-4 h-4 text-emerald-600" />,
+                  2: <Flame className="w-4 h-4 text-red-600" />,
                   3: <SprayCan className="w-4 h-4 text-sky-600" />,
                   4: <Smile className="w-4 h-4 text-indigo-600" />,
                 };
@@ -203,7 +203,7 @@ export const BasicRanchoAnalysisModal: React.FC<BasicRanchoAnalysisModalProps> =
                         <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
                           {cat.percentage}%
                         </span>
-                        <span className="text-emerald-700 font-extrabold">
+                        <span className="text-red-700 font-extrabold">
                           ~R$ {cat.allocatedAmount.toFixed(2)}
                         </span>
                       </div>
@@ -218,24 +218,24 @@ export const BasicRanchoAnalysisModal: React.FC<BasicRanchoAnalysisModalProps> =
           </div>
 
           {/* 3. Supermarkets Comparison in Passo Fundo */}
-          <div className="p-4 rounded-2xl bg-emerald-950 text-white">
+          <div className="p-4 rounded-2xl bg-red-950 text-white">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <Store className="w-4 h-4 text-emerald-400" />
-                <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-300">
+                <Store className="w-4 h-4 text-red-400" />
+                <h4 className="text-xs font-bold uppercase tracking-wider text-red-300">
                   Onde este rancho sai mais barato em Passo Fundo?
                 </h4>
               </div>
-              <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-900/60 px-2 py-0.5 rounded-full border border-emerald-700/50">
+              <span className="text-[11px] font-semibold text-red-400 bg-red-900/60 px-2 py-0.5 rounded-full border border-red-700/50">
                 Economia de até R$ {data.estimatedSavings.toFixed(2)}
               </span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
-              <div className="p-2.5 rounded-xl bg-emerald-900/80 border border-emerald-500/50 text-center">
-                <span className="text-[10px] text-emerald-300 block font-semibold">1º Stok Center</span>
+              <div className="p-2.5 rounded-xl bg-red-900/80 border border-red-500/50 text-center">
+                <span className="text-[10px] text-red-300 block font-semibold">1º Stok Center</span>
                 <span className="text-sm font-black text-white">R$ {data.estimatedCostStokCenter.toFixed(2)}</span>
-                <span className="text-[9px] text-emerald-300 block mt-0.5">Mais barato!</span>
+                <span className="text-[9px] text-red-300 block mt-0.5">Mais barato!</span>
               </div>
               <div className="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-center">
                 <span className="text-[10px] text-slate-300 block font-semibold">2º Atacadão</span>
@@ -272,7 +272,7 @@ export const BasicRanchoAnalysisModal: React.FC<BasicRanchoAnalysisModalProps> =
         {/* Footer Actions */}
         <div className="p-4 sm:p-5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="text-xs text-slate-500 text-center sm:text-left">
-            Total estimado no Stok Center: <strong className="text-emerald-700 text-sm font-extrabold">R$ {data.estimatedCostStokCenter.toFixed(2)}</strong> (cabe perfeitamente no teto de R$ {data.ranchoBudget.toFixed(2)}).
+            Total estimado no Stok Center: <strong className="text-red-700 text-sm font-extrabold">R$ {data.estimatedCostStokCenter.toFixed(2)}</strong> (cabe perfeitamente no teto de R$ {data.ranchoBudget.toFixed(2)}).
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -287,7 +287,7 @@ export const BasicRanchoAnalysisModal: React.FC<BasicRanchoAnalysisModalProps> =
             <button
               type="button"
               onClick={handleApply}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition active:scale-98"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-md transition active:scale-98"
             >
               <Check className="w-4 h-4" />
               <span>Montar Este Rancho Básico</span>

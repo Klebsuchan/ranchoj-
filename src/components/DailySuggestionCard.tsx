@@ -130,10 +130,10 @@ export const DailySuggestionCard: React.FC<DailySuggestionCardProps> = ({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-950 via-slate-900 to-emerald-900 text-white p-3.5 sm:p-4 shadow-md border border-emerald-500/30">
+    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-950 via-slate-900 to-red-900 text-white p-3.5 sm:p-4 shadow-md border border-red-500/30">
       {/* Decorative subtle background accents */}
-      <div className="absolute top-0 right-0 -mt-6 -mr-6 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/3 -mb-8 w-40 h-24 bg-teal-500/10 rounded-full blur-xl pointer-events-none" />
+      <div className="absolute top-0 right-0 -mt-6 -mr-6 w-32 h-32 bg-red-500/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/3 -mb-8 w-40 h-24 bg-red-500/10 rounded-full blur-xl pointer-events-none" />
 
       {/* Top Header Tag: Sugestão do Dia & Cycle Button */}
       <div className="relative z-10 flex items-center justify-between gap-2 mb-2.5">
@@ -142,8 +142,8 @@ export const DailySuggestionCard: React.FC<DailySuggestionCardProps> = ({
             <Flame className="w-3 h-3 text-amber-950 fill-current" />
             <span>Sugestão do Dia</span>
           </span>
-          <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-300">
-            <Sparkles className="w-3 h-3 text-emerald-400" />
+          <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-red-300">
+            <Sparkles className="w-3 h-3 text-red-400" />
             Maior Economia em {cityName}
           </span>
         </div>
@@ -153,7 +153,7 @@ export const DailySuggestionCard: React.FC<DailySuggestionCardProps> = ({
           <button
             type="button"
             onClick={handleNext}
-            className="text-[11px] font-bold text-emerald-300 hover:text-white flex items-center gap-1 bg-white/10 hover:bg-white/20 active:scale-95 px-2 py-0.5 rounded-lg transition"
+            className="text-[11px] font-bold text-red-300 hover:text-white flex items-center gap-1 bg-white/10 hover:bg-white/20 active:scale-95 px-2 py-0.5 rounded-lg transition"
             title="Ver outro produto com alta economia no histórico"
           >
             <RefreshCw className="w-3 h-3" />
@@ -171,7 +171,7 @@ export const DailySuggestionCard: React.FC<DailySuggestionCardProps> = ({
               {currentSuggestion.item.name}
             </h3>
             {currentSuggestion.item.isEssential && (
-              <span className="text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.2 rounded">
+              <span className="text-[9px] font-black uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/40 px-1.5 py-0.2 rounded">
                 Essencial
               </span>
             )}
@@ -184,8 +184,8 @@ export const DailySuggestionCard: React.FC<DailySuggestionCardProps> = ({
           )}
 
           {/* Historical Price Analysis Note */}
-          <div className="flex items-start gap-1.5 text-[11px] text-emerald-200/90 bg-emerald-900/40 border border-emerald-500/20 rounded-xl p-2">
-            <History className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-1.5 text-[11px] text-red-200/90 bg-red-900/40 border border-red-500/20 rounded-xl p-2">
+            <History className="w-3.5 h-3.5 text-red-400 shrink-0 mt-0.5" />
             <p className="leading-snug">
               <strong>Histórico de Compras:</strong> {currentSuggestion.historicalNote}
             </p>
@@ -193,9 +193,9 @@ export const DailySuggestionCard: React.FC<DailySuggestionCardProps> = ({
         </div>
 
         {/* Right Side: Price Comparison Pill & Action Button */}
-        <div className="sm:col-span-5 flex flex-col sm:items-end justify-center gap-2 pt-1 sm:pt-0 border-t sm:border-t-0 border-emerald-800/50">
+        <div className="sm:col-span-5 flex flex-col sm:items-end justify-center gap-2 pt-1 sm:pt-0 border-t sm:border-t-0 border-red-800/50">
           {/* Price Comparison Block */}
-          <div className="w-full sm:w-auto bg-slate-950/60 rounded-xl p-2.5 border border-emerald-500/30 flex items-center justify-between sm:justify-end gap-3">
+          <div className="w-full sm:w-auto bg-slate-950/60 rounded-xl p-2.5 border border-red-500/30 flex items-center justify-between sm:justify-end gap-3">
             {/* Previous Month Price */}
             <div className="text-left sm:text-right">
               <span className="block text-[9px] uppercase font-bold text-slate-400 tracking-wider">
@@ -207,13 +207,13 @@ export const DailySuggestionCard: React.FC<DailySuggestionCardProps> = ({
             </div>
 
             {/* Arrow & Drop */}
-            <div className="flex items-center text-emerald-400">
+            <div className="flex items-center text-red-400">
               <ArrowDownRight className="w-4 h-4" />
             </div>
 
             {/* Current Lowest Price */}
             <div className="text-right">
-              <span className="block text-[9px] uppercase font-bold text-emerald-400 tracking-wider">
+              <span className="block text-[9px] uppercase font-bold text-red-400 tracking-wider">
                 Preço Hoje
               </span>
               <div className="text-base sm:text-lg font-black text-white leading-tight">
@@ -229,7 +229,7 @@ export const DailySuggestionCard: React.FC<DailySuggestionCardProps> = ({
               <span className="truncate">{currentSuggestion.cheapestMarket}</span>
             </span>
 
-            <span className="inline-flex items-center gap-1 font-extrabold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-md">
+            <span className="inline-flex items-center gap-1 font-extrabold text-red-300 bg-red-500/20 px-2 py-0.5 rounded-md">
               <TrendingDown className="w-3 h-3" />
               <span>-{currentSuggestion.savingsPercent}% (R$ {currentSuggestion.savingsDiff.toFixed(2).replace('.', ',')})</span>
             </span>
@@ -241,10 +241,10 @@ export const DailySuggestionCard: React.FC<DailySuggestionCardProps> = ({
             onClick={handleAdd}
             className={`w-full min-h-[38px] px-3 py-1.5 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition shadow-sm active:scale-98 ${
               justAdded
-                ? 'bg-emerald-500 text-slate-950'
+                ? 'bg-red-500 text-white'
                 : itemInList
-                ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white border border-emerald-400/40'
-                : 'bg-emerald-400 hover:bg-emerald-300 text-slate-950'
+                ? 'bg-red-600/90 hover:bg-red-500 text-white border border-red-400/40'
+                : 'bg-red-600 hover:bg-red-500 text-white'
             }`}
           >
             {justAdded ? (

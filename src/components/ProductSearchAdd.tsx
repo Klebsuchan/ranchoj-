@@ -83,10 +83,10 @@ export const ProductSearchAdd: React.FC<ProductSearchAddProps> = ({ onAddCustomP
   };
 
   return (
-    <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-900 text-white rounded-2xl p-3.5 mb-4 shadow-xs border border-emerald-800/40">
+    <div className="bg-gradient-to-r from-red-950 via-slate-900 to-slate-900 text-white rounded-2xl p-3.5 mb-4 shadow-xs border border-red-800/40">
       <div>
         <div className="flex items-center gap-1.5 mb-1">
-          <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          <Sparkles className="w-3.5 h-3.5 text-red-400 shrink-0" />
           <h3 className="text-xs font-bold text-white tracking-tight">
             Pesquisar Qualquer Produto no Mercado
           </h3>
@@ -104,7 +104,7 @@ export const ProductSearchAdd: React.FC<ProductSearchAddProps> = ({ onAddCustomP
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Ex: Azeite Andorinha, Fralda Pampers, Cerveja..."
-              className="w-full pl-9 pr-8 py-2 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              className="w-full pl-9 pr-8 py-2 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500"
             />
             {query && (
               <button
@@ -123,7 +123,7 @@ export const ProductSearchAdd: React.FC<ProductSearchAddProps> = ({ onAddCustomP
               id="btn-pesquisar-produto"
               type="submit"
               disabled={isSearching || !query.trim()}
-              className="flex-1 min-h-[42px] py-2 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-98 disabled:opacity-50 text-slate-950 font-bold text-xs transition flex items-center justify-center gap-2"
+              className="flex-1 min-h-[42px] py-2 px-4 rounded-xl bg-red-600 hover:bg-red-500 active:scale-98 disabled:opacity-50 text-white font-bold text-xs transition flex items-center justify-center gap-2"
             >
               {isSearching ? (
                 <>
@@ -148,7 +148,7 @@ export const ProductSearchAdd: React.FC<ProductSearchAddProps> = ({ onAddCustomP
               key={item}
               type="button"
               onClick={() => handleQuickSelect(item)}
-              className="shrink-0 px-2 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-emerald-500/50 transition"
+              className="shrink-0 px-2 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-red-500/50 transition"
             >
               {item}
             </button>
@@ -163,13 +163,13 @@ export const ProductSearchAdd: React.FC<ProductSearchAddProps> = ({ onAddCustomP
 
         {/* Search Result Card */}
         {result && (
-          <div className="mt-3.5 bg-slate-800/90 border border-emerald-500/40 rounded-xl p-3.5">
+          <div className="mt-3.5 bg-slate-800/90 border border-red-500/40 rounded-xl p-3.5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h4 className="font-bold text-sm sm:text-base text-white">{result.name}</h4>
                   {result.isEssential ? (
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700">
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-red-950 text-red-300 border border-red-700">
                       Cesta Básica
                     </span>
                   ) : (
@@ -186,7 +186,7 @@ export const ProductSearchAdd: React.FC<ProductSearchAddProps> = ({ onAddCustomP
                 {result.description && (
                   <p className="text-xs text-slate-300 mt-1">{result.description}</p>
                 )}
-                <div className="mt-1 flex items-center gap-2 text-[11px] text-emerald-400 font-semibold">
+                <div className="mt-1 flex items-center gap-2 text-[11px] text-red-400 font-semibold">
                   <span>Mais barato no <strong>{result.cheapestMarket}</strong></span>
                   <span>•</span>
                   <span>Economia de até R$ {result.savingsAmount.toFixed(2)} ({result.savingsPercent}%)</span>
@@ -199,8 +199,8 @@ export const ProductSearchAdd: React.FC<ProductSearchAddProps> = ({ onAddCustomP
                 disabled={justAdded}
                 className={`py-2 px-4 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 shrink-0 ${
                   justAdded 
-                    ? 'bg-emerald-600 text-white' 
-                    : 'bg-emerald-400 hover:bg-emerald-300 text-slate-950 shadow-md active:scale-95'
+                    ? 'bg-red-600 text-white' 
+                    : 'bg-red-600 hover:bg-red-500 text-white shadow-md active:scale-95'
                 }`}
               >
                 {justAdded ? (
@@ -226,7 +226,7 @@ export const ProductSearchAdd: React.FC<ProductSearchAddProps> = ({ onAddCustomP
                     key={p.supermarket}
                     className={`p-2 rounded-lg border text-center transition ${
                       isCheapest
-                        ? 'bg-emerald-950/80 border-emerald-500 text-emerald-200 shadow-xs'
+                        ? 'bg-red-950/80 border-red-500 text-red-200 shadow-xs'
                         : 'bg-slate-900/60 border-slate-700 text-slate-300'
                     }`}
                   >
@@ -234,11 +234,11 @@ export const ProductSearchAdd: React.FC<ProductSearchAddProps> = ({ onAddCustomP
                       <Store className="w-3 h-3 shrink-0" />
                       <span className="truncate">{p.supermarket}</span>
                     </div>
-                    <div className={`text-sm sm:text-base font-extrabold mt-0.5 ${isCheapest ? 'text-emerald-300' : 'text-white'}`}>
+                    <div className={`text-sm sm:text-base font-extrabold mt-0.5 ${isCheapest ? 'text-red-300' : 'text-white'}`}>
                       R$ {p.price.toFixed(2)}
                     </div>
                     {isCheapest && (
-                      <span className="inline-block mt-1 text-[9px] font-black px-1.5 py-0.2 rounded bg-emerald-600 text-white">
+                      <span className="inline-block mt-1 text-[9px] font-black px-1.5 py-0.2 rounded bg-red-600 text-white">
                         Menor Preço
                       </span>
                     )}

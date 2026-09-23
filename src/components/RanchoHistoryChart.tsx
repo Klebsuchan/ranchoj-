@@ -93,7 +93,7 @@ export const RanchoHistoryChart: React.FC<RanchoHistoryChartProps> = ({
           
           <div className="flex justify-between items-center text-slate-200">
             <span>Total Gasto no Rancho:</span>
-            <span className="font-extrabold text-emerald-400">R$ {spent.toFixed(2)}</span>
+            <span className="font-extrabold text-red-400">R$ {spent.toFixed(2)}</span>
           </div>
 
           <div className="flex justify-between items-center text-slate-300">
@@ -103,7 +103,7 @@ export const RanchoHistoryChart: React.FC<RanchoHistoryChartProps> = ({
 
           <div className="flex justify-between items-center pt-1 border-t border-slate-800">
             <span>Saldo:</span>
-            <span className={`font-bold ${isOver ? 'text-rose-400' : 'text-emerald-300'}`}>
+            <span className={`font-bold ${isOver ? 'text-rose-400' : 'text-red-300'}`}>
               {isOver ? `Estourou R$ ${Math.abs(diff).toFixed(2)}` : `Sobrou R$ ${diff.toFixed(2)}`}
             </span>
           </div>
@@ -134,10 +134,10 @@ export const RanchoHistoryChart: React.FC<RanchoHistoryChartProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-emerald-600" />
+                <TrendingUp className="w-5 h-5 text-red-600" />
                 Histórico de Gastos com Rancho (Recharts)
               </h3>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-300">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-red-100 text-red-800 border border-red-300">
                 localStorage Ativo
               </span>
             </div>
@@ -184,7 +184,7 @@ export const RanchoHistoryChart: React.FC<RanchoHistoryChartProps> = ({
 
           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
             <span className="text-[11px] text-slate-500 font-medium block">Orçamento Médio Utilizado</span>
-            <span className="text-base sm:text-lg font-extrabold text-emerald-600">
+            <span className="text-base sm:text-lg font-extrabold text-red-600">
               {avgBudgetUsed.toFixed(0)}%
             </span>
           </div>
@@ -213,8 +213,8 @@ export const RanchoHistoryChart: React.FC<RanchoHistoryChartProps> = ({
               <AreaChart data={history} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorSpent" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.35} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="#EA1D2C" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#EA1D2C" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
@@ -242,11 +242,11 @@ export const RanchoHistoryChart: React.FC<RanchoHistoryChartProps> = ({
                   type="monotone" 
                   dataKey="totalSpent" 
                   name="totalSpent"
-                  stroke="#10b981" 
+                  stroke="#EA1D2C" 
                   strokeWidth={3} 
                   fillOpacity={1} 
                   fill="url(#colorSpent)" 
-                  activeDot={{ r: 6, stroke: '#047857', strokeWidth: 2 }}
+                  activeDot={{ r: 6, stroke: '#B91C1C', strokeWidth: 2 }}
                 />
                 <Line 
                   type="monotone" 
@@ -265,7 +265,7 @@ export const RanchoHistoryChart: React.FC<RanchoHistoryChartProps> = ({
                 <YAxis tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={(val) => `R$ ${val}`} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
-                <Bar dataKey="stokCenterTotal" name="Stock Center" fill="#10b981" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="stokCenterTotal" name="Stock Center" fill="#EA1D2C" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="atacadaoTotal" name="Atacadão" fill="#0284c7" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="zaffariTotal" name="Zaffari" fill="#d97706" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="bourbonTotal" name="Bourbon" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
@@ -280,7 +280,7 @@ export const RanchoHistoryChart: React.FC<RanchoHistoryChartProps> = ({
         <form onSubmit={handleSave} className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <h4 className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-1.5">
-              <Save className="w-4 h-4 text-emerald-600" />
+              <Save className="w-4 h-4 text-red-600" />
               Salvar Rancho Atual no Histórico Mensal
             </h4>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -295,7 +295,7 @@ export const RanchoHistoryChart: React.FC<RanchoHistoryChartProps> = ({
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
               placeholder="Ex: Set/2026"
-              className="w-28 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-28 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500"
             />
             <input
               id="input-notas-historico"
@@ -303,7 +303,7 @@ export const RanchoHistoryChart: React.FC<RanchoHistoryChartProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Nota (opcional, ex: Foco em ofertas Stok Center)"
-              className="flex-1 md:w-64 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="flex-1 md:w-64 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500"
             />
             <button
               id="btn-salvar-mes-historico"
@@ -311,7 +311,7 @@ export const RanchoHistoryChart: React.FC<RanchoHistoryChartProps> = ({
               disabled={currentRanchoTotal === 0}
               className={`py-1.5 px-4 rounded-lg font-bold text-xs transition flex items-center gap-1.5 shrink-0 shadow-2xs ${
                 justSaved 
-                  ? 'bg-emerald-600 text-white' 
+                  ? 'bg-red-600 text-white' 
                   : 'bg-slate-900 hover:bg-slate-800 text-white disabled:opacity-50'
               }`}
             >
@@ -344,7 +344,7 @@ export const RanchoHistoryChart: React.FC<RanchoHistoryChartProps> = ({
                 >
                   <span className="font-bold text-slate-800">{entry.monthYear}</span>
                   <span className="text-slate-400">•</span>
-                  <span className="font-semibold text-emerald-700">R$ {entry.totalSpent.toFixed(2)}</span>
+                  <span className="font-semibold text-red-700">R$ {entry.totalSpent.toFixed(2)}</span>
                   <span className="text-[10px] text-slate-400">/ R$ {entry.budgetLimit.toFixed(0)}</span>
                   <button
                     type="button"

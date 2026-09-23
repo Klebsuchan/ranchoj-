@@ -79,7 +79,7 @@ export const PackageComparisonModal: React.FC<PackageComparisonModalProps> = ({
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+            <div className="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-xs">
               <Scale className="w-5 h-5 text-amber-300" />
             </div>
             <div>
@@ -162,7 +162,7 @@ export const PackageComparisonModal: React.FC<PackageComparisonModalProps> = ({
             {/* Embalagem A */}
             <div className={`p-4 rounded-2xl border transition-all ${
               result.cheaperOption === 'A' 
-                ? 'bg-emerald-50/70 border-emerald-400 ring-2 ring-emerald-500/20' 
+                ? 'bg-red-50/70 border-red-400 ring-2 ring-red-500/20' 
                 : 'bg-slate-50/70 border-slate-200'
             }`}>
               <div className="flex items-center justify-between mb-2">
@@ -170,7 +170,7 @@ export const PackageComparisonModal: React.FC<PackageComparisonModalProps> = ({
                   Embalagem A (Maior / Atacado)
                 </span>
                 {result.cheaperOption === 'A' && (
-                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-600 text-white">
+                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-red-600 text-white">
                     Mais Barata!
                   </span>
                 )}
@@ -189,13 +189,13 @@ export const PackageComparisonModal: React.FC<PackageComparisonModalProps> = ({
                       min="0.01"
                       value={amountA || ''}
                       onChange={(e) => setAmountA(parseFloat(e.target.value) || 0)}
-                      className="w-2/3 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-2/3 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500"
                     />
                     <select
                       id="select-unit-a"
                       value={unitA}
                       onChange={(e) => setUnitA(e.target.value as any)}
-                      className="w-1/3 px-2 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-1/3 px-2 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500"
                     >
                       <option value="kg">kg</option>
                       <option value="g">g</option>
@@ -217,7 +217,7 @@ export const PackageComparisonModal: React.FC<PackageComparisonModalProps> = ({
                     min="0"
                     value={priceA || ''}
                     onChange={(e) => setPriceA(parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                 </div>
 
@@ -233,7 +233,7 @@ export const PackageComparisonModal: React.FC<PackageComparisonModalProps> = ({
             {/* Embalagem B */}
             <div className={`p-4 rounded-2xl border transition-all ${
               result.cheaperOption === 'B' 
-                ? 'bg-emerald-50/70 border-emerald-400 ring-2 ring-emerald-500/20' 
+                ? 'bg-red-50/70 border-red-400 ring-2 ring-red-500/20' 
                 : 'bg-slate-50/70 border-slate-200'
             }`}>
               <div className="flex items-center justify-between mb-2">
@@ -241,7 +241,7 @@ export const PackageComparisonModal: React.FC<PackageComparisonModalProps> = ({
                   Embalagem B (Menor / Tradicional)
                 </span>
                 {result.cheaperOption === 'B' && (
-                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-600 text-white">
+                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-red-600 text-white">
                     Mais Barata!
                   </span>
                 )}
@@ -260,13 +260,13 @@ export const PackageComparisonModal: React.FC<PackageComparisonModalProps> = ({
                       min="0.01"
                       value={amountB || ''}
                       onChange={(e) => setAmountB(parseFloat(e.target.value) || 0)}
-                      className="w-2/3 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-2/3 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500"
                     />
                     <select
                       id="select-unit-b"
                       value={unitB}
                       onChange={(e) => setUnitB(e.target.value as any)}
-                      className="w-1/3 px-2 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-1/3 px-2 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500"
                     >
                       <option value="kg">kg</option>
                       <option value="g">g</option>
@@ -288,7 +288,7 @@ export const PackageComparisonModal: React.FC<PackageComparisonModalProps> = ({
                     min="0"
                     value={priceB || ''}
                     onChange={(e) => setPriceB(parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                 </div>
 
@@ -306,11 +306,11 @@ export const PackageComparisonModal: React.FC<PackageComparisonModalProps> = ({
           {/* Verdict Box */}
           <div className="p-4 rounded-2xl bg-slate-900 text-white shadow-sm">
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-black shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-red-600 text-white flex items-center justify-center font-black shrink-0">
                 <TrendingDown className="w-4 h-4" />
               </div>
               <div className="space-y-1 flex-1">
-                <div className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+                <div className="text-xs font-bold uppercase tracking-wider text-red-400">
                   Veredito da Economia Real
                 </div>
                 <p className="text-xs sm:text-sm font-semibold text-slate-100">

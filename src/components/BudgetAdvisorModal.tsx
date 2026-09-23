@@ -48,7 +48,7 @@ export const BudgetAdvisorModal: React.FC<BudgetAdvisorModalProps> = ({
         {/* Modal Header */}
         <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+            <div className="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-xs">
               <Sparkles className="w-5 h-5 text-amber-300" />
             </div>
             <div>
@@ -73,7 +73,7 @@ export const BudgetAdvisorModal: React.FC<BudgetAdvisorModalProps> = ({
         <div className="p-5 overflow-y-auto space-y-5">
           {isLoading ? (
             <div className="py-16 text-center space-y-3">
-              <div className="w-10 h-10 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <div className="w-10 h-10 border-3 border-red-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
               <p className="font-bold text-sm text-slate-800">
                 Avaliando itens do seu rancho com IA...
               </p>
@@ -94,7 +94,7 @@ export const BudgetAdvisorModal: React.FC<BudgetAdvisorModalProps> = ({
                     ? 'bg-rose-50 border-rose-200 text-rose-900'
                     : analysis.status === 'alerta'
                     ? 'bg-amber-50 border-amber-200 text-amber-900'
-                    : 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                    : 'bg-red-50 border-red-200 text-red-900'
                 }`}
               >
                 {analysis.status === 'estourado' ? (
@@ -102,7 +102,7 @@ export const BudgetAdvisorModal: React.FC<BudgetAdvisorModalProps> = ({
                 ) : analysis.status === 'alerta' ? (
                   <AlertTriangle className="w-6 h-6 text-amber-600 shrink-0 mt-0.5" />
                 ) : (
-                  <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-6 h-6 text-red-600 shrink-0 mt-0.5" />
                 )}
 
                 <div>
@@ -124,13 +124,13 @@ export const BudgetAdvisorModal: React.FC<BudgetAdvisorModalProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
                 {/* O QUE PODE COMPRAR */}
-                <div className="bg-emerald-50/40 border border-emerald-200 rounded-2xl p-4">
-                  <div className="flex items-center justify-between mb-3 pb-2 border-b border-emerald-200/80">
-                    <span className="font-bold text-xs uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <div className="bg-slate-50/70 border border-slate-200 rounded-2xl p-4">
+                  <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200/80">
+                    <span className="font-bold text-xs uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-red-600" />
                       Você PODE Comprar ({analysis.canBuyItems?.length || 0})
                     </span>
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full">
                       Prioridade
                     </span>
                   </div>
@@ -138,10 +138,10 @@ export const BudgetAdvisorModal: React.FC<BudgetAdvisorModalProps> = ({
                   <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
                     {analysis.canBuyItems && analysis.canBuyItems.length > 0 ? (
                       analysis.canBuyItems.map((item, idx) => (
-                        <div key={idx} className="bg-white p-2.5 rounded-xl border border-emerald-200/60 shadow-2xs">
+                        <div key={idx} className="bg-white p-2.5 rounded-xl border border-slate-200/80 shadow-2xs">
                           <div className="flex justify-between items-baseline text-xs font-bold text-slate-800">
                             <span>{item.name}</span>
-                            <span className="text-emerald-700 shrink-0 ml-2">R$ {item.cost.toFixed(2)}</span>
+                            <span className="text-red-700 shrink-0 ml-2">R$ {item.cost.toFixed(2)}</span>
                           </div>
                           <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">{item.reason}</p>
                         </div>
@@ -175,8 +175,8 @@ export const BudgetAdvisorModal: React.FC<BudgetAdvisorModalProps> = ({
                             </div>
                             <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">{item.reason}</p>
                             {item.substitute && (
-                              <div className="mt-1.5 pt-1 border-t border-slate-100 text-[11px] text-emerald-800 bg-emerald-50 px-2 py-1 rounded font-medium flex items-center gap-1">
-                                <ArrowRight className="w-3 h-3 text-emerald-600 shrink-0" />
+                              <div className="mt-1.5 pt-1 border-t border-slate-100 text-[11px] text-red-800 bg-red-50 px-2 py-1 rounded font-medium flex items-center gap-1">
+                                <ArrowRight className="w-3 h-3 text-red-600 shrink-0" />
                                 <span><strong>Troca inteligente:</strong> {item.substitute}</span>
                               </div>
                             )}
@@ -184,7 +184,7 @@ export const BudgetAdvisorModal: React.FC<BudgetAdvisorModalProps> = ({
                         ))
                       ) : (
                         <div className="p-4 text-center text-xs text-slate-500">
-                          <CheckCircle2 className="w-6 h-6 text-emerald-600 mx-auto mb-1" />
+                          <CheckCircle2 className="w-6 h-6 text-red-600 mx-auto mb-1" />
                           Excelente! Não há itens supérfluos ou excessivos na sua lista.
                         </div>
                       )}
@@ -216,7 +216,7 @@ export const BudgetAdvisorModal: React.FC<BudgetAdvisorModalProps> = ({
                   <ul className="space-y-1.5 text-xs text-slate-600">
                     {analysis.recommendations.map((tip, idx) => (
                       <li key={idx} className="flex items-start gap-2">
-                        <span className="text-emerald-600 font-bold shrink-0">•</span>
+                        <span className="text-red-600 font-bold shrink-0">•</span>
                         <span>{tip}</span>
                       </li>
                     ))}

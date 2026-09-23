@@ -121,7 +121,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
   if (items.length === 0) {
     return (
       <div className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 text-center shadow-xs">
-        <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 mb-4">
+        <div className="w-14 h-14 mx-auto rounded-2xl bg-red-50 flex items-center justify-center text-red-600 mb-4">
           <ShoppingCart className="w-7 h-7" />
         </div>
         <h3 className="text-lg font-bold text-slate-900 font-display">Seu Rancho está vazio</h3>
@@ -139,10 +139,10 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <ShoppingCart className="w-5 h-5 text-emerald-600" />
+              <ShoppingCart className="w-5 h-5 text-red-600" />
               Lista do Meu Rancho
             </h2>
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-red-100 text-red-800">
               {items.length} {items.length === 1 ? 'item' : 'itens'}
             </span>
           </div>
@@ -157,7 +157,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
             id="btn-abrir-compartilhar-rancho"
             type="button"
             onClick={() => setIsShareModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white transition shadow-xs active:scale-98"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white transition shadow-xs active:scale-98"
             title="Compartilhar lista via WhatsApp, redes sociais ou link direto"
           >
             <Share2 className="w-3.5 h-3.5" />
@@ -169,7 +169,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
             id="btn-whatsapp-rancho-rapido"
             type="button"
             onClick={handleQuickWhatsApp}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs active:scale-98"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white transition shadow-xs active:scale-98"
             title="Enviar lista formatada direto no WhatsApp"
           >
             <MessageCircle className="w-3.5 h-3.5 fill-current" />
@@ -181,7 +181,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
             id="btn-copiar-rancho-rapido"
             type="button"
             onClick={handleQuickCopy}
-            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition shadow-2xs active:scale-98 ${
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border transition shadow-2xs active:scale-98 ${
               quickCopied
                 ? 'bg-slate-900 text-white border-slate-900'
                 : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
@@ -190,7 +190,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
           >
             {quickCopied ? (
               <>
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <Check className="w-3.5 h-3.5 text-red-500" />
                 <span>Copiado!</span>
               </>
             ) : (
@@ -209,7 +209,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
             disabled={isGeneratingPdf || items.length === 0}
             className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition shadow-xs ${
               pdfSuccess
-                ? 'bg-emerald-700 text-white'
+                ? 'bg-red-600 text-white'
                 : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 active:scale-98 disabled:opacity-50'
             }`}
             title="Exportar documento PDF pronto para levar às compras ou imprimir"
@@ -221,7 +221,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
               </>
             ) : pdfSuccess ? (
               <>
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-red-600" />
                 <span>PDF Baixado!</span>
               </>
             ) : (
@@ -291,11 +291,11 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
                   <button
                     type="button"
                     onClick={() => onToggleBought(item.id)}
-                    className="mt-0.5 text-slate-400 hover:text-emerald-600 transition shrink-0"
+                    className="mt-0.5 text-slate-400 hover:text-red-600 transition shrink-0"
                     title={item.isBought ? 'Desmarcar' : 'Marcar como comprado'}
                   >
                     {item.isBought ? (
-                      <CheckSquare className="w-5 h-5 text-emerald-600" />
+                      <CheckSquare className="w-5 h-5 text-red-600" />
                     ) : (
                       <Square className="w-5 h-5" />
                     )}
@@ -307,7 +307,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
                         {item.name}
                       </span>
                       {item.isEssential ? (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200">
                           Essencial
                         </span>
                       ) : (
@@ -383,37 +383,37 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
                     Comparativo Passo Fundo (1 un):
                   </div>
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 text-center text-xs">
-                    <div className={`p-1.5 rounded bg-white border ${cheapestMkt === 'Stock Center' ? 'border-emerald-500 bg-emerald-50/50' : 'border-slate-200'}`}>
+                    <div className={`p-1.5 rounded bg-white border ${cheapestMkt === 'Stock Center' ? 'border-red-500 bg-red-50/50' : 'border-slate-200'}`}>
                       <div className="text-[9px] font-semibold text-slate-500 truncate">Stok Center</div>
                       <div className="font-extrabold text-slate-900 text-[11px]">
                         R$ {stokP ? (stokP as number).toFixed(2) : '-'}
                       </div>
                     </div>
-                    <div className={`p-1.5 rounded bg-white border ${cheapestMkt === 'Supermercado Boqueirão' ? 'border-emerald-500 bg-emerald-50/50' : 'border-slate-200'}`}>
+                    <div className={`p-1.5 rounded bg-white border ${cheapestMkt === 'Supermercado Boqueirão' ? 'border-red-500 bg-red-50/50' : 'border-slate-200'}`}>
                       <div className="text-[9px] font-semibold text-slate-500 truncate">Boqueirão</div>
                       <div className="font-extrabold text-slate-900 text-[11px]">
                         R$ {boqueiraoP ? (boqueiraoP as number).toFixed(2) : '-'}
                       </div>
                     </div>
-                    <div className={`p-1.5 rounded bg-white border ${cheapestMkt === 'Atacadão' ? 'border-emerald-500 bg-emerald-50/50' : 'border-slate-200'}`}>
+                    <div className={`p-1.5 rounded bg-white border ${cheapestMkt === 'Atacadão' ? 'border-red-500 bg-red-50/50' : 'border-slate-200'}`}>
                       <div className="text-[9px] font-semibold text-slate-500 truncate">Atacadão</div>
                       <div className="font-extrabold text-slate-900 text-[11px]">
                         R$ {atacadaoP ? (atacadaoP as number).toFixed(2) : '-'}
                       </div>
                     </div>
-                    <div className={`p-1.5 rounded bg-white border ${cheapestMkt === 'Zaffari' ? 'border-emerald-500 bg-emerald-50/50' : 'border-slate-200'}`}>
+                    <div className={`p-1.5 rounded bg-white border ${cheapestMkt === 'Zaffari' ? 'border-red-500 bg-red-50/50' : 'border-slate-200'}`}>
                       <div className="text-[9px] font-semibold text-slate-500 truncate">Zaffari</div>
                       <div className="font-extrabold text-slate-900 text-[11px]">
                         R$ {zaffariP ? (zaffariP as number).toFixed(2) : '-'}
                       </div>
                     </div>
-                    <div className={`p-1.5 rounded bg-white border ${cheapestMkt === 'Bourbon' ? 'border-emerald-500 bg-emerald-50/50' : 'border-slate-200'}`}>
+                    <div className={`p-1.5 rounded bg-white border ${cheapestMkt === 'Bourbon' ? 'border-red-500 bg-red-50/50' : 'border-slate-200'}`}>
                       <div className="text-[9px] font-semibold text-slate-500 truncate">Bourbon</div>
                       <div className="font-extrabold text-slate-900 text-[11px]">
                         R$ {bourbonP ? (bourbonP as number).toFixed(2) : '-'}
                       </div>
                     </div>
-                    <div className={`p-1.5 rounded bg-white border ${cheapestMkt === 'Coqueiros' ? 'border-emerald-500 bg-emerald-50/50' : 'border-slate-200'}`}>
+                    <div className={`p-1.5 rounded bg-white border ${cheapestMkt === 'Coqueiros' ? 'border-red-500 bg-red-50/50' : 'border-slate-200'}`}>
                       <div className="text-[9px] font-semibold text-slate-500 truncate">Coqueiros</div>
                       <div className="font-extrabold text-slate-900 text-[11px]">
                         R$ {coqueirosP ? (coqueirosP as number).toFixed(2) : '-'}
@@ -431,7 +431,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
                     <select
                       value={item.selectedMarket}
                       onChange={(e) => onChangeMarket(item.id, e.target.value as any)}
-                      className="text-xs font-semibold bg-white border border-slate-300 rounded-lg py-1 px-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 max-w-[190px]"
+                      className="text-xs font-semibold bg-white border border-slate-300 rounded-lg py-1 px-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500 max-w-[190px]"
                     >
                       <option value="best">✨ Mais Barato ({cheapestMkt})</option>
                       <option value="Stock Center">Stock Center (R$ {(stokP || item.unitPrice).toFixed(2)})</option>
@@ -469,7 +469,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
       {/* Footer Quick Sharing & Totals Bar */}
       <div className="p-4 sm:p-5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center font-bold">
             <ShoppingCart className="w-5 h-5" />
           </div>
           <div>
@@ -481,7 +481,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
               {budgetLimit > 0 && (
                 <span className={`text-xs font-semibold ml-2 px-2.5 py-0.5 rounded-full ${
                   total <= budgetLimit 
-                    ? 'bg-emerald-100 text-emerald-800' 
+                    ? 'bg-red-100 text-red-800' 
                     : 'bg-rose-100 text-rose-800'
                 }`}>
                   {total <= budgetLimit ? 'Dentro do teto' : `Excedeu R$ ${(total - budgetLimit).toFixed(2)}`}
@@ -495,7 +495,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
           <button
             type="button"
             onClick={() => setIsShareModalOpen(true)}
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition active:scale-98"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-xs transition active:scale-98"
           >
             <Share2 className="w-4 h-4" />
             <span>Compartilhar Rancho</span>
@@ -504,7 +504,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
           <button
             type="button"
             onClick={handleQuickWhatsApp}
-            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition active:scale-98"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-xs transition active:scale-98"
             title="Enviar no WhatsApp"
           >
             <MessageCircle className="w-4 h-4 fill-current" />
@@ -520,7 +520,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
                 : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
             }`}
           >
-            {quickCopied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-slate-500" />}
+            {quickCopied ? <Check className="w-4 h-4 text-red-500" /> : <Copy className="w-4 h-4 text-slate-500" />}
             <span>{quickCopied ? 'Copiado!' : 'Copiar'}</span>
           </button>
         </div>
