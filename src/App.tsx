@@ -29,6 +29,7 @@ import { decodeRanchoFromUrl, fetchShortRancho } from './utils/shareRancho';
 import { BudgetStepView } from './components/BudgetStepView';
 import { CompactBudgetHeader } from './components/CompactBudgetHeader';
 import { DailyTipsCarousel } from './components/DailyTipsCarousel';
+import { HomeIntroBanner } from './components/HomeIntroBanner';
 import { RanchoProntoSelector } from './components/RanchoProntoSelector';
 import { FloatingQuickCartBar } from './components/FloatingQuickCartBar';
 import { 
@@ -1054,6 +1055,18 @@ export default function App() {
         {/* VIEW: Ofertas & Catálogo de Produtos (Ultra-Rápido & Dinâmico) */}
         {activeTab === 'promocoes' && (
           <div className="space-y-3 pb-8">
+            {/* Breve introdução do site e utilidade para todos em Passo Fundo */}
+            <HomeIntroBanner
+              onGoToRanchoPronto={() => {
+                setActiveTab('rancho');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onGoToMap={() => {
+                setActiveTab('mapa');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+
             <CompactBudgetHeader
               totalRancho={totalRancho}
               budgetLimit={profile.ranchoBudget}
