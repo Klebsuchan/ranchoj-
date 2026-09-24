@@ -143,7 +143,7 @@ O aplicativo foi desenhado para ser utilizado diretamente na tela do celular, di
 
 1. **Clone o repositório:**
    ```bash
-   git clone https://github.com/braiancamargo/rancho-passo-fundo.git
+   git clone https://github.com/ranchoja/rancho-passo-fundo.git
    cd rancho-passo-fundo
    ```
 
@@ -175,9 +175,8 @@ GEMINI_API_KEY=sua_chave_aqui
 
 ---
 
-## 👥 Autor & Créditos
+## 👥 Créditos
 
-Desenvolvido por **Braian Camargo** ([braian.kleber.camargo@gmail.com](mailto:braian.kleber.camargo@gmail.com)).  
 Projetado sob medida para fortalecer o poder de compra das famílias de Passo Fundo e região! 💚🌾
 
 ---

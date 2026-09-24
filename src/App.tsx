@@ -175,31 +175,42 @@ export default function App() {
       const savedGoogle = localStorage.getItem('ranchoja_google_user');
       if (savedGoogle) {
         const gu = JSON.parse(savedGoogle);
-        return {
-          id: gu.id,
-          name: gu.name,
-          email: gu.email,
-          avatarUrl: cleanAvatarUrl(gu.photoUrl),
-          isConnectedWithGoogle: true,
-          connectedAt: gu.signedInAt,
-          neighborhood: 'Boqueirão',
-          city: 'Passo Fundo',
-          coordinates: { lat: -28.2685, lng: -52.4310 },
-          locationMode: 'gps',
-          radiusKm: 5,
-        };
+        if (gu.email === 'braian.kleber.camargo@gmail.com' || gu.name === 'Braian Camargo') {
+          localStorage.removeItem('ranchoja_google_user');
+        } else {
+          return {
+            id: gu.id,
+            name: gu.name,
+            email: gu.email,
+            avatarUrl: cleanAvatarUrl(gu.photoUrl),
+            isConnectedWithGoogle: true,
+            connectedAt: gu.signedInAt,
+            neighborhood: 'Boqueirão',
+            city: 'Passo Fundo',
+            coordinates: { lat: -28.2685, lng: -52.4310 },
+            locationMode: 'gps',
+            radiusKm: 5,
+          };
+        }
       }
       const saved = localStorage.getItem('pf_rancho_user_profile');
       if (saved) {
         const parsed = JSON.parse(saved);
+        if (parsed.email === 'braian.kleber.camargo@gmail.com' || parsed.name === 'Braian Camargo') {
+          parsed.name = '';
+          parsed.email = '';
+          parsed.isConnectedWithGoogle = false;
+          parsed.avatarUrl = undefined;
+          localStorage.setItem('pf_rancho_user_profile', JSON.stringify(parsed));
+        }
         parsed.avatarUrl = cleanAvatarUrl(parsed.avatarUrl);
         return parsed;
       }
     } catch {}
     return {
       id: 'user-default',
-      name: 'Braian Camargo',
-      email: 'braian.kleber.camargo@gmail.com',
+      name: '',
+      email: '',
       isConnectedWithGoogle: false,
       neighborhood: 'Boqueirão',
       city: 'Passo Fundo',

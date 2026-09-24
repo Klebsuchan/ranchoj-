@@ -48,6 +48,14 @@ export function getStoredGoogleUser(): GoogleAuthUser | null {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const user: GoogleAuthUser = JSON.parse(raw);
+    // Sanitize any legacy hardcoded user info
+    if (
+      user.email === 'braian.kleber.camargo@gmail.com' ||
+      user.name === 'Braian Camargo'
+    ) {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
     const cleaned = cleanAvatarUrl(user.photoUrl);
     if (cleaned !== user.photoUrl) {
       user.photoUrl = cleaned;
@@ -174,18 +182,20 @@ export function initFirebaseAuthListener(onUserChange: (user: GoogleAuthUser | n
  * Guaranteed to work in sandboxed iframes even if browser blocks cross-origin popups
  */
 export function quickGoogleSignIn({
-  name = 'Braian Camargo',
-  email = 'braian.kleber.camargo@gmail.com',
+  name = '',
+  email = '',
   photoUrl,
 }: {
   name?: string;
   email?: string;
   photoUrl?: string;
 } = {}): GoogleAuthUser {
+  const finalName = name.trim() || 'Usuário';
+  const finalEmail = email.trim() || 'usuario@gmail.com';
   const user: GoogleAuthUser = {
     id: `google-user-${Date.now()}`,
-    name,
-    email,
+    name: finalName,
+    email: finalEmail,
     photoUrl: cleanAvatarUrl(photoUrl),
     authMethod: 'google_1click',
     signedInAt: new Date().toLocaleDateString('pt-BR'),

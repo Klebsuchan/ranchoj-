@@ -56,8 +56,15 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   profile,
   onUpdateProfile,
 }) => {
-  const [name, setName] = useState(profile.name || 'Braian Camargo');
-  const [email, setEmail] = useState(profile.email || 'braian.kleber.camargo@gmail.com');
+  const [name, setName] = useState(() => {
+    if (profile.name === 'Braian Camargo') return '';
+    return profile.name || '';
+  });
+  const [email, setEmail] = useState(() => {
+    if (profile.email === 'braian.kleber.camargo@gmail.com') return '';
+    return profile.email || '';
+  });
+  const [manualSaveSuccess, setManualSaveSuccess] = useState(false);
   const [neighborhood, setNeighborhood] = useState<string>(profile.neighborhood || 'Boqueirão');
   const [cityName, setCityName] = useState<string>(profile.city || 'Passo Fundo');
   const [customCityInput, setCustomCityInput] = useState<string>('');
@@ -70,6 +77,20 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   const [avatarLoadError, setAvatarLoadError] = useState(false);
 
   const watchIdRef = useRef<number | null>(null);
+
+  // Synchronize state when profile updates or modal opens
+  useEffect(() => {
+    if (profile.name === 'Braian Camargo') {
+      setName('');
+    } else {
+      setName(profile.name || '');
+    }
+    if (profile.email === 'braian.kleber.camargo@gmail.com') {
+      setEmail('');
+    } else {
+      setEmail(profile.email || '');
+    }
+  }, [profile.name, profile.email, isOpen]);
 
   if (!isOpen) return null;
 
@@ -93,13 +114,17 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         locationMode: profile.locationMode || 'gps',
         radiusKm,
       };
+      setName(user.name);
+      setEmail(user.email);
       onUpdateProfile(updated);
       setLocationStatus(`Autenticado com sucesso via Firebase (${user.email})!`);
     } catch (err: any) {
       console.warn('Fallback conexão Google:', err);
+      const chosenName = name.trim() || profile.name || 'Usuário Google';
+      const chosenEmail = email.trim() || profile.email || 'usuario@gmail.com';
       const user = quickGoogleSignIn({
-        name: name.trim() || profile.name || 'Braian Camargo',
-        email: email.trim() || profile.email || 'braian.kleber.camargo@gmail.com',
+        name: chosenName,
+        email: chosenEmail,
         photoUrl: cleanAvatarUrl(profile.avatarUrl),
       });
 
@@ -116,6 +141,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         locationMode: profile.locationMode || 'gps',
         radiusKm,
       };
+      setName(user.name);
+      setEmail(user.email);
       onUpdateProfile(updated);
       setLocationStatus(`Conta Google ${user.email} conectada!`);
     } finally {
@@ -128,9 +155,38 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
     const updated: UserProfile = {
       ...profile,
       isConnectedWithGoogle: false,
+      avatarUrl: undefined,
     };
     onUpdateProfile(updated);
     setLocationStatus('Desconectado da conta Google.');
+  };
+
+  const handleSaveManualProfile = () => {
+    const updated: UserProfile = {
+      ...profile,
+      name: name.trim(),
+      email: email.trim(),
+      city: cityName,
+      neighborhood: neighborhood || 'Boqueirão',
+      radiusKm,
+    };
+    onUpdateProfile(updated);
+    setManualSaveSuccess(true);
+    setLocationStatus('Cadastro salvo com sucesso!');
+    setTimeout(() => setManualSaveSuccess(false), 3000);
+  };
+
+  const handleConfirmAndClose = () => {
+    const updated: UserProfile = {
+      ...profile,
+      name: name.trim(),
+      email: email.trim(),
+      city: cityName,
+      neighborhood: neighborhood || 'Boqueirão',
+      radiusKm,
+    };
+    onUpdateProfile(updated);
+    onClose();
   };
 
   // Real-time GPS location tracking watcher (Works anywhere in Brazil and the world)
@@ -409,71 +465,91 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 </button>
               </div>
             ) : (
-              <div className="space-y-3">
-                {/* Firebase Authentication Status Banner */}
-                <div className="bg-red-50 border border-red-200 rounded-2xl p-3.5 text-xs text-red-950 flex items-start gap-2.5">
-                  <Flame className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-                  <div className="space-y-0.5 text-[11px] leading-relaxed">
-                    <p className="font-bold text-red-900 text-xs flex items-center gap-1.5">
-                      <span>Firebase Authentication & Firestore Ativos</span>
-                      <span className="bg-red-200 text-red-900 font-extrabold text-[9px] px-1.5 py-0.2 rounded-full">Oficial</span>
-                    </p>
-                    <p className="text-red-800">
-                      Faça login com sua <strong>Conta Google</strong> para manter suas listas de compras, histórico de gastos e alertas salvos na nuvem Firebase.
-                    </p>
-                  </div>
+              <div className="space-y-3.5">
+                {/* 1. Botão Principal: Entrar com Conta Google */}
+                <div>
+                  <button
+                    type="button"
+                    id="btn-login-google-modal"
+                    onClick={handleGoogleConnect}
+                    disabled={isLoggingIn}
+                    className="w-full min-h-[48px] inline-flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl bg-white hover:bg-slate-50 border-2 border-slate-300 hover:border-red-500 text-slate-800 font-extrabold text-xs sm:text-sm shadow-xs transition active:scale-98 disabled:opacity-70"
+                  >
+                    <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+                      <path
+                        fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                      />
+                    </svg>
+                    <span>{isLoggingIn ? 'Conectando ao Google...' : 'Entrar com Conta Google'}</span>
+                  </button>
+                  <p className="text-[10px] text-slate-500 text-center mt-1">
+                    Login rápido e seguro para salvar listas de compras e preferências.
+                  </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Seu Nome</label>
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Braian Camargo"
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Seu Email Google</label>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="braian.kleber.camargo@gmail.com"
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
-                    />
-                  </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-px bg-slate-200"></div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ou cadastre seu nome e e-mail</span>
+                  <div className="flex-1 h-px bg-slate-200"></div>
                 </div>
 
-                {/* Primary Google Login Button via Firebase */}
-                <button
-                  type="button"
-                  onClick={handleGoogleConnect}
-                  disabled={isLoggingIn}
-                  className="w-full min-h-[46px] inline-flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border-2 border-slate-300 text-slate-800 font-bold text-xs sm:text-sm shadow-xs transition hover:border-red-500 active:scale-98 disabled:opacity-70"
-                >
-                  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-                    <path
-                      fill="#4285F4"
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                    />
-                    <path
-                      fill="#EA4335"
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                    />
-                  </svg>
-                  <span>{isLoggingIn ? 'Conectando ao Firebase...' : 'Entrar com Conta Google'}</span>
-                </button>
+                {/* 2. Formulário Manual */}
+                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-2.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">Seu Nome</label>
+                      <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Ex: Seu Nome Completo"
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">Seu E-mail</label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="seu.email@exemplo.com"
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2 pt-1">
+                    <span className="text-[10px] text-slate-500">
+                      {manualSaveSuccess ? (
+                        <span className="text-emerald-700 font-bold flex items-center gap-1">
+                          <Check className="w-3.5 h-3.5 text-emerald-600" /> Cadastro salvo com sucesso!
+                        </span>
+                      ) : (
+                        'Seus dados ficam salvos com segurança no seu aparelho.'
+                      )}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleSaveManualProfile}
+                      className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs transition active:scale-95 shadow-2xs shrink-0"
+                    >
+                      Salvar Cadastro
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -728,7 +804,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2 shrink-0">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleConfirmAndClose}
             className="w-full sm:w-auto min-h-[44px] px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-sm transition active:scale-98"
           >
             Confirmar e Concluir
