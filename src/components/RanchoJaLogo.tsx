@@ -107,8 +107,8 @@ export const RanchoJaLogo: React.FC<RanchoJaLogoProps> = ({
   className = '',
 }) => {
   const pixelSizes = {
-    xs: 24,
-    sm: 30,
+    xs: 22,
+    sm: 26,
     md: 36,
     lg: 46,
     xl: 60,
@@ -116,7 +116,7 @@ export const RanchoJaLogo: React.FC<RanchoJaLogoProps> = ({
 
   const textClasses = {
     xs: 'text-xs',
-    sm: 'text-sm',
+    sm: 'text-[13px] sm:text-sm',
     md: 'text-base',
     lg: 'text-xl',
     xl: 'text-2xl',
@@ -125,22 +125,22 @@ export const RanchoJaLogo: React.FC<RanchoJaLogoProps> = ({
   const isDark = variant === 'dark';
 
   return (
-    <div className={`inline-flex items-center gap-2 select-none ${className}`}>
-      <RanchoJaIcon size={pixelSizes[size]} />
+    <div className={`inline-flex items-center gap-1 sm:gap-2 select-none shrink-0 whitespace-nowrap overflow-visible ${className}`}>
+      <RanchoJaIcon size={pixelSizes[size]} className="shrink-0" />
 
       {showText && (
-        <div className="flex flex-col leading-none">
-          <div className="flex items-center tracking-tight">
+        <div className="flex flex-col justify-center leading-tight py-0.5 shrink-0 whitespace-nowrap overflow-visible">
+          <div className="flex items-center tracking-tight shrink-0 whitespace-nowrap overflow-visible">
             <span
-              className={`font-black ${textClasses[size]} ${
+              className={`font-black tracking-tight ${textClasses[size]} ${
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
               rancho
             </span>
             <span
-              className={`font-black italic ml-0.5 px-1.5 py-0.5 rounded-lg bg-red-600 text-white shadow-xs ${
-                size === 'xs' || size === 'sm' ? 'text-[11px]' : textClasses[size]
+              className={`inline-flex items-center justify-center font-black italic ml-1 px-1.5 py-0.5 rounded-md bg-red-600 text-white shadow-xs shrink-0 ${
+                size === 'xs' || size === 'sm' ? 'text-[10px] sm:text-[11px]' : textClasses[size]
               }`}
             >
               já
@@ -148,7 +148,7 @@ export const RanchoJaLogo: React.FC<RanchoJaLogoProps> = ({
           </div>
           {(size === 'md' || size === 'lg' || size === 'xl') && (
             <span
-              className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${
+              className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 shrink-0 ${
                 isDark ? 'text-red-300' : 'text-red-600'
               }`}
             >

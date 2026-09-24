@@ -63,12 +63,12 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   if (variant === 'header') {
     if (currentUser) {
       return (
-        <div className={`relative ${className}`} ref={menuRef}>
+        <div className={`relative shrink-0 ${className}`} ref={menuRef}>
           <button
             id="btn-google-header-logado"
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="flex items-center gap-1.5 py-1 px-2 rounded-full border border-red-300 bg-red-50/80 hover:bg-red-100 text-slate-800 text-[11px] font-bold transition shadow-2xs active:scale-95"
+            className="flex items-center gap-1 sm:gap-1.5 h-7 sm:h-8 px-1.5 sm:px-2 rounded-full border border-red-300 bg-red-50/90 hover:bg-red-100 text-slate-800 text-[10px] sm:text-[11px] font-bold transition shadow-2xs active:scale-95 shrink-0 max-w-[85px] sm:max-w-[140px]"
             title={`Logado como ${currentUser.name} (${currentUser.email})`}
           >
             {currentUser.photoUrl && !headerAvatarError ? (
@@ -78,17 +78,17 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
                 referrerPolicy="no-referrer"
                 crossOrigin="anonymous"
                 onError={() => setHeaderAvatarError(true)}
-                className="w-5 h-5 rounded-full object-cover border border-red-500 shrink-0"
+                className="w-4 h-4 rounded-full object-cover border border-red-500 shrink-0"
               />
             ) : (
-              <div className="w-5 h-5 rounded-full bg-red-600 text-white text-[9px] font-black flex items-center justify-center shrink-0">
+              <div className="w-4 h-4 rounded-full bg-red-600 text-white text-[8px] font-black flex items-center justify-center shrink-0">
                 {currentUser.name ? currentUser.name.slice(0, 1).toUpperCase() : 'G'}
               </div>
             )}
-            <span className="truncate max-w-[80px] text-[11px] font-extrabold text-slate-800">
+            <span className="truncate max-w-[38px] sm:max-w-[75px] text-[10px] sm:text-[11px] font-extrabold text-slate-800 leading-none">
               {currentUser.givenName || currentUser.name.split(' ')[0]}
             </span>
-            <ChevronDown className="w-3 h-3 text-red-700 shrink-0" />
+            <ChevronDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-red-700 shrink-0 opacity-80" />
           </button>
 
           {/* Quick Dropdown Menu */}
@@ -137,7 +137,7 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
         id="btn-google-header-login"
         type="button"
         onClick={onOpenProfile}
-        className={`flex items-center gap-1.5 py-1 px-2.5 rounded-full border border-slate-300 hover:border-red-400 bg-white hover:bg-slate-50 text-slate-700 text-[11px] font-bold transition shadow-2xs active:scale-95 shrink-0 ${className}`}
+        className={`flex items-center gap-1 sm:gap-1.5 h-7 sm:h-8 px-2 sm:px-2.5 rounded-full border border-slate-300 hover:border-red-400 bg-white hover:bg-slate-50 text-slate-700 text-[10px] sm:text-[11px] font-bold transition shadow-2xs active:scale-95 shrink-0 ${className}`}
         title="Fazer Login com sua Conta Google para sincronizar seu rancho"
       >
         <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
@@ -158,7 +158,7 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
           />
         </svg>
-        <span>Entrar</span>
+        <span className="font-extrabold text-[10px] sm:text-[11px] leading-none">Entrar</span>
       </button>
     );
   }

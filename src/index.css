@@ -19,9 +19,8 @@
     background-color: #f8fafc;
     color: #1e293b;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    overflow-x: hidden;
-    overscroll-behavior-y: none;
-    overscroll-behavior: contain;
+    overflow-x: clip;
+    overscroll-behavior-y: auto;
     -webkit-overflow-scrolling: touch;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -33,7 +32,7 @@
     background-color: #f8fafc;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
+    overflow-x: clip;
     position: relative;
   }
 
@@ -43,6 +42,12 @@
 
   button, a, input, select, textarea {
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Smooth native-like scrolling */
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -65,6 +70,41 @@
   textarea {
     font-size: 16px;
   }
+}
+
+/* Dynamic Mobile UI Animations & Micro-Interactions */
+@keyframes pop-in {
+  0% { transform: scale(0.92); opacity: 0; }
+  70% { transform: scale(1.04); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
+}
+
+@keyframes ticker-slide {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-pop-in {
+  animation: pop-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-slide 28s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
 }
 
 

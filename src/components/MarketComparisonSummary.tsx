@@ -186,93 +186,118 @@ export const MarketComparisonSummary: React.FC<MarketComparisonSummaryProps> = (
         </div>
       </div>
 
-      {/* Grid of Supermarkets Totals (Swipeable on mobile, Grid on desktop) */}
-      <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none -mx-1 px-1">
-        {marketEntries.map(([market, total], idx) => {
-          const isCheapest = idx === 0;
-          const diffFromLowest = total - splitOptimizedTotal;
-          const proximity = getMarketProximity(market);
-          const trueTotalWithFuel = total + proximity.fuel.fuelCost;
+      {/* Vertical Ranking of Supermarkets in Passo Fundo - Mobile First & Senior Legible */}
+      <div className="space-y-3">
+        {/* Winner Highlight Card */}
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white shadow-md flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-2xl shrink-0">
+              🏆
+            </div>
+            <div>
+              <span className="text-xs font-black uppercase tracking-wider text-amber-200 block">
+                Mercado Mais Barato de Passo Fundo
+              </span>
+              <h4 className="text-lg sm:text-xl font-black text-white leading-tight">
+                {cheapestSingleMarket[0]}
+              </h4>
+              <p className="text-xs text-red-100 mt-0.5 font-medium">
+                Total do seu rancho: <strong>R$ {cheapestSingleMarket[1].toFixed(2)}</strong> (Economia de até <strong>{percentSaved}%</strong>)
+              </p>
+            </div>
+          </div>
+        </div>
 
-          return (
-            <div
-              key={market}
-              className={`w-[80vw] max-w-[280px] sm:w-auto sm:max-w-none shrink-0 snap-center rounded-2xl p-3.5 border transition-all flex flex-col justify-between ${
-                isCheapest
-                  ? 'bg-red-50/70 border-red-300 ring-2 ring-red-500 shadow-xs'
-                  : 'bg-slate-50/80 border-slate-200'
-              }`}
-            >
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-bold text-slate-800 truncate">{market}</span>
-                  {isCheapest && (
-                    <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-red-600 text-white shrink-0">
-                      1º Lugar
-                    </span>
-                  )}
-                </div>
-                <div className="text-lg sm:text-xl font-extrabold text-slate-900">
-                  R$ {total.toFixed(2)}
+        {/* Stacked Ranking List */}
+        <div className="space-y-2.5">
+          {marketEntries.map(([market, total], idx) => {
+            const isCheapest = idx === 0;
+            const diffFromLowest = total - cheapestSingleMarket[1];
+            const proximity = getMarketProximity(market);
+            const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}º`;
+
+            return (
+              <div
+                key={market}
+                className={`p-3.5 rounded-2xl border-2 transition flex items-center justify-between gap-3 ${
+                  isCheapest
+                    ? 'bg-red-50/90 border-red-400 ring-2 ring-red-500/20 shadow-xs'
+                    : 'bg-white border-slate-200 shadow-2xs'
+                }`}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-base shrink-0 ${
+                    isCheapest ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-700'
+                  }`}>
+                    {medal}
+                  </div>
+
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="text-sm sm:text-base font-black text-slate-900 truncate">
+                        {market}
+                      </h4>
+                      {isCheapest && (
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-red-600 text-white uppercase tracking-wider">
+                          Mais Barato
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
+                      <span className="flex items-center gap-1 font-medium">
+                        <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                        {proximity.distanceKm} km
+                      </span>
+                      {diffFromLowest > 0 ? (
+                        <span className="text-rose-600 font-bold">
+                          + R$ {diffFromLowest.toFixed(2)} mais caro
+                        </span>
+                      ) : (
+                        <span className="text-emerald-700 font-bold">
+                          Melhor preço total
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Distance and fuel info */}
-                <div className="mt-2 pt-2 border-t border-slate-200/70 space-y-1 text-[11px] text-slate-600">
-                  <div className="flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1 text-slate-500">
-                      <MapPin className="w-3 h-3 text-red-500" />
-                      Distância:
-                    </span>
-                    <span className="font-semibold text-slate-700">{proximity.distanceKm} km</span>
+                <div className="text-right shrink-0">
+                  <div className="text-base sm:text-lg font-black text-slate-900">
+                    R$ {total.toFixed(2)}
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1 text-slate-500">
-                      <Fuel className="w-3 h-3 text-amber-500" />
-                      Gasolina:
-                    </span>
-                    <span className="font-semibold text-slate-700">~R$ {proximity.fuel.fuelCost.toFixed(2)}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] font-bold text-slate-800 pt-0.5">
-                    <span>Total c/ Frete/Gasolina:</span>
-                    <span>R$ {trueTotalWithFuel.toFixed(2)}</span>
-                  </div>
+                  <span className="text-[11px] text-slate-400 block">
+                    {items.length} itens
+                  </span>
                 </div>
               </div>
+            );
+          })}
+        </div>
 
-              <div className="text-[11px] text-slate-500 mt-2 pt-1 border-t border-slate-200/50">
-                {isCheapest ? (
-                  <span className="text-red-700 font-bold">★ Menor preço de gôndola</span>
-                ) : (
-                  <span>+ R$ {diffFromLowest.toFixed(2)} nos produtos</span>
-                )}
+        {/* Split Optimized Rancho Option */}
+        <div className="p-3.5 rounded-2xl bg-slate-900 text-white shadow-md flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-amber-300 shrink-0">
+              <Sparkles className="w-5 h-5 fill-amber-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black text-amber-300 uppercase tracking-wider">
+                  Divisão Inteligente de Mercados
+                </span>
               </div>
+              <p className="text-xs text-slate-300">
+                Pegando cada item onde ele está mais barato:
+              </p>
             </div>
-          );
-        })}
-
-        {/* Optimized Split Card */}
-        <div className="w-[80vw] max-w-[280px] sm:w-auto sm:max-w-none shrink-0 snap-center rounded-2xl p-3.5 border bg-slate-900 text-white border-slate-800 shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-bold text-red-300 flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-amber-300" />
-                Rancho Dividido
-              </span>
-              <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-red-600 text-white">
-                Máxima Economia
-              </span>
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-white">
+          </div>
+          <div className="text-right shrink-0">
+            <div className="text-lg font-black text-emerald-400">
               R$ {splitOptimizedTotal.toFixed(2)}
             </div>
-            <p className="text-[10px] text-slate-300 mt-1">
-              Comprando cada produto no mercado com a melhor oferta.
-            </p>
-          </div>
-
-          <div className="mt-2 pt-2 border-t border-slate-800 flex items-center gap-1 text-[11px] text-red-300 font-semibold">
-            <TrendingDown className="w-3.5 h-3.5" />
-            Economia de R$ {totalMaxSavings.toFixed(2)} ({percentSaved}%)
+            <span className="text-[10px] text-emerald-300 font-bold block">
+              Economiza R$ {totalMaxSavings.toFixed(2)} ({percentSaved}%)
+            </span>
           </div>
         </div>
       </div>

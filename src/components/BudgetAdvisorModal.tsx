@@ -39,23 +39,26 @@ export const BudgetAdvisorModal: React.FC<BudgetAdvisorModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div 
-        className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden"
+        className="bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[90dvh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden"
         role="dialog"
         aria-modal="true"
       >
+        {/* Mobile Drag Handle */}
+        <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mt-2.5 sm:hidden" />
+
         {/* Modal Header */}
-        <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-xs">
+            <div className="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-xs shrink-0">
               <Sparkles className="w-5 h-5 text-amber-300" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
                 Guia do Rancho: O Que Posso e Não Posso Comprar
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-[11px] sm:text-xs text-slate-500">
                 Auditoria financeira de sobrevivência baseada no seu teto de gastos
               </p>
             </div>
@@ -63,7 +66,8 @@ export const BudgetAdvisorModal: React.FC<BudgetAdvisorModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-200/50 transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition"
+            aria-label="Fechar"
           >
             <X className="w-5 h-5" />
           </button>

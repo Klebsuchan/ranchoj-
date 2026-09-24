@@ -335,40 +335,40 @@ export const RanchoProntoSelector: React.FC<RanchoProntoSelectorProps> = ({
             </div>
           </div>
 
-          {/* Household size selector */}
-          <div className="flex items-center gap-1 bg-slate-900 rounded-xl p-1 border border-slate-700/80">
+          {/* Household size selector - Senior friendly touch buttons */}
+          <div className="grid grid-cols-3 gap-1 bg-slate-900 rounded-xl p-1 border border-slate-700/80 w-full md:w-auto">
             <button
               type="button"
               onClick={() => handleHouseholdSelect('solo')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 ${
+              className={`min-h-[44px] px-2.5 py-1.5 rounded-lg text-xs font-black transition flex items-center justify-center gap-1 active:scale-95 ${
                 household === 'solo'
                   ? 'bg-red-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  : 'text-slate-300 hover:text-white'
               }`}
             >
-              <span>1 Pessoa (Solo)</span>
+              <span>👤 1 Pessoa</span>
             </button>
             <button
               type="button"
               onClick={() => handleHouseholdSelect('casal')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 ${
+              className={`min-h-[44px] px-2.5 py-1.5 rounded-lg text-xs font-black transition flex items-center justify-center gap-1 active:scale-95 ${
                 household === 'casal'
                   ? 'bg-red-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  : 'text-slate-300 hover:text-white'
               }`}
             >
-              <span>Casal (2 un)</span>
+              <span>👥 Casal</span>
             </button>
             <button
               type="button"
               onClick={() => handleHouseholdSelect('familia')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 ${
+              className={`min-h-[44px] px-2.5 py-1.5 rounded-lg text-xs font-black transition flex items-center justify-center gap-1 active:scale-95 ${
                 household === 'familia'
                   ? 'bg-red-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  : 'text-slate-300 hover:text-white'
               }`}
             >
-              <span>Família (3-4 un)</span>
+              <span>👨‍👩‍👧 Família</span>
             </button>
           </div>
         </div>

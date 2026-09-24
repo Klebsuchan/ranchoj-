@@ -392,29 +392,32 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div 
-        className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 max-w-xl w-full overflow-hidden max-h-[92vh] flex flex-col"
+        className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 max-w-xl w-full overflow-hidden max-h-[90dvh] flex flex-col"
         role="dialog"
         aria-modal="true"
       >
-        {/* Header */}
-        <div className="p-4 sm:p-6 bg-linear-to-br from-slate-900 via-slate-800 to-red-950 text-white flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white/10 flex items-center justify-center border border-white/15 shrink-0">
-              <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />
+        {/* Header with Mobile Drag Handle */}
+        <div className="pt-2 px-4 pb-4 sm:p-6 bg-linear-to-br from-slate-900 via-slate-800 to-red-950 text-white shrink-0">
+          <div className="w-12 h-1.5 bg-white/30 rounded-full mx-auto mb-2.5 sm:hidden" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white/10 flex items-center justify-center border border-white/15 shrink-0">
+                <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />
+              </div>
+              <div>
+                <h2 className="text-base sm:text-xl font-bold font-display">Conta & Localização Móvel</h2>
+                <p className="text-[11px] sm:text-xs text-slate-300">Acesse de qualquer cidade com GPS em tempo real</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-base sm:text-xl font-bold font-display">Conta & Localização Móvel</h2>
-              <p className="text-[11px] sm:text-xs text-slate-300">Acesse de qualquer cidade do Brasil com GPS em tempo real</p>
-            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-2 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition"
+              aria-label="Fechar"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition"
-            aria-label="Fechar"
-          >
-            <X className="w-5 h-5" />
-          </button>
         </div>
 
         {/* Content Body */}
@@ -801,7 +804,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2 shrink-0">
+        <div className="p-4 pb-[calc(env(safe-area-inset-bottom,0px)+16px)] sm:pb-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2 shrink-0">
           <button
             type="button"
             onClick={handleConfirmAndClose}

@@ -368,8 +368,8 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
         <div className="lg:col-span-7 relative flex flex-col bg-slate-100">
           <div 
             ref={mapContainerRef} 
-            className="w-full h-[360px] sm:h-[420px] z-10"
-            style={{ minHeight: '360px' }}
+            className="w-full h-[280px] sm:h-[420px] z-10"
+            style={{ minHeight: '260px' }}
           />
 
           {/* Map Overlay Badge */}
