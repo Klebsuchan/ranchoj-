@@ -153,6 +153,18 @@ export interface PromotionsResponse {
   isRealTime: boolean;
 }
 
+export interface DailyTip {
+  id: string;
+  title: string;
+  category: 'substituicao' | 'timing' | 'atacado' | 'planejamento' | 'alerta';
+  icon: string;
+  tag: string;
+  shortText: string;
+  actionableAdvice: string;
+  potentialSavings?: string;
+  badgeColor?: 'emerald' | 'amber' | 'blue' | 'rose' | 'purple';
+}
+
 export interface BudgetAnalysis {
   status: 'dentro' | 'alerta' | 'estourado';
   ranchoBudget: number;

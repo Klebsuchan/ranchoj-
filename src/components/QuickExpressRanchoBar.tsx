@@ -128,7 +128,11 @@ export const QuickExpressRanchoBar: React.FC<QuickExpressRanchoBarProps> = ({
       `\n\nGerado no RanchoJá: https://ranchoja.app/`;
 
     const encoded = encodeURIComponent(text);
-    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+    try {
+      window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+    } catch {
+      navigator.clipboard?.writeText(text);
+    }
   };
 
   return (

@@ -112,7 +112,11 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
       includeStores: true,
     });
     const encoded = encodeURIComponent(formatted);
-    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank', 'noopener,noreferrer');
+    try {
+      window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank', 'noopener,noreferrer');
+    } catch {
+      copyTextToClipboard(formatted);
+    }
   };
 
   const total = items.reduce((acc, item) => acc + item.totalPrice, 0);

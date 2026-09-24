@@ -134,7 +134,11 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
   const handleSendWhatsApp = () => {
     const encoded = encodeURIComponent(formattedText);
     const whatsappUrl = `https://api.whatsapp.com/send?text=${encoded}`;
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    try {
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    } catch {
+      handleCopyText();
+    }
   };
 
   const handleNativeShare = async () => {
@@ -307,14 +311,15 @@ export const ShareRanchoModal: React.FC<ShareRanchoModalProps> = ({
               >
                 {copiedLink ? 'Copiado!' : 'Copiar'}
               </button>
-              <button
-                type="button"
-                onClick={() => window.open(activeShareUrl, '_blank')}
-                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold shrink-0 transition"
+              <a
+                href={activeShareUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold shrink-0 transition flex items-center justify-center"
                 title="Testar e abrir em nova aba"
               >
                 <ExternalLink className="w-4 h-4" />
-              </button>
+              </a>
             </div>
             <p className="mt-2 text-[11px] text-slate-500 flex items-center gap-1">
               <span>💡</span>

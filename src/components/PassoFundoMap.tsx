@@ -116,6 +116,10 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
     if (!mapContainerRef.current) return;
 
     if (!mapInstanceRef.current) {
+      if ((mapContainerRef.current as any)._leaflet_id) {
+        delete (mapContainerRef.current as any)._leaflet_id;
+      }
+
       const map = L.map(mapContainerRef.current, {
         center: [userLat, userLng],
         zoom: 14,
@@ -216,6 +220,7 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
       const marker = L.marker([store.lat, store.lng], { icon: storeIcon }).addTo(markersGroup);
       marker.on('click', () => {
         setSelectedStoreId(store.id);
+        map.panTo([store.lat, store.lng], { animate: true });
       });
 
       marker.bindPopup(`
@@ -233,7 +238,13 @@ export const PassoFundoMap: React.FC<PassoFundoMapProps> = ({
       `);
     });
 
-    map.panTo([userLat, userLng], { animate: true });
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+        markersGroupRef.current = null;
+      }
+    };
   }, [userLat, userLng, userProfile.neighborhood, selectedStoreId, visibleStores]);
 
   // Quick neighborhood change

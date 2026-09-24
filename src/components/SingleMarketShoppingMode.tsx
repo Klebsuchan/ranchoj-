@@ -227,7 +227,11 @@ export const SingleMarketShoppingMode: React.FC<SingleMarketShoppingModeProps> =
     ].filter(Boolean);
 
     const text = encodeURIComponent(lines.join('\n'));
-    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+    try {
+      window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+    } catch {
+      navigator.clipboard?.writeText(lines.join('\n'));
+    }
   };
 
   return (

@@ -28,6 +28,7 @@ import { getDefaultPromotionsCatalogue } from './utils/catalogueData';
 import { decodeRanchoFromUrl, fetchShortRancho } from './utils/shareRancho';
 import { BudgetStepView } from './components/BudgetStepView';
 import { CompactBudgetHeader } from './components/CompactBudgetHeader';
+import { DailyTipsCarousel } from './components/DailyTipsCarousel';
 import { RanchoProntoSelector } from './components/RanchoProntoSelector';
 import { FloatingQuickCartBar } from './components/FloatingQuickCartBar';
 import { 
@@ -291,6 +292,20 @@ export default function App() {
     budget: number;
   } | null>(null);
 
+  // In-app Toast & Confirmation State (replaces blocking window.alert / window.confirm)
+  const [toastMessage, setToastMessage] = useState<{
+    text: string;
+    type: 'info' | 'warning' | 'success';
+  } | null>(null);
+  const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
+
+  const showToast = (text: string, type: 'info' | 'warning' | 'success' = 'info') => {
+    setToastMessage({ text, type });
+    setTimeout(() => {
+      setToastMessage((cur) => (cur?.text === text ? null : cur));
+    }, 3500);
+  };
+
   // Dynamic Best Supermarket calculation for quick orientation
   const bestMarketName = useMemo(() => {
     if (shoppingList.length === 0) return 'Stock Center';
@@ -324,7 +339,7 @@ export default function App() {
   // 1-tap WhatsApp list export for sharing with family
   const handleShareListToWhatsApp = () => {
     if (shoppingList.length === 0) {
-      alert('Sua lista está vazia! Adicione itens ou clique no Rancho Pronto.');
+      showToast('Sua lista está vazia! Adicione itens ou escolha o Rancho Pronto.', 'warning');
       return;
     }
     const cheapestMarket = bestMarketName;
@@ -337,7 +352,12 @@ export default function App() {
       `\n\n✅ Gerado no RanchoJá: https://ranchoja.app/`;
 
     const encoded = encodeURIComponent(text);
-    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+    try {
+      window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+    } catch {
+      navigator.clipboard?.writeText(text);
+      showToast('Lista copiada para a área de transferência!', 'success');
+    }
   };
 
   // Apply pre-built basic rancho based on user chosen budget
@@ -710,15 +730,19 @@ export default function App() {
   };
 
   const handleClearList = () => {
-    if (confirm('Tem certeza que deseja esvaziar sua lista de rancho?')) {
-      setShoppingList([]);
-    }
+    setIsClearConfirmOpen(true);
+  };
+
+  const handleConfirmClearList = () => {
+    setShoppingList([]);
+    setIsClearConfirmOpen(false);
+    showToast('Lista de rancho esvaziada com sucesso.', 'info');
   };
 
   // Run AI Budget Advisor
   const runBudgetAdvisor = async () => {
     if (shoppingList.length === 0) {
-      alert('Adicione pelo menos 1 item ao seu rancho antes de rodar a análise financeira.');
+      showToast('Adicione pelo menos 1 item ao seu rancho antes de rodar a análise financeira.', 'warning');
       return;
     }
 
@@ -832,7 +856,7 @@ export default function App() {
   // Export physical PDF list ready for printing or offline use
   const handleExportPdf = () => {
     if (shoppingList.length === 0) {
-      alert('Sua lista está vazia! Adicione itens antes de exportar o PDF.');
+      showToast('Sua lista está vazia! Adicione itens antes de exportar o PDF.', 'warning');
       return;
     }
     generateRanchoPdf({
@@ -842,6 +866,7 @@ export default function App() {
       neighborhood: userProfile.neighborhood,
       cityName: userProfile.city || 'Passo Fundo',
     });
+    showToast('PDF do seu rancho gerado e baixado com sucesso!', 'success');
   };
 
   return (
@@ -1034,6 +1059,22 @@ export default function App() {
               budgetLimit={profile.ranchoBudget}
               onAdjustBudget={() => {
                 setActiveTab('orcamento');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+
+            {/* Carrossel de Dicas Rápidas do Dia (IA Gemini) */}
+            <DailyTipsCarousel
+              shoppingList={shoppingList}
+              history={history}
+              profile={profile}
+              userProfile={userProfile}
+              currentTotal={totalRancho}
+              onNavigateToOffers={() => {
+                setActiveTab('promocoes');
+              }}
+              onNavigateToRancho={() => {
+                setActiveTab('rancho');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             />
@@ -1537,6 +1578,61 @@ export default function App() {
         neighborhood={userProfile.neighborhood || userProfile.city || 'Passo Fundo - RS'}
         cityName={userProfile.city || 'Passo Fundo'}
       />
+
+      {/* In-App Toast Notification (non-blocking) */}
+      {toastMessage && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-sm animate-in fade-in slide-in-from-top-3">
+          <div className={`p-3 rounded-2xl shadow-xl border flex items-center justify-between gap-2.5 ${
+            toastMessage.type === 'warning'
+              ? 'bg-amber-900 text-amber-50 border-amber-500/50'
+              : toastMessage.type === 'success'
+              ? 'bg-emerald-900 text-emerald-50 border-emerald-500/50'
+              : 'bg-slate-900 text-white border-slate-700'
+          }`}>
+            <span className="text-xs font-bold leading-snug">{toastMessage.text}</span>
+            <button
+              type="button"
+              onClick={() => setToastMessage(null)}
+              className="p-1 text-white/70 hover:text-white rounded-lg transition"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal to Clear Shopping List */}
+      {isClearConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white rounded-2xl max-w-xs w-full p-4 shadow-2xl border border-slate-200 text-center space-y-3">
+            <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+              <ShoppingCart className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-extrabold text-slate-900">Limpar lista de compras?</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Todos os itens adicionados ao rancho atual serão removidos.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setIsClearConfirmOpen(false)}
+                className="py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmClearList}
+                className="py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition shadow-xs"
+              >
+                Sim, Limpar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
